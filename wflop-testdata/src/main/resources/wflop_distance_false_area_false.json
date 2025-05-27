@@ -1,0 +1,12 @@
+{
+  "rotorRadius": 40.0,
+  "hubHeight": 100.0,
+  "rotorEfficiency": 0.9,
+  "thrustCoefficient": 0.8,
+  "airDensity": 1.225,
+  "surfaceRoughness": 0.1,
+  "gridWidth": 200.0,
+  "dimension": 10,
+  "useDistanceMatrix": false,
+  "useIntersectedAreaMatrix": false
+}
