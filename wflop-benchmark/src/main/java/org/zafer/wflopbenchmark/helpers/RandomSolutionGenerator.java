@@ -6,16 +6,20 @@ import java.util.List;
 
 public class RandomSolutionGenerator {
 
-    public static ArrayList<Integer> populateUniqueRandomListShuffle(int n, int M) {
-        if (M <= 0 || n < 0) throw new IllegalArgumentException("Invalid input.");
-        int maxVal = M * M;
-        if (n > maxVal) throw new IllegalArgumentException("n cannot be greater than M*M.");
+    public static ArrayList<Integer> populateUniqueRandomListShuffle(int numberOfTurbines, int cellCount) {
+        if (cellCount <= 0 || numberOfTurbines < 0) {
+            throw new IllegalArgumentException("Invalid input.");
+        }
 
-        List<Integer> allNumbers = new ArrayList<>(maxVal);
-        for (int i = 0; i < maxVal; i++) {
+        if (numberOfTurbines > cellCount) {
+            throw new IllegalArgumentException("Number of turbines cannot be greater than number of cells.");
+        }
+
+        List<Integer> allNumbers = new ArrayList<>(cellCount);
+        for (int i = 0; i < cellCount; i++) {
             allNumbers.add(i);
         }
         Collections.shuffle(allNumbers);
-        return new ArrayList<>(allNumbers.subList(0, n));
+        return new ArrayList<>(allNumbers.subList(0, numberOfTurbines));
     }
 }

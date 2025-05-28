@@ -14,6 +14,7 @@ public class WFLOP {
     private final double gridWidth;
     private final int dimension;
     private final int cellCount;
+    private final int numberOfTurbines;
 
     private final double axialInductionFactor;
     private final double entrainmentConstant;
@@ -38,6 +39,7 @@ public class WFLOP {
             @JsonProperty("surfaceRoughness") double surfaceRoughness,
             @JsonProperty("gridWidth") double gridWidth,
             @JsonProperty("dimension") int dimension,
+            @JsonProperty("numberOfTurbines") int numberOfTurbines,
             @JsonProperty("useDistanceMatrix") boolean useDistanceMatrix,
             @JsonProperty("useIntersectedAreaMatrix") boolean useIntersectedAreaMatrix) {
 
@@ -49,8 +51,15 @@ public class WFLOP {
         this.surfaceRoughness = surfaceRoughness;
         this.gridWidth = gridWidth;
         this.dimension = dimension;
-
         this.cellCount = dimension * dimension;
+
+        if (numberOfTurbines > this.cellCount) {
+            throw new IllegalArgumentException("numberOfTurbines (" + numberOfTurbines +
+                    ") cannot exceed grid cell count (" + this.cellCount + ")");
+        } else {
+            this.numberOfTurbines = numberOfTurbines;
+        }
+
         this.axialInductionFactor = 1 - Math.sqrt(1 - thrustCoefficient);
         this.entrainmentConstant = 0.5 / Math.log(hubHeight / surfaceRoughness);
 
@@ -160,6 +169,14 @@ public class WFLOP {
 
     public double getEntrainmentConstant() {
         return entrainmentConstant;
+    }
+
+    public int getCellCount() {
+        return cellCount;
+    }
+
+    public int getNumberOfTurbines() {
+        return numberOfTurbines;
     }
 
     public boolean getUseDistanceMatrix() {

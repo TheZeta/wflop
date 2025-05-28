@@ -29,6 +29,7 @@ public class WFLOPBenchmark {
     @Param({"true", "false"})
     public boolean useIntersectedAreaMatrix;
 
+    private WFLOP wflop;
     private PowerOutputCalculator powerCalculator;
     private Solution iterationSolution;
     private WindProfile[] windProfiles;
@@ -39,7 +40,7 @@ public class WFLOPBenchmark {
                 useDistanceMatrix ? "true" : "false",
                 useIntersectedAreaMatrix ? "true" : "false");
 
-        WFLOP wflop = ConfigLoader.loadFromResource(wflopFile, new TypeReference<WFLOP>() {});
+        wflop = ConfigLoader.loadFromResource(wflopFile, new TypeReference<WFLOP>() {});
         windProfiles = ConfigLoader.loadFromResource("wind_profiles.json", new TypeReference<WindProfile[]>() {});
 
         WakeCalculatorJensen wakeCalculator = new WakeCalculatorJensen(wflop);
@@ -49,7 +50,9 @@ public class WFLOPBenchmark {
 
     @Setup(Level.Iteration)
     public void prepareIteration() {
-        iterationSolution = new Solution(RandomSolutionGenerator.populateUniqueRandomListShuffle(20, 10));
+        iterationSolution = new Solution(RandomSolutionGenerator.populateUniqueRandomListShuffle(
+                wflop.getNumberOfTurbines(),
+                wflop.getCellCount()));
     }
 
     @Benchmark
