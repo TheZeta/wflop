@@ -1,6 +1,6 @@
 # WFLOP
 
-**Wind Farm Layout Optimization Platform (WFLOP)** is a modular Java framework for modeling, analyzing, and benchmarking wind farm layouts. It supports flexible configuration loading, precomputed wake effects, and JMH-powered performance benchmarks.
+**Wind Farm Layout Optimization Problem (WFLOP)** is a modular Java framework for modeling, analyzing, and benchmarking wind farm layouts. It supports flexible configuration loading, precomputed wake effects, and JMH-powered performance benchmarks.
 
 ## Modules
 
