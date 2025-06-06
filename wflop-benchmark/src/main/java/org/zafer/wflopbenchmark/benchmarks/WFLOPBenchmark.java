@@ -41,11 +41,9 @@ public class WFLOPBenchmark {
                 useIntersectedAreaMatrix ? "true" : "false");
 
         wflop = ConfigLoader.loadFromResource(wflopFile, new TypeReference<WFLOP>() {});
-        windProfiles = ConfigLoader.loadFromResource("wind_profiles.json", new TypeReference<WindProfile[]>() {});
 
-        WakeCalculatorJensen wakeCalculator = new WakeCalculatorJensen(wflop);
         PowerModel powerModel = new GEOnePointFiveSLEPowerModel();
-        powerCalculator = new PowerOutputCalculator(wakeCalculator, powerModel);
+        powerCalculator = new PowerOutputCalculator(wflop, powerModel);
     }
 
     @Setup(Level.Iteration)
@@ -57,6 +55,6 @@ public class WFLOPBenchmark {
 
     @Benchmark
     public void benchmarkTotalPowerOutput(Blackhole bh) {
-        bh.consume(powerCalculator.calculateTotalPowerOutput(iterationSolution, windProfiles));
+        bh.consume(powerCalculator.calculateTotalPowerOutput(iterationSolution));
     }
 }

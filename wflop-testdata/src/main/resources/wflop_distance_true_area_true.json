@@ -8,6 +8,28 @@
   "gridWidth": 200.0,
   "dimension": 10,
   "numberOfTurbines": 20,
+  "windProfiles": [
+    {
+      "speed": 5.2,
+      "angle": 45
+    },
+    {
+      "speed": 6.7,
+      "angle": 90
+    },
+    {
+      "speed": 4.9,
+      "angle": 135
+    },
+    {
+      "speed": 7.3,
+      "angle": 180
+    },
+    {
+      "speed": 5.8,
+      "angle": 225
+    }
+  ],
   "useDistanceMatrix": true,
   "useIntersectedAreaMatrix": true
 }

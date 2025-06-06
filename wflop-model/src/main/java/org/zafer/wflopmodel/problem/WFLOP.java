@@ -2,6 +2,7 @@ package org.zafer.wflopmodel.problem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.zafer.wflopmodel.wind.WindProfile;
 
 public class WFLOP {
 
@@ -15,6 +16,7 @@ public class WFLOP {
     private final int dimension;
     private final int cellCount;
     private final int numberOfTurbines;
+    private final WindProfile[] windProfiles;
 
     private final double axialInductionFactor;
     private final double entrainmentConstant;
@@ -40,6 +42,7 @@ public class WFLOP {
             @JsonProperty("gridWidth") double gridWidth,
             @JsonProperty("dimension") int dimension,
             @JsonProperty("numberOfTurbines") int numberOfTurbines,
+            @JsonProperty("windProfiles") WindProfile[] windProfiles,
             @JsonProperty("useDistanceMatrix") boolean useDistanceMatrix,
             @JsonProperty("useIntersectedAreaMatrix") boolean useIntersectedAreaMatrix) {
 
@@ -59,6 +62,8 @@ public class WFLOP {
         } else {
             this.numberOfTurbines = numberOfTurbines;
         }
+
+        this.windProfiles = windProfiles;
 
         this.axialInductionFactor = 1 - Math.sqrt(1 - thrustCoefficient);
         this.entrainmentConstant = 0.5 / Math.log(hubHeight / surfaceRoughness);
@@ -177,6 +182,10 @@ public class WFLOP {
 
     public int getNumberOfTurbines() {
         return numberOfTurbines;
+    }
+
+    public WindProfile[] getWindProfiles() {
+        return windProfiles;
     }
 
     public boolean getUseDistanceMatrix() {

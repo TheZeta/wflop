@@ -25,17 +25,11 @@ class WFLOPPrecomputationTest {
                 "solution.json",
                 new TypeReference<Solution>() {});
 
-        WindProfile[] windProfiles = ConfigLoader.loadFromResource(
-                "wind_profiles.json",
-                new TypeReference<WindProfile[]>() {});
-
-        WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflop);
-
         PowerOutputCalculator powerOutputCalculator = new PowerOutputCalculator(
-                wakeCalculatorJensen,
+                wflop,
                 new GEOnePointFiveSLEPowerModel());
 
-        assertDoesNotThrow(() -> powerOutputCalculator.calculateTotalPowerOutput(solution, windProfiles));
+        assertDoesNotThrow(() -> powerOutputCalculator.calculateTotalPowerOutput(solution));
     }
 
     @Test
@@ -48,11 +42,9 @@ class WFLOPPrecomputationTest {
                 "solution.json",
                 new TypeReference<Solution>() {});
 
-        WindProfile[] windProfiles = ConfigLoader.loadFromResource(
-                "wind_profiles.json",
-                new TypeReference<WindProfile[]>() {});
-
         WFLOP wflopSpy = spy(wflop);
+        WindProfile[] windProfiles = wflopSpy.getWindProfiles();
+
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
@@ -72,11 +64,9 @@ class WFLOPPrecomputationTest {
                 "solution.json",
                 new TypeReference<Solution>() {});
 
-        WindProfile[] windProfiles = ConfigLoader.loadFromResource(
-                "wind_profiles.json",
-                new TypeReference<WindProfile[]>() {});
-
         WFLOP wflopSpy = spy(wflop);
+        WindProfile[] windProfiles = wflopSpy.getWindProfiles();
+
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
