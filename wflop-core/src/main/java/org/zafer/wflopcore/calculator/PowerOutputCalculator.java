@@ -1,6 +1,8 @@
 package org.zafer.wflopcore.calculator;
 
+import org.zafer.wflopcore.model.DefaultPowerModelProvider;
 import org.zafer.wflopcore.model.PowerModel;
+import org.zafer.wflopcore.model.PowerModelProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
@@ -13,13 +15,17 @@ public class PowerOutputCalculator {
     private final PowerModel powerModel;
     private final WFLOP wflop;
 
-    public PowerOutputCalculator(WFLOP wflop, PowerModel powerModel) {
-        this(wflop, powerModel, new DefaultWakeCalculatorProvider());
+    public PowerOutputCalculator(WFLOP wflop) {
+        this(wflop, new DefaultPowerModelProvider(), new DefaultWakeCalculatorProvider());
     }
 
-    public PowerOutputCalculator(WFLOP wflop, PowerModel powerModel, WakeCalculatorProvider calculatorProvider) {
+    public PowerOutputCalculator(
+            WFLOP wflop,
+            PowerModelProvider powerModelProvider,
+            WakeCalculatorProvider calculatorProvider
+    ) {
         this.wflop = wflop;
-        this.powerModel = powerModel;
+        this.powerModel = powerModelProvider.create();
         this.wakeCalculatorJensen = calculatorProvider.create(wflop);
     }
 

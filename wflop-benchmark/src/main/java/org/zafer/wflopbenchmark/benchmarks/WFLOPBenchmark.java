@@ -6,8 +6,10 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.calculator.*;
+import org.zafer.wflopcore.model.DefaultPowerModelProvider;
 import org.zafer.wflopcore.model.GEOnePointFiveSLEPowerModel;
 import org.zafer.wflopcore.model.PowerModel;
+import org.zafer.wflopcore.model.PowerModelProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
@@ -38,10 +40,10 @@ public class WFLOPBenchmark {
         String wflopFile = "wflop_problem.json";
         wflop = ConfigLoader.loadFromResource(wflopFile, new TypeReference<WFLOP>() {});
 
-        PowerModel powerModel = new GEOnePointFiveSLEPowerModel();
-        WakeCalculationPolicy policy = new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix);
-        WakeCalculatorProvider provider = new ConfigurableWakeCalculatorProvider(policy);
-        powerCalculator = new PowerOutputCalculator(wflop, powerModel, provider);
+        PowerModelProvider powerModelProvider = new DefaultPowerModelProvider();
+        WakeCalculationPolicy wakeCalculationPolicy = new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix);
+        WakeCalculatorProvider wakeCalculatorProvider = new ConfigurableWakeCalculatorProvider(wakeCalculationPolicy);
+        powerCalculator = new PowerOutputCalculator(wflop, powerModelProvider, wakeCalculatorProvider);
     }
 
     @Setup(Level.Iteration)
