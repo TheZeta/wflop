@@ -99,9 +99,9 @@ public class WakeCalculatorJensen {
 
     private double[] computeRotatedDistance(int from, int to, int angle) {
         double x1 = (from % dimension + 0.5) * gridWidth;
-        double y1 = (from / dimension + 0.5) * gridWidth;
+        double y1 = ((double) from / dimension + 0.5) * gridWidth;
         double x2 = (to % dimension + 0.5) * gridWidth;
-        double y2 = (to / dimension + 0.5) * gridWidth;
+        double y2 = ((double) to / dimension + 0.5) * gridWidth;
 
         double dx = x2 - x1;
         double dy = y2 - y1;

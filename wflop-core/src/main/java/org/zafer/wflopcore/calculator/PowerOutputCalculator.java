@@ -32,7 +32,7 @@ public class PowerOutputCalculator {
     /**
      * This is the objective function to maximize.
      *
-     * @param turbineLayout
+     * @param turbineLayout the layout configuration containing the positions of wind turbines
      * @return totalPower: The total power output of the layout under the given wind conditions.
      */
     public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {

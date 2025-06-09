@@ -7,12 +7,9 @@ import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.calculator.*;
 import org.zafer.wflopcore.model.DefaultPowerModelProvider;
-import org.zafer.wflopcore.model.GEOnePointFiveSLEPowerModel;
-import org.zafer.wflopcore.model.PowerModel;
 import org.zafer.wflopcore.model.PowerModelProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
-import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +30,6 @@ public class WFLOPBenchmark {
     private WFLOP wflop;
     private PowerOutputCalculator powerCalculator;
     private TurbineLayout iterationTurbineLayout;
-    private WindProfile[] windProfiles;
 
     @Setup(Level.Trial)
     public void setup() {

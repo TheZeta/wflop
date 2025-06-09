@@ -58,16 +58,10 @@ public class WFLOP {
 
     // Accessors
     public double getRotorRadius() { return rotorRadius; }
-    public double getHubHeight() { return hubHeight; }
-    public double getRotorEfficiency() { return rotorEfficiency; }
-    public double getThrustCoefficient() { return thrustCoefficient; }
-    public double getAirDensity() { return airDensity; }
-    public double getSurfaceRoughness() { return surfaceRoughness; }
     public double getGridWidth() { return gridWidth; }
     public int getDimension() { return dimension; }
     public int getCellCount() { return cellCount; }
     public int getNumberOfTurbines() { return numberOfTurbines; }
     public WindProfile[] getWindProfiles() { return windProfiles; }
-    public double getAxialInductionFactor() { return axialInductionFactor; }
     public double getEntrainmentConstant() { return entrainmentConstant; }
 }
