@@ -14,9 +14,13 @@ public class PowerOutputCalculator {
     private final WFLOP wflop;
 
     public PowerOutputCalculator(WFLOP wflop, PowerModel powerModel) {
+        this(wflop, powerModel, new DefaultWakeCalculatorProvider());
+    }
+
+    public PowerOutputCalculator(WFLOP wflop, PowerModel powerModel, WakeCalculatorProvider calculatorProvider) {
         this.wflop = wflop;
-        this.wakeCalculatorJensen = new WakeCalculatorJensen(wflop);
         this.powerModel = powerModel;
+        this.wakeCalculatorJensen = calculatorProvider.create(wflop);
     }
 
     /**

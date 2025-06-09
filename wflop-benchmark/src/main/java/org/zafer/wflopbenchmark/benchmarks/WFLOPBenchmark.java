@@ -5,8 +5,7 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
-import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
+import org.zafer.wflopcore.calculator.*;
 import org.zafer.wflopcore.model.GEOnePointFiveSLEPowerModel;
 import org.zafer.wflopcore.model.PowerModel;
 import org.zafer.wflopmodel.problem.WFLOP;
@@ -36,14 +35,13 @@ public class WFLOPBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
-        String wflopFile = String.format("wflop_distance_%s_area_%s.json",
-                useDistanceMatrix ? "true" : "false",
-                useIntersectedAreaMatrix ? "true" : "false");
-
+        String wflopFile = "wflop_problem.json";
         wflop = ConfigLoader.loadFromResource(wflopFile, new TypeReference<WFLOP>() {});
 
         PowerModel powerModel = new GEOnePointFiveSLEPowerModel();
-        powerCalculator = new PowerOutputCalculator(wflop, powerModel);
+        WakeCalculationPolicy policy = new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix);
+        WakeCalculatorProvider provider = new ConfigurableWakeCalculatorProvider(policy);
+        powerCalculator = new PowerOutputCalculator(wflop, powerModel, provider);
     }
 
     @Setup(Level.Iteration)

@@ -29,7 +29,5 @@
       "speed": 5.8,
       "angle": 225
     }
-  ],
-  "useDistanceMatrix": true,
-  "useIntersectedAreaMatrix": false
+  ]
 }
