@@ -16,7 +16,7 @@ public class TurbineLayout {
         this.turbineIndices = turbineIndices;
     }
 
-    public int[] getTurbineIndices() {
-        return turbineIndices.stream().mapToInt(Integer::intValue).toArray();
+    public List<Integer> getTurbineIndices() {
+        return turbineIndices;
     }
 }

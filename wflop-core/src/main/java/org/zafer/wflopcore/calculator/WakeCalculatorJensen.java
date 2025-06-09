@@ -3,6 +3,8 @@ package org.zafer.wflopcore.calculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.wind.WindProfile;
 
+import java.util.List;
+
 public class WakeCalculatorJensen {
 
     private final WFLOP wflop;
@@ -25,7 +27,7 @@ public class WakeCalculatorJensen {
         this.entrainmentConstant = wflop.getEntrainmentConstant();
     }
 
-    public double calculateReducedSpeedMultiple(WindProfile windProfile, int downwind, int[] upwindTurbines) {
+    public double calculateReducedSpeedMultiple(WindProfile windProfile, int downwind, List<Integer> upwindTurbines) {
         int angle = windProfile.getAngle();
         double baseSpeed = windProfile.getSpeed();
         double sum = 0;

@@ -5,6 +5,8 @@ import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
 
+import java.util.List;
+
 public class PowerOutputCalculator {
 
     private final WakeCalculatorJensen wakeCalculatorJensen;
@@ -25,7 +27,7 @@ public class PowerOutputCalculator {
      */
     public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {
         double totalPower = 0;
-        int[] turbineIndices = turbineLayout.getTurbineIndices();
+        List<Integer> turbineIndices = turbineLayout.getTurbineIndices();
         WindProfile[] windProfiles = wflop.getWindProfiles();
 
         for (WindProfile windProfile : windProfiles) {

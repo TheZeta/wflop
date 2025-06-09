@@ -48,7 +48,7 @@ class WFLOPPrecomputationTest {
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
-                turbineLayout.getTurbineIndices()[0],
+                turbineLayout.getTurbineIndices().get(0),
                 turbineLayout.getTurbineIndices());
 
         verify(wflopSpy, atLeastOnce()).computeIntersectedArea(anyDouble(), anyDouble());
@@ -70,7 +70,7 @@ class WFLOPPrecomputationTest {
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
-                turbineLayout.getTurbineIndices()[0],
+                turbineLayout.getTurbineIndices().get(0),
                 turbineLayout.getTurbineIndices());
 
         verify(wflopSpy, never()).computeIntersectedArea(anyDouble(), anyDouble());
