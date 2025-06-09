@@ -10,7 +10,7 @@ import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
 import org.zafer.wflopcore.model.GEOnePointFiveSLEPowerModel;
 import org.zafer.wflopcore.model.PowerModel;
 import org.zafer.wflopmodel.problem.WFLOP;
-import org.zafer.wflopmodel.solution.Solution;
+import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.concurrent.TimeUnit;
@@ -31,7 +31,7 @@ public class WFLOPBenchmark {
 
     private WFLOP wflop;
     private PowerOutputCalculator powerCalculator;
-    private Solution iterationSolution;
+    private TurbineLayout iterationTurbineLayout;
     private WindProfile[] windProfiles;
 
     @Setup(Level.Trial)
@@ -48,13 +48,13 @@ public class WFLOPBenchmark {
 
     @Setup(Level.Iteration)
     public void prepareIteration() {
-        iterationSolution = new Solution(RandomSolutionGenerator.populateUniqueRandomListShuffle(
+        iterationTurbineLayout = new TurbineLayout(RandomSolutionGenerator.populateUniqueRandomListShuffle(
                 wflop.getNumberOfTurbines(),
                 wflop.getCellCount()));
     }
 
     @Benchmark
     public void benchmarkTotalPowerOutput(Blackhole bh) {
-        bh.consume(powerCalculator.calculateTotalPowerOutput(iterationSolution));
+        bh.consume(powerCalculator.calculateTotalPowerOutput(iterationTurbineLayout));
     }
 }

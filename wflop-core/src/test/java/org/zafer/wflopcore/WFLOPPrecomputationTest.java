@@ -7,7 +7,7 @@ import org.zafer.wflopcore.calculator.PowerOutputCalculator;
 import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
 import org.zafer.wflopcore.model.GEOnePointFiveSLEPowerModel;
 import org.zafer.wflopmodel.problem.WFLOP;
-import org.zafer.wflopmodel.solution.Solution;
+import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,15 +21,15 @@ class WFLOPPrecomputationTest {
                 "wflop_distance_true_area_true.json",
                 new TypeReference<WFLOP>() {});
 
-        Solution solution = ConfigLoader.loadFromResource(
+        TurbineLayout turbineLayout = ConfigLoader.loadFromResource(
                 "solution.json",
-                new TypeReference<Solution>() {});
+                new TypeReference<TurbineLayout>() {});
 
         PowerOutputCalculator powerOutputCalculator = new PowerOutputCalculator(
                 wflop,
                 new GEOnePointFiveSLEPowerModel());
 
-        assertDoesNotThrow(() -> powerOutputCalculator.calculateTotalPowerOutput(solution));
+        assertDoesNotThrow(() -> powerOutputCalculator.calculateTotalPowerOutput(turbineLayout));
     }
 
     @Test
@@ -38,9 +38,9 @@ class WFLOPPrecomputationTest {
                 "wflop_distance_true_area_false.json",
                 new TypeReference<WFLOP>() {});
 
-        Solution solution = ConfigLoader.loadFromResource(
+        TurbineLayout turbineLayout = ConfigLoader.loadFromResource(
                 "solution.json",
-                new TypeReference<Solution>() {});
+                new TypeReference<TurbineLayout>() {});
 
         WFLOP wflopSpy = spy(wflop);
         WindProfile[] windProfiles = wflopSpy.getWindProfiles();
@@ -48,8 +48,8 @@ class WFLOPPrecomputationTest {
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
-                solution.getTurbineIndices()[0],
-                solution.getTurbineIndices());
+                turbineLayout.getTurbineIndices()[0],
+                turbineLayout.getTurbineIndices());
 
         verify(wflopSpy, atLeastOnce()).computeIntersectedArea(anyDouble(), anyDouble());
     }
@@ -60,9 +60,9 @@ class WFLOPPrecomputationTest {
                 "wflop_distance_true_area_true.json",
                 new TypeReference<WFLOP>() {});
 
-        Solution solution = ConfigLoader.loadFromResource(
+        TurbineLayout turbineLayout = ConfigLoader.loadFromResource(
                 "solution.json",
-                new TypeReference<Solution>() {});
+                new TypeReference<TurbineLayout>() {});
 
         WFLOP wflopSpy = spy(wflop);
         WindProfile[] windProfiles = wflopSpy.getWindProfiles();
@@ -70,8 +70,8 @@ class WFLOPPrecomputationTest {
         WakeCalculatorJensen wakeCalculatorJensen = new WakeCalculatorJensen(wflopSpy);
         wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 windProfiles[0],
-                solution.getTurbineIndices()[0],
-                solution.getTurbineIndices());
+                turbineLayout.getTurbineIndices()[0],
+                turbineLayout.getTurbineIndices());
 
         verify(wflopSpy, never()).computeIntersectedArea(anyDouble(), anyDouble());
     }

@@ -2,7 +2,7 @@ package org.zafer.wflopcore.calculator;
 
 import org.zafer.wflopcore.model.PowerModel;
 import org.zafer.wflopmodel.problem.WFLOP;
-import org.zafer.wflopmodel.solution.Solution;
+import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
 
 public class PowerOutputCalculator {
@@ -20,12 +20,12 @@ public class PowerOutputCalculator {
     /**
      * This is the objective function to maximize.
      *
-     * @param solution
+     * @param turbineLayout
      * @return totalPower: The total power output of the layout under the given wind conditions.
      */
-    public double calculateTotalPowerOutput(Solution solution) {
+    public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {
         double totalPower = 0;
-        int[] turbineIndices = solution.getTurbineIndices();
+        int[] turbineIndices = turbineLayout.getTurbineIndices();
         WindProfile[] windProfiles = wflop.getWindProfiles();
 
         for (WindProfile windProfile : windProfiles) {

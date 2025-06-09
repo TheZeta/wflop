@@ -1,16 +1,16 @@
-package org.zafer.wflopmodel.solution;
+package org.zafer.wflopmodel.layout;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class Solution {
+public class TurbineLayout {
 
     private final List<Integer> turbineIndices;
 
     @JsonCreator
-    public Solution(
+    public TurbineLayout(
             @JsonProperty("turbineIndices") List<Integer> turbineIndices) {
 
         this.turbineIndices = turbineIndices;
