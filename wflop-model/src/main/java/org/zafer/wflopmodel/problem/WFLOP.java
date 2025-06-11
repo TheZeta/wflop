@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.zafer.wflopmodel.wind.WindProfile;
 
+import java.util.List;
+
 public class WFLOP {
 
     private final double rotorRadius;
@@ -16,7 +18,7 @@ public class WFLOP {
     private final int dimension;
     private final int cellCount;
     private final int numberOfTurbines;
-    private final WindProfile[] windProfiles;
+    private final List<WindProfile> windProfiles;
 
     private final double axialInductionFactor;
     private final double entrainmentConstant;
@@ -32,7 +34,7 @@ public class WFLOP {
             @JsonProperty("gridWidth") double gridWidth,
             @JsonProperty("dimension") int dimension,
             @JsonProperty("numberOfTurbines") int numberOfTurbines,
-            @JsonProperty("windProfiles") WindProfile[] windProfiles
+            @JsonProperty("windProfiles") List<WindProfile> windProfiles
     ) {
         this.rotorRadius = rotorRadius;
         this.hubHeight = hubHeight;
@@ -62,6 +64,6 @@ public class WFLOP {
     public int getDimension() { return dimension; }
     public int getCellCount() { return cellCount; }
     public int getNumberOfTurbines() { return numberOfTurbines; }
-    public WindProfile[] getWindProfiles() { return windProfiles; }
+    public List<WindProfile> getWindProfiles() { return windProfiles; }
     public double getEntrainmentConstant() { return entrainmentConstant; }
 }

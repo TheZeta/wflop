@@ -38,7 +38,7 @@ public class PowerOutputCalculator {
     public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {
         double totalPower = 0;
         List<Integer> turbineIndices = turbineLayout.getTurbineIndices();
-        WindProfile[] windProfiles = wflop.getWindProfiles();
+        List<WindProfile> windProfiles = wflop.getWindProfiles();
 
         for (WindProfile windProfile : windProfiles) {
             for (int downwindTurbineIndex : turbineIndices) {
