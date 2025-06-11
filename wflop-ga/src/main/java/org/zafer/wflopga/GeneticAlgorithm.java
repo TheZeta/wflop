@@ -102,7 +102,7 @@ public class GeneticAlgorithm implements Metaheuristic {
         }
     }
 
-    private double computeFitness(Individual individual) {
+    public double computeFitness(Individual individual) {
         double fitness = fitnessCalculator.calculateTotalPowerOutput(individual.getSolution());
         individual.setFitness(fitness);
         return fitness;
