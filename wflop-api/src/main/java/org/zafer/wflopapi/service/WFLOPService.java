@@ -3,18 +3,26 @@ package org.zafer.wflopapi.service;
 import org.springframework.stereotype.Service;
 import org.zafer.wflopapi.dto.ProblemDTO;
 import org.zafer.wflopapi.dto.SolutionDTO;
-import org.zafer.wflopga.GeneticAlgorithm;
 import org.zafer.wflopga.Individual;
-import org.zafer.wflopga.strategy.crossover.SinglePointCrossover;
-import org.zafer.wflopga.strategy.mutation.RandomReplacementMutation;
-import org.zafer.wflopga.strategy.selection.TournamentSelection;
+import org.zafer.wflopmetaheuristic.Metaheuristic;
+import org.zafer.wflopmetaheuristic.MetaheuristicRunner;
+import org.zafer.wflopmetaheuristic.RunResult;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.wind.WindProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
 @Service
 public class WFLOPService {
+
+    private final WFLOPAlgorithmFactory algorithmFactory;
+    private static final Logger log = LoggerFactory.getLogger(WFLOPService.class);
+
+    public WFLOPService(WFLOPAlgorithmFactory algorithmFactory) {
+        this.algorithmFactory = algorithmFactory;
+    }
 
     public SolutionDTO solve(ProblemDTO dto) {
         WFLOP problem = new WFLOP(
@@ -32,17 +40,27 @@ public class WFLOPService {
                         .collect(Collectors.toList())
         );
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(
-                problem,
-                100, // population size
-                200, // number of generations
-                new SinglePointCrossover(),
-                new RandomReplacementMutation(0.1),
-                new TournamentSelection(3)
-        );
+        Metaheuristic<Individual> algorithm = algorithmFactory.createDefaultGA(problem);
+        MetaheuristicRunner<Individual> runner = new MetaheuristicRunner<>(algorithm);
 
-        Individual solution = ga.run();
+        final double[] firstBest = new double[] { Double.NaN };
+        final double[] lastBest = new double[] { Double.NaN };
+        runner.addListener(evt -> {
+            if (Double.isNaN(firstBest[0])) firstBest[0] = evt.getBestFitness();
+            lastBest[0] = evt.getBestFitness();
+        });
 
+        RunResult<Individual> result = runner.run();
+        long durationMs = result.getMetrics().getDurationMs();
+        int iterations = result.getMetrics().getIterations();
+        double bestFitness = result.getMetrics().getBestFitness();
+        double convergencePerIter = (iterations > 0 && !Double.isNaN(firstBest[0])) ?
+                (lastBest[0] - firstBest[0]) / iterations : 0.0;
+        double itersPerSecond = durationMs > 0 ? (iterations * 1000.0 / durationMs) : 0.0;
+        log.info("WFLOP solve metrics - durationMs={}, iterations={}, bestFitness={}, convergencePerIter={}, itersPerSec={}",
+                durationMs, iterations, bestFitness, convergencePerIter, itersPerSecond);
+
+        Individual solution = result.getBestSolution();
         return new SolutionDTO(solution.getTurbineIndices(), solution.getFitness());
     }
 
@@ -66,18 +84,9 @@ public class WFLOPService {
         // Create an Individual with the given layout and evaluate its fitness
         Individual individual = new Individual(solutionDto.layout);
         
-        // Create a temporary GA instance to access the fitness computation
-        GeneticAlgorithm ga = new GeneticAlgorithm(
-                problem,
-                1, // minimal population size since we're only evaluating one
-                1, // minimal generations since we're only evaluating
-                new SinglePointCrossover(),
-                new RandomReplacementMutation(0.1),
-                new TournamentSelection(3)
-        );
-
-        // Evaluate the fitness using the GA's fitness computation
-        double fitness = ga.computeFitness(individual);
+        // Evaluate fitness using the same calculator as GA would use
+        org.zafer.wflopcore.calculator.PowerOutputCalculator calculator = new org.zafer.wflopcore.calculator.PowerOutputCalculator(problem);
+        double fitness = calculator.calculateTotalPowerOutput(individual.getSolution());
 
         return new SolutionDTO(solutionDto.layout, fitness);
     }

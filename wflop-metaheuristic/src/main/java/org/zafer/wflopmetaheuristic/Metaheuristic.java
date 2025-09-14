@@ -1,6 +1,10 @@
 package org.zafer.wflopmetaheuristic;
 
-public interface Metaheuristic {
+public interface Metaheuristic<S extends Solution> {
 
-    Solution run();
+    S run();
+
+    default S runWithListeners(java.util.List<ProgressListener> listeners) {
+        return run();
+    }
 }

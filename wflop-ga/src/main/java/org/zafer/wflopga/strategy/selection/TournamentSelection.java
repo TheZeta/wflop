@@ -16,11 +16,27 @@ public class TournamentSelection implements SelectionStrategy {
 
     @Override
     public Individual select(List<Individual> population) {
+        if (population.isEmpty()) {
+            return null;
+        }
+        
         Individual best = null;
-        for (int i = 0; i < tournamentSize; i++) {
-            Individual candidate = population.get(random.nextInt(population.size()));
-            if (best == null || candidate.getFitness() > best.getFitness()) {
-                best = candidate;
+        int effectiveTournamentSize = Math.max(1, Math.abs(tournamentSize));
+        
+        // If tournament size is >= population size, select the best from entire population
+        if (effectiveTournamentSize >= population.size()) {
+            for (Individual candidate : population) {
+                if (best == null || candidate.getFitness() > best.getFitness()) {
+                    best = candidate;
+                }
+            }
+        } else {
+            // Otherwise, do random tournament selection
+            for (int i = 0; i < effectiveTournamentSize; i++) {
+                Individual candidate = population.get(random.nextInt(population.size()));
+                if (best == null || candidate.getFitness() > best.getFitness()) {
+                    best = candidate;
+                }
             }
         }
         return best;
