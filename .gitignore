@@ -7,6 +7,12 @@ target/
 # === Build tools ===
 build/
 
+# === Generated result files ===
+*.csv
+*.json
+*.xlsx
+*.xls
+
 # === IntelliJ IDEA ===
 .idea/
 *.iws
