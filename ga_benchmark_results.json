@@ -1,0 +1,242 @@
+[
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 1,
+    "fitness": 6036.505926,
+    "runtimeSeconds": 0.347,
+    "solution": "[34, 80, 85, 97, 70, 46, 76, 61, 69, 10, 88, 9, 94, 17, 3, 5, 53, 22, 82, 38]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 2,
+    "fitness": 6089.992843,
+    "runtimeSeconds": 0.335,
+    "solution": "[60, 98, 9, 67, 16, 4, 1, 93, 32, 55, 3, 39, 47, 79, 20, 8, 74, 62, 81, 86]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 3,
+    "fitness": 6189.035029,
+    "runtimeSeconds": 0.338,
+    "solution": "[77, 15, 0, 60, 58, 46, 34, 21, 39, 8, 53, 99, 96, 84, 91, 27, 7, 72, 65, 2]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 4,
+    "fitness": 6042.156697,
+    "runtimeSeconds": 0.293,
+    "solution": "[35, 6, 99, 19, 88, 22, 61, 96, 54, 67, 1, 20, 73, 94, 82, 13, 75, 90, 48, 27]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 5,
+    "fitness": 6062.174940,
+    "runtimeSeconds": 0.301,
+    "solution": "[98, 46, 30, 59, 7, 80, 54, 5, 23, 28, 61, 85, 19, 73, 92, 4, 67, 42, 86, 11]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 6,
+    "fitness": 6096.055873,
+    "runtimeSeconds": 0.368,
+    "solution": "[16, 90, 8, 97, 85, 64, 76, 92, 29, 4, 68, 89, 37, 9, 43, 50, 1, 25, 71, 22]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 7,
+    "fitness": 6098.159665,
+    "runtimeSeconds": 0.309,
+    "solution": "[9, 5, 65, 2, 69, 91, 41, 96, 89, 60, 53, 77, 10, 84, 14, 48, 72, 33, 17, 26]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 8,
+    "fitness": 6134.199058,
+    "runtimeSeconds": 0.286,
+    "solution": "[19, 27, 6, 86, 71, 42, 55, 94, 0, 48, 92, 30, 13, 98, 21, 67, 80, 14, 73, 79]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 9,
+    "fitness": 6016.047337,
+    "runtimeSeconds": 0.283,
+    "solution": "[3, 24, 84, 86, 18, 93, 32, 60, 11, 98, 65, 5, 72, 40, 78, 57, 26, 9, 49, 91]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.7,mutation=0.3,pop=100,gen=100",
+    "runNumber": 10,
+    "fitness": 6103.883983,
+    "runtimeSeconds": 0.290,
+    "solution": "[1, 40, 97, 36, 3, 22, 15, 10, 89, 28, 7, 68, 82, 53, 95, 19, 74, 90, 61, 76]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 1,
+    "fitness": 6071.251094,
+    "runtimeSeconds": 0.339,
+    "solution": "[80, 36, 10, 53, 57, 84, 65, 97, 28, 7, 99, 9, 41, 15, 78, 61, 92, 96, 49, 22]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 2,
+    "fitness": 6102.045342,
+    "runtimeSeconds": 0.321,
+    "solution": "[3, 37, 24, 61, 45, 68, 8, 20, 90, 84, 32, 76, 82, 53, 29, 0, 16, 89, 97, 70]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 3,
+    "fitness": 6000.996615,
+    "runtimeSeconds": 0.329,
+    "solution": "[23, 88, 84, 67, 60, 90, 6, 72, 35, 19, 27, 96, 10, 41, 59, 2, 47, 4, 91, 93]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 4,
+    "fitness": 6071.593205,
+    "runtimeSeconds": 0.318,
+    "solution": "[2, 70, 45, 77, 96, 94, 14, 82, 91, 53, 69, 9, 85, 17, 98, 38, 50, 21, 26, 0]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 5,
+    "fitness": 6074.268245,
+    "runtimeSeconds": 0.328,
+    "solution": "[9, 24, 88, 67, 65, 53, 41, 96, 84, 12, 36, 92, 3, 72, 38, 60, 90, 17, 79, 0]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 6,
+    "fitness": 6036.272842,
+    "runtimeSeconds": 0.323,
+    "solution": "[31, 28, 3, 78, 75, 87, 15, 73, 10, 36, 94, 92, 99, 52, 71, 7, 80, 24, 96, 19]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 7,
+    "fitness": 6104.266096,
+    "runtimeSeconds": 0.333,
+    "solution": "[54, 28, 4, 11, 16, 61, 9, 21, 92, 97, 80, 42, 59, 8, 85, 73, 66, 89, 35, 47]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 8,
+    "fitness": 6073.303555,
+    "runtimeSeconds": 0.323,
+    "solution": "[15, 60, 96, 81, 99, 79, 41, 58, 8, 84, 46, 34, 92, 75, 67, 27, 10, 22, 53, 3]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 9,
+    "fitness": 6037.006846,
+    "runtimeSeconds": 0.330,
+    "solution": "[85, 83, 13, 64, 48, 6, 40, 27, 71, 52, 4, 89, 0, 98, 8, 29, 77, 25, 90, 21]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.3,mutation=0.7,pop=100,gen=100",
+    "runNumber": 10,
+    "fitness": 6006.362651,
+    "runtimeSeconds": 0.324,
+    "solution": "[50, 14, 95, 97, 42, 85, 47, 63, 78, 2, 0, 21, 35, 16, 66, 94, 28, 80, 9, 59]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 1,
+    "fitness": 6174.366664,
+    "runtimeSeconds": 0.333,
+    "solution": "[86, 28, 43, 79, 93, 50, 55, 62, 36, 15, 91, 67, 2, 19, 0, 14, 98, 74, 21, 7]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 2,
+    "fitness": 6020.393802,
+    "runtimeSeconds": 0.304,
+    "solution": "[21, 45, 69, 97, 19, 57, 27, 73, 92, 85, 2, 91, 64, 33, 48, 14, 76, 60, 7, 0]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 3,
+    "fitness": 6091.043456,
+    "runtimeSeconds": 0.299,
+    "solution": "[96, 9, 61, 80, 92, 98, 79, 30, 26, 11, 84, 18, 42, 23, 47, 67, 39, 93, 4, 55]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 4,
+    "fitness": 5994.341438,
+    "runtimeSeconds": 0.323,
+    "solution": "[6, 89, 74, 20, 28, 96, 7, 47, 90, 35, 61, 9, 67, 59, 14, 53, 88, 82, 22, 1]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 5,
+    "fitness": 6019.912498,
+    "runtimeSeconds": 0.326,
+    "solution": "[58, 98, 7, 65, 89, 35, 51, 42, 10, 4, 39, 90, 71, 8, 83, 77, 16, 84, 96, 23]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 6,
+    "fitness": 6079.464344,
+    "runtimeSeconds": 0.311,
+    "solution": "[49, 30, 93, 84, 32, 86, 19, 81, 72, 7, 65, 25, 99, 1, 6, 80, 78, 57, 44, 13]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 7,
+    "fitness": 6159.525936,
+    "runtimeSeconds": 0.326,
+    "solution": "[78, 41, 16, 35, 60, 66, 73, 92, 1, 47, 97, 19, 22, 54, 91, 28, 7, 20, 85, 59]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 8,
+    "fitness": 6122.840816,
+    "runtimeSeconds": 0.325,
+    "solution": "[92, 98, 2, 37, 58, 9, 31, 8, 23, 16, 86, 79, 73, 94, 52, 80, 44, 77, 10, 65]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 9,
+    "fitness": 6110.087714,
+    "runtimeSeconds": 0.307,
+    "solution": "[85, 35, 30, 66, 1, 97, 58, 23, 90, 61, 82, 4, 42, 7, 54, 19, 78, 73, 28, 16]"
+  },
+  {
+    "algorithm": "GA",
+    "configuration": "crossover=0.5,mutation=0.5,pop=100,gen=100",
+    "runNumber": 10,
+    "fitness": 6091.840645,
+    "runtimeSeconds": 0.321,
+    "solution": "[9, 33, 91, 70, 67, 75, 59, 83, 46, 82, 4, 17, 90, 0, 96, 25, 54, 88, 21, 12]"
+  }
+]
