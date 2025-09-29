@@ -51,7 +51,7 @@ public class GeneticAlgorithmTest {
                 new TournamentSelection(DEFAULT_TOURNAMENT_SIZE)
         );
 
-        optimal = ga.run();
+        optimal = (Individual) ga.run();
     }
 
     /**
@@ -127,7 +127,7 @@ public class GeneticAlgorithmTest {
     @Story("Algorithm Behavior")
     public void differentRunsShouldProduceDifferentValidSolutions() {
         // Run the algorithm a second time
-        Individual secondRun = ga.run();
+        Individual secondRun = (Individual) ga.run();
 
         // Both solutions should be valid
         assertEquals(problem.getNumberOfTurbines(), secondRun.getSolution().getTurbineIndices().size(),
@@ -168,7 +168,7 @@ public class GeneticAlgorithmTest {
                 DEFAULT_TOURNAMENT_SIZE
         );
 
-        Individual largerPopSolution = largerPopGA.run();
+        Individual largerPopSolution = (Individual) largerPopGA.run();
 
         // Solution should still be valid
         assertEquals(problem.getNumberOfTurbines(), largerPopSolution.getSolution().getTurbineIndices().size(),
@@ -194,7 +194,7 @@ public class GeneticAlgorithmTest {
                 DEFAULT_TOURNAMENT_SIZE
         );
 
-        Individual highMutationSolution = highMutationGA.run();
+        Individual highMutationSolution = (Individual) highMutationGA.run();
 
         // Solution should still be valid
         assertEquals(problem.getNumberOfTurbines(), highMutationSolution.getSolution().getTurbineIndices().size(),

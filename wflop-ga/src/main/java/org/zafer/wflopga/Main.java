@@ -110,7 +110,7 @@ public class Main {
             );
 
             long startTime = System.currentTimeMillis();
-            Individual bestSolution = ga.run();
+            Individual bestSolution = (Individual) ga.run();
             long endTime = System.currentTimeMillis();
 
             double executionTime = (endTime - startTime) / 1000.0; // Convert to seconds

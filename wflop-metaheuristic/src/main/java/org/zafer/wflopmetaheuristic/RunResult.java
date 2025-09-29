@@ -1,16 +1,16 @@
 package org.zafer.wflopmetaheuristic;
 
-public class RunResult<S extends Solution> {
+public class RunResult {
 
-    private final S bestSolution;
+    private final Solution bestSolution;
     private final RunMetrics metrics;
 
-    public RunResult(S bestSolution, RunMetrics metrics) {
+    public RunResult(Solution bestSolution, RunMetrics metrics) {
         this.bestSolution = bestSolution;
         this.metrics = metrics;
     }
 
-    public S getBestSolution() {
+    public Solution getBestSolution() {
         return bestSolution;
     }
 

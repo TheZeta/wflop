@@ -5,14 +5,13 @@ import org.zafer.wflopga.strategy.crossover.SinglePointCrossover;
 import org.zafer.wflopga.strategy.mutation.RandomReplacementMutation;
 import org.zafer.wflopga.strategy.selection.TournamentSelection;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopga.Individual;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WFLOPAlgorithmFactory {
 
-    public Metaheuristic<Individual> createDefaultGA(WFLOP problem) {
+    public Metaheuristic createDefaultGA(WFLOP problem) {
         return new GeneticAlgorithm(
                 problem,
                 100,

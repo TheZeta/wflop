@@ -6,12 +6,13 @@ import org.zafer.wflopga.strategy.selection.SelectionStrategy;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.ProgressListener;
+import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopcore.calculator.PowerOutputCalculator;
 
 import java.util.*;
 
-public class GeneticAlgorithm implements Metaheuristic<Individual> {
+public class GeneticAlgorithm implements Metaheuristic {
 
     private final WFLOP problem;
     private final int populationSize;
@@ -62,7 +63,7 @@ public class GeneticAlgorithm implements Metaheuristic<Individual> {
     }
 
     @Override
-    public Individual run() {
+    public Solution run() {
         List<Individual> population = initializePopulation();
         evaluateFitness(population);
 
@@ -95,7 +96,7 @@ public class GeneticAlgorithm implements Metaheuristic<Individual> {
     }
 
     @Override
-    public Individual runWithListeners(java.util.List<ProgressListener> listeners) {
+    public Solution runWithListeners(java.util.List<ProgressListener> listeners) {
         List<Individual> population = initializePopulation();
         evaluateFitness(population);
 

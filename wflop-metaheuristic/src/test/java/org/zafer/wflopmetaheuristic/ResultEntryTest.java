@@ -73,7 +73,7 @@ public class ResultEntryTest {
         // Arrange - Create a mock solution and metrics
         TestSolution solution = new TestSolution(100.0);
         RunMetrics metrics = new RunMetrics(0, 2500, 100, 100.0); // 2.5 seconds runtime
-        RunResult<TestSolution> runResult = new RunResult<>(solution, metrics);
+        RunResult runResult = new RunResult(solution, metrics);
 
         // Act
         ResultEntry entry = ResultEntry.fromRunResult("GA", "test-config", 1, runResult);
@@ -93,7 +93,7 @@ public class ResultEntryTest {
         // Arrange
         TestSolution solution = new TestSolution(100.0);
         RunMetrics metrics = new RunMetrics(0, 3000, 150, 100.0); // 3.0 seconds runtime
-        RunResult<TestSolution> runResult = new RunResult<>(solution, metrics);
+        RunResult runResult = new RunResult(solution, metrics);
         String customSolution = "{\"indices\":[1,2,3,4,5],\"fitness\":100.0}";
 
         // Act

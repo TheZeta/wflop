@@ -3,12 +3,12 @@ package org.zafer.wflopmetaheuristic;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetaheuristicRunner<S extends Solution> {
+public class MetaheuristicRunner {
 
-    private final Metaheuristic<S> algorithm;
+    private final Metaheuristic algorithm;
     private final List<ProgressListener> listeners = new ArrayList<>();
 
-    public MetaheuristicRunner(Metaheuristic<S> algorithm) {
+    public MetaheuristicRunner(Metaheuristic algorithm) {
         this.algorithm = algorithm;
     }
 
@@ -16,7 +16,7 @@ public class MetaheuristicRunner<S extends Solution> {
         listeners.add(listener);
     }
 
-    public RunResult<S> run() {
+    public RunResult run() {
         long start = System.currentTimeMillis();
         final int[] iterationCounter = new int[] { 0 };
         ProgressListener countingListener = evt -> iterationCounter[0] = evt.getIteration();
@@ -25,10 +25,10 @@ public class MetaheuristicRunner<S extends Solution> {
         effective.add(countingListener);
         effective.addAll(listeners);
 
-        S best = algorithm.runWithListeners(effective);
+        Solution best = algorithm.runWithListeners(effective);
         long end = System.currentTimeMillis();
         RunMetrics metrics = new RunMetrics(start, end, iterationCounter[0], best.getFitness());
-        return new RunResult<>(best, metrics);
+        return new RunResult(best, metrics);
     }
 }
 

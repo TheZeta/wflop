@@ -7,6 +7,7 @@ import org.zafer.wflopga.Individual;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.MetaheuristicRunner;
 import org.zafer.wflopmetaheuristic.RunResult;
+import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.wind.WindProfile;
 import org.slf4j.Logger;
@@ -40,8 +41,8 @@ public class WFLOPService {
                         .collect(Collectors.toList())
         );
 
-        Metaheuristic<Individual> algorithm = algorithmFactory.createDefaultGA(problem);
-        MetaheuristicRunner<Individual> runner = new MetaheuristicRunner<>(algorithm);
+        Metaheuristic algorithm = algorithmFactory.createDefaultGA(problem);
+        MetaheuristicRunner runner = new MetaheuristicRunner(algorithm);
 
         final double[] firstBest = new double[] { Double.NaN };
         final double[] lastBest = new double[] { Double.NaN };
@@ -50,7 +51,7 @@ public class WFLOPService {
             lastBest[0] = evt.getBestFitness();
         });
 
-        RunResult<Individual> result = runner.run();
+        RunResult result = runner.run();
         long durationMs = result.getMetrics().getDurationMs();
         int iterations = result.getMetrics().getIterations();
         double bestFitness = result.getMetrics().getBestFitness();
@@ -60,8 +61,9 @@ public class WFLOPService {
         log.info("WFLOP solve metrics - durationMs={}, iterations={}, bestFitness={}, convergencePerIter={}, itersPerSec={}",
                 durationMs, iterations, bestFitness, convergencePerIter, itersPerSecond);
 
-        Individual solution = result.getBestSolution();
-        return new SolutionDTO(solution.getTurbineIndices(), solution.getFitness());
+        Solution solution = result.getBestSolution();
+        Individual individualSolution = (Individual) solution;
+        return new SolutionDTO(individualSolution.getTurbineIndices(), individualSolution.getFitness());
     }
 
     public SolutionDTO evaluate(ProblemDTO problemDto, SolutionDTO solutionDto) {

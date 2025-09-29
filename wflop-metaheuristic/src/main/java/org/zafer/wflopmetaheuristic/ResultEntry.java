@@ -57,11 +57,11 @@ public class ResultEntry {
      * @param runResult the RunResult containing metrics and solution
      * @return a new ResultEntry
      */
-    public static <S extends Solution> ResultEntry fromRunResult(
+    public static ResultEntry fromRunResult(
             String algorithm,
             String configuration, 
             int runNumber,
-            RunResult<S> runResult) {
+            RunResult runResult) {
         
         double runtimeSeconds = runResult.getMetrics().getDurationMs() / 1000.0;
         double fitness = runResult.getMetrics().getBestFitness();
@@ -80,11 +80,11 @@ public class ResultEntry {
      * @param solutionRepresentation custom string representation of the solution
      * @return a new ResultEntry
      */
-    public static <S extends Solution> ResultEntry fromRunResult(
+    public static ResultEntry fromRunResult(
             String algorithm,
             String configuration, 
             int runNumber,
-            RunResult<S> runResult,
+            RunResult runResult,
             String solutionRepresentation) {
         
         double runtimeSeconds = runResult.getMetrics().getDurationMs() / 1000.0;
