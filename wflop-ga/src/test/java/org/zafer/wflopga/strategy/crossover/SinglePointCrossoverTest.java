@@ -29,7 +29,7 @@ public class SinglePointCrossoverTest {
 
     @BeforeEach
     public void setup() {
-        crossover = new SinglePointCrossover(0.7);
+        crossover = new SinglePointCrossover(1.0); // 100% crossover rate for deterministic tests
         mockProblem = mock(WFLOP.class);
         when(mockProblem.getNumberOfTurbines()).thenReturn(4);
         when(mockProblem.getCellCount()).thenReturn(16);

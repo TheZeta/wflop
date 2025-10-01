@@ -21,17 +21,30 @@ public class SinglePointCrossover implements CrossoverStrategy {
         int numberOfTurbines = problem.getNumberOfTurbines();
 
         if (random.nextDouble() < crossoverRate) {
-            int cut = random.nextInt(numberOfTurbines);
-            Set<Integer> childGenes = new LinkedHashSet<>(t1.subList(0, cut));
+            // Ensure we have a valid cut point that allows genes from both parents
+            int cut = random.nextInt(numberOfTurbines - 1) + 1; // Cut between 1 and numberOfTurbines-1
+            
+            Set<Integer> childGenes = new LinkedHashSet<>();
+            
+            // Add genes from parent1 up to cut point
+            for (int i = 0; i < cut && childGenes.size() < numberOfTurbines; i++) {
+                childGenes.add(t1.get(i));
+            }
+            
+            // Add remaining genes from parent2
             for (Integer idx : t2) {
                 if (childGenes.size() >= numberOfTurbines) break;
                 childGenes.add(idx);
             }
+            
+            // If we still don't have enough genes, fill with remaining genes from parent1
+            for (int i = cut; i < t1.size() && childGenes.size() < numberOfTurbines; i++) {
+                childGenes.add(t1.get(i));
+            }
+            
             return new Individual(new ArrayList<>(childGenes));
         } else {
             return new Individual(new ArrayList<>(t1));
         }
-
-
     }
 }
