@@ -1,0 +1,9 @@
+{
+  "algorithmType": "PSO",
+  "swarmSize": 50,
+  "maxIterations": 100,
+  "inertiaWeight": 0.729,
+  "cognitiveComponent": 1.49445,
+  "socialComponent": 1.49445
+}
+

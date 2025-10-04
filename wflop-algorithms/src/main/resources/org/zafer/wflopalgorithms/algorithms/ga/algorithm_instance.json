@@ -1,0 +1,9 @@
+{
+  "algorithmType": "GA",
+  "populationSize": 100,
+  "generations": 50,
+  "crossoverRate": 0.8,
+  "mutationRate": 0.01,
+  "selectionStrategy": "tournament"
+}
+
