@@ -11,7 +11,7 @@ import org.zafer.wflopmetaheuristic.Solution;
  */
 public class GA implements Metaheuristic {
 
-    private final String algorithmType;
+    private final String algorithm;
     private final int populationSize;
     private final int generations;
     private final double crossoverRate;
@@ -20,14 +20,14 @@ public class GA implements Metaheuristic {
 
     @JsonCreator
     public GA(
-            @JsonProperty("algorithmType") String algorithmType,
+            @JsonProperty("algorithm") String algorithm,
             @JsonProperty("populationSize") int populationSize,
             @JsonProperty("generations") int generations,
             @JsonProperty("crossoverRate") double crossoverRate,
             @JsonProperty("mutationRate") double mutationRate,
             @JsonProperty("selectionStrategy") String selectionStrategy
     ) {
-        this.algorithmType = algorithmType;
+        this.algorithm = algorithm;
         this.populationSize = populationSize;
         this.generations = generations;
         this.crossoverRate = crossoverRate;
@@ -42,8 +42,8 @@ public class GA implements Metaheuristic {
     }
 
     // Getters for testing and validation
-    public String getAlgorithmType() {
-        return algorithmType;
+    public String getAlgorithm() {
+        return algorithm;
     }
 
     public int getPopulationSize() {

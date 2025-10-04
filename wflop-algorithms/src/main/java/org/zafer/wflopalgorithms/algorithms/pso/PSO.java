@@ -11,7 +11,7 @@ import org.zafer.wflopmetaheuristic.Solution;
  */
 public class PSO implements Metaheuristic {
 
-    private final String algorithmType;
+    private final String algorithm;
     private final int swarmSize;
     private final int maxIterations;
     private final double inertiaWeight;
@@ -20,14 +20,14 @@ public class PSO implements Metaheuristic {
 
     @JsonCreator
     public PSO(
-            @JsonProperty("algorithmType") String algorithmType,
+            @JsonProperty("algorithm") String algorithm,
             @JsonProperty("swarmSize") int swarmSize,
             @JsonProperty("maxIterations") int maxIterations,
             @JsonProperty("inertiaWeight") double inertiaWeight,
             @JsonProperty("cognitiveComponent") double cognitiveComponent,
             @JsonProperty("socialComponent") double socialComponent
     ) {
-        this.algorithmType = algorithmType;
+        this.algorithm = algorithm;
         this.swarmSize = swarmSize;
         this.maxIterations = maxIterations;
         this.inertiaWeight = inertiaWeight;
@@ -42,8 +42,8 @@ public class PSO implements Metaheuristic {
     }
 
     // Getters for testing and validation
-    public String getAlgorithmType() {
-        return algorithmType;
+    public String getAlgorithm() {
+        return algorithm;
     }
 
     public int getSwarmSize() {

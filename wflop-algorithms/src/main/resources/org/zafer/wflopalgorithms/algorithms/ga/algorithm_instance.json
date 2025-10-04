@@ -1,5 +1,5 @@
 {
-  "algorithmType": "GA",
+  "algorithm": "GA",
   "populationSize": 100,
   "generations": 50,
   "crossoverRate": 0.8,

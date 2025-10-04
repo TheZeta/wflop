@@ -41,7 +41,7 @@ class AlgorithmFactoryTest {
         assertInstanceOf(GA.class, algorithm);
 
         GA ga = (GA) algorithm;
-        assertEquals("GA", ga.getAlgorithmType());
+        assertEquals("GA", ga.getAlgorithm());
         assertEquals(100, ga.getPopulationSize());
         assertEquals(50, ga.getGenerations());
         assertEquals(0.8, ga.getCrossoverRate(), 0.001);
@@ -62,7 +62,7 @@ class AlgorithmFactoryTest {
         assertInstanceOf(PSO.class, algorithm);
 
         PSO pso = (PSO) algorithm;
-        assertEquals("PSO", pso.getAlgorithmType());
+        assertEquals("PSO", pso.getAlgorithm());
         assertEquals(50, pso.getSwarmSize());
         assertEquals(100, pso.getMaxIterations());
         assertEquals(0.729, pso.getInertiaWeight(), 0.001);
@@ -129,7 +129,7 @@ class AlgorithmFactoryTest {
 
     @Test
     void testMissingAlgorithmTypeProperty() {
-        // Given - A JSON file without algorithmType property
+        // Given - A JSON file without algorithm property
         String jsonPath = "org/zafer/wflopalgorithms/factory/test_missing_type.json";
 
         // When & Then
@@ -138,7 +138,7 @@ class AlgorithmFactoryTest {
             () -> AlgorithmFactory.loadFromJson(jsonPath)
         );
 
-        assertTrue(exception.getMessage().contains("algorithmType"));
+        assertTrue(exception.getMessage().contains("algorithm"));
     }
 
     @Test
