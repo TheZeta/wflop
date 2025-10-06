@@ -1,5 +1,7 @@
 package org.zafer.wflopmetaheuristic;
 
+import org.zafer.wflopmodel.problem.WFLOP;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class MetaheuristicRunner {
         listeners.add(listener);
     }
 
-    public RunResult run() {
+    public RunResult run(WFLOP problem) {
         long start = System.currentTimeMillis();
         final int[] iterationCounter = new int[] { 0 };
         ProgressListener countingListener = evt -> iterationCounter[0] = evt.getIteration();
@@ -25,7 +27,7 @@ public class MetaheuristicRunner {
         effective.add(countingListener);
         effective.addAll(listeners);
 
-        Solution best = algorithm.runWithListeners(effective);
+        Solution best = algorithm.runWithListeners(problem, effective);
         long end = System.currentTimeMillis();
         RunMetrics metrics = new RunMetrics(start, end, iterationCounter[0], best.getFitness());
         return new RunResult(best, metrics);

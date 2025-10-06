@@ -4,10 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopmodel.problem.WFLOP;
 
 /**
- * Particle Swarm Optimization implementation that can be loaded from JSON.
- * This is a sample implementation demonstrating the factory pattern.
+ * Particle Swarm Optimization implementation for WFLOP that can be loaded from JSON.
+ * This is a stateless, reusable algorithm instance.
+ * 
+ * Usage:
+ *   Metaheuristic pso = AlgorithmFactory.loadFromJson("path/to/pso_config.json");
+ *   Solution solution = pso.run(wflopInstance);
  */
 public class PSO implements Metaheuristic {
 
@@ -36,8 +41,9 @@ public class PSO implements Metaheuristic {
     }
 
     @Override
-    public Solution run() {
-        // Sample implementation - returns a mock solution
+    public Solution run(WFLOP problem) {
+        // TODO: Implement actual PSO algorithm
+        // For now, returns a placeholder solution
         return new PSOSolution(swarmSize * maxIterations * inertiaWeight);
     }
 
@@ -82,4 +88,3 @@ public class PSO implements Metaheuristic {
         }
     }
 }
-

@@ -5,8 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zafer.wflopalgorithms.algorithms.ga.GA;
 import org.zafer.wflopalgorithms.algorithms.pso.PSO;
+import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopmodel.problem.WFLOP;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -161,9 +165,12 @@ class AlgorithmFactoryTest {
         // Given
         String jsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
+        WFLOP problem = ConfigLoader.loadFromResource(
+                "wflop_problem.json",
+                new TypeReference<WFLOP>() {});
 
         // When
-        Solution solution = algorithm.run();
+        Solution solution = algorithm.run(problem);
 
         // Then
         assertNotNull(solution);
@@ -175,9 +182,12 @@ class AlgorithmFactoryTest {
         // Given
         String jsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
+        WFLOP problem = ConfigLoader.loadFromResource(
+                "wflop_problem.json",
+                new TypeReference<WFLOP>() {});
 
         // When
-        Solution solution = algorithm.run();
+        Solution solution = algorithm.run(problem);
 
         // Then
         assertNotNull(solution);

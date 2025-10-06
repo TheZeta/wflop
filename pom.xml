@@ -17,7 +17,6 @@
         <module>wflop-model</module>
         <module>wflop-testdata</module>
         <module>wflop-metaheuristic</module>
-        <module>wflop-ga</module>
         <module>wflop-api</module>
         <module>wflop-algorithms</module>
     </modules>

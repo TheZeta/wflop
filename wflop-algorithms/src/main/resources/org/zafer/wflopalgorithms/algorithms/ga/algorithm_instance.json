@@ -4,6 +4,7 @@
   "generations": 50,
   "crossoverRate": 0.8,
   "mutationRate": 0.01,
-  "selectionStrategy": "tournament"
+  "selectionStrategy": "tournament",
+  "crossoverStrategy": "singlepoint",
+  "mutationStrategy": "randomreplacement"
 }
-

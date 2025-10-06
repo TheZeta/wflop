@@ -3,7 +3,7 @@ package org.zafer.wflopapi.service;
 import org.springframework.stereotype.Service;
 import org.zafer.wflopapi.dto.ProblemDTO;
 import org.zafer.wflopapi.dto.SolutionDTO;
-import org.zafer.wflopga.Individual;
+import org.zafer.wflopalgorithms.algorithms.ga.Individual;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.MetaheuristicRunner;
 import org.zafer.wflopmetaheuristic.RunResult;
@@ -41,7 +41,8 @@ public class WFLOPService {
                         .collect(Collectors.toList())
         );
 
-        Metaheuristic algorithm = algorithmFactory.createDefaultGA(problem);
+        // Use new stateless API - algorithm is reusable
+        Metaheuristic algorithm = algorithmFactory.createDefaultGA();
         MetaheuristicRunner runner = new MetaheuristicRunner(algorithm);
 
         final double[] firstBest = new double[] { Double.NaN };
@@ -51,7 +52,7 @@ public class WFLOPService {
             lastBest[0] = evt.getBestFitness();
         });
 
-        RunResult result = runner.run();
+        RunResult result = runner.run(problem);
         long durationMs = result.getMetrics().getDurationMs();
         int iterations = result.getMetrics().getIterations();
         double bestFitness = result.getMetrics().getBestFitness();
@@ -63,7 +64,7 @@ public class WFLOPService {
 
         Solution solution = result.getBestSolution();
         Individual individualSolution = (Individual) solution;
-        return new SolutionDTO(individualSolution.getTurbineIndices(), individualSolution.getFitness());
+        return new SolutionDTO(individualSolution.getGenes(), individualSolution.getFitness());
     }
 
     public SolutionDTO evaluate(ProblemDTO problemDto, SolutionDTO solutionDto) {
@@ -86,9 +87,12 @@ public class WFLOPService {
         // Create an Individual with the given layout and evaluate its fitness
         Individual individual = new Individual(solutionDto.layout);
         
-        // Evaluate fitness using the same calculator as GA would use
-        org.zafer.wflopcore.calculator.PowerOutputCalculator calculator = new org.zafer.wflopcore.calculator.PowerOutputCalculator(problem);
-        double fitness = calculator.calculateTotalPowerOutput(individual.getSolution());
+        // Evaluate fitness using PowerOutputCalculator
+        org.zafer.wflopcore.calculator.PowerOutputCalculator calculator = 
+            new org.zafer.wflopcore.calculator.PowerOutputCalculator(problem);
+        org.zafer.wflopmodel.layout.TurbineLayout layout = 
+            new org.zafer.wflopmodel.layout.TurbineLayout(individual.getGenes());
+        double fitness = calculator.calculateTotalPowerOutput(layout);
 
         return new SolutionDTO(solutionDto.layout, fitness);
     }

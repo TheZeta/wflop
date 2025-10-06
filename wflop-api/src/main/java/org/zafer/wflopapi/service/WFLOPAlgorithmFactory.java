@@ -1,26 +1,27 @@
 package org.zafer.wflopapi.service;
 
-import org.zafer.wflopga.GeneticAlgorithm;
-import org.zafer.wflopga.strategy.crossover.SinglePointCrossover;
-import org.zafer.wflopga.strategy.mutation.RandomReplacementMutation;
-import org.zafer.wflopga.strategy.selection.TournamentSelection;
+import org.zafer.wflopalgorithms.algorithms.ga.GA;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmodel.problem.WFLOP;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WFLOPAlgorithmFactory {
 
-    public Metaheuristic createDefaultGA(WFLOP problem) {
-        return new GeneticAlgorithm(
-                problem,
-                100,
-                200,
-                new SinglePointCrossover(0.7),
-                new RandomReplacementMutation(0.1),
-                new TournamentSelection(3)
+    /**
+     * Creates a default GA instance with hardcoded parameters.
+     * For production, consider loading from JSON config.
+     */
+    public Metaheuristic createDefaultGA() {
+        // Create GA with default parameters (matches the old wflop-ga config)
+        return new GA(
+                "GA",
+                100,        // populationSize
+                200,        // generations
+                0.7,        // crossoverRate
+                0.1,        // mutationRate
+                "tournament",        // selectionStrategy
+                "singlepoint",       // crossoverStrategy
+                "randomreplacement"  // mutationStrategy
         );
     }
 }
-
-
