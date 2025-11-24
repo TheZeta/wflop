@@ -1,6 +1,6 @@
-package org.zafer.wflopalgorithms.algorithms.ga.strategy;
+package org.zafer.wflopalgorithms.common.ga.strategy;
 
-import org.zafer.wflopalgorithms.algorithms.ga.Individual;
+import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.zafer.wflopapi.service;
 
-import org.zafer.wflopalgorithms.algorithms.ga.GA;
+import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ public class WFLOPAlgorithmFactory {
      */
     public Metaheuristic createDefaultGA() {
         // Create GA with default parameters (matches the old wflop-ga config)
-        return new GA(
+        return new StandardGA(
                 "GA",
                 100,        // populationSize
                 200,        // generations

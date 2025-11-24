@@ -3,7 +3,7 @@ package org.zafer.wflopapi.service;
 import org.springframework.stereotype.Service;
 import org.zafer.wflopapi.dto.ProblemDTO;
 import org.zafer.wflopapi.dto.SolutionDTO;
-import org.zafer.wflopalgorithms.algorithms.ga.Individual;
+import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.MetaheuristicRunner;
 import org.zafer.wflopmetaheuristic.RunResult;

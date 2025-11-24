@@ -1,5 +1,5 @@
 {
-  "algorithm": "GA",
+  "algorithm": "StandardGA",
   "populationSize": 100,
   "generations": 50,
   "crossoverRate": 0.8,

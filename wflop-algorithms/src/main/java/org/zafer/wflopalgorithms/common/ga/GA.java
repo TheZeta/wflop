@@ -1,8 +1,24 @@
-package org.zafer.wflopalgorithms.algorithms.ga;
+package org.zafer.wflopalgorithms.common.ga;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.zafer.wflopalgorithms.algorithms.ga.strategy.*;
+
+import org.zafer.wflopalgorithms.common.ga.solution.Individual;
+import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
+import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
+import org.zafer.wflopalgorithms.common.ga.strategy.RandomReplacementMutation;
+import org.zafer.wflopalgorithms.common.ga.strategy.SelectionStrategy;
+import org.zafer.wflopalgorithms.common.ga.strategy.SinglePointCrossover;
+import org.zafer.wflopalgorithms.common.ga.strategy.SwapMutation;
+import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.calculator.PowerOutputCalculator;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
@@ -11,19 +27,8 @@ import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.problem.WFLOP;
 
-import java.util.*;
+public abstract class GA implements Metaheuristic {
 
-/**
- * Genetic Algorithm implementation for WFLOP that can be loaded from JSON.
- * This is a stateless, reusable algorithm instance - thread-safe and can run on multiple problems.
- * 
- * Usage:
- *   Metaheuristic ga = AlgorithmFactory.loadFromJson("path/to/ga_config.json");
- *   Solution solution = ga.run(wflopInstance);
- */
-public class GA implements Metaheuristic {
-
-    // Algorithm parameters (loaded from JSON) - immutable
     private final String algorithm;
     private final int populationSize;
     private final int generations;
@@ -56,12 +61,6 @@ public class GA implements Metaheuristic {
         this.random = new Random();
     }
 
-    /**
-     * Sets the random seed for reproducibility.
-     * Call this before run() if you need deterministic results.
-     * 
-     * @param seed The random seed
-     */
     public void setSeed(long seed) {
         this.random.setSeed(seed);
     }
@@ -78,31 +77,19 @@ public class GA implements Metaheuristic {
         return runInternal(problem, calculator, listeners);
     }
 
-    /**
-     * Advanced: Run with custom fitness calculator.
-     * Useful for testing or using different wake models.
-     * 
-     * @param problem The WFLOP problem instance
-     * @param calculator Custom power output calculator
-     * @return The solution found by the algorithm
-     */
     public Solution run(WFLOP problem, PowerOutputCalculator calculator) {
         return runInternal(problem, calculator, Collections.emptyList());
     }
 
-    /**
-     * Advanced: Run with custom calculator and listeners.
-     */
     public Solution runWithListeners(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
         return runInternal(problem, calculator, listeners);
     }
 
     private Solution runInternal(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
-        // Create strategies for this run
+        SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
         MutationStrategy mutationStrategyImpl = createMutationStrategy();
-        SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
-        
+
         List<Individual> population = initializePopulation(problem);
         evaluateFitness(population, calculator);
 
@@ -156,6 +143,7 @@ public class GA implements Metaheuristic {
             Individual individual = new Individual(new ArrayList<>(indices));
             population.add(individual);
         }
+	
         return population;
     }
 
@@ -171,7 +159,19 @@ public class GA implements Metaheuristic {
         return calculator.calculateTotalPowerOutput(layout);
     }
 
-    private CrossoverStrategy createCrossoverStrategy() {
+
+    protected SelectionStrategy createSelectionStrategy() {
+        long seed = random.nextLong();
+        int tournamentSize = 3; // Default tournament size
+        return switch (selectionStrategy.toLowerCase()) {
+            case "tournament" -> 
+                new TournamentSelection(tournamentSize, seed);
+            default -> 
+                new TournamentSelection(tournamentSize, seed);
+        };
+    }
+
+    protected CrossoverStrategy createCrossoverStrategy() {
         long seed = random.nextLong();
         return switch (crossoverStrategy.toLowerCase()) {
             case "singlepoint", "single-point", "single_point" -> 
@@ -181,7 +181,7 @@ public class GA implements Metaheuristic {
         };
     }
 
-    private MutationStrategy createMutationStrategy() {
+    protected MutationStrategy createMutationStrategy() {
         long seed = random.nextLong();
         return switch (mutationStrategy.toLowerCase()) {
             case "randomreplacement", "random-replacement", "random_replacement" -> 
@@ -193,18 +193,7 @@ public class GA implements Metaheuristic {
         };
     }
 
-    private SelectionStrategy createSelectionStrategy() {
-        long seed = random.nextLong();
-        int tournamentSize = 3; // Default tournament size
-        return switch (selectionStrategy.toLowerCase()) {
-            case "tournament" -> 
-                new TournamentSelection(tournamentSize, seed);
-            default -> 
-                new TournamentSelection(tournamentSize, seed);
-        };
-    }
 
-    // Getters for testing and validation
     public String getAlgorithm() {
         return algorithm;
     }
@@ -235,5 +224,9 @@ public class GA implements Metaheuristic {
 
     public String getMutationStrategy() {
         return mutationStrategy;
+    }
+
+    public Random getRandom() {
+        return random;
     }
 }

@@ -1,4 +1,4 @@
-package org.zafer.wflopalgorithms.algorithms.ga;
+package org.zafer.wflopalgorithms.common.ga.solution;
 
 import org.zafer.wflopmetaheuristic.Solution;
 
@@ -44,4 +44,3 @@ public class Individual implements Solution {
         return new Individual(newGenes, 0.0);
     }
 }
-

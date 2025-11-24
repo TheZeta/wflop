@@ -3,7 +3,7 @@ package org.zafer.wflopalgorithms.factory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zafer.wflopalgorithms.algorithms.ga.GA;
+import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
 import org.zafer.wflopalgorithms.algorithms.pso.PSO;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
@@ -33,19 +33,19 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testLoadGAFromJson() throws AlgorithmLoadException {
+    void testLoadStandardGAFromJson() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
+        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
 
         // When
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
 
         // Then
         assertNotNull(algorithm);
-        assertInstanceOf(GA.class, algorithm);
+        assertInstanceOf(StandardGA.class, algorithm);
 
-        GA ga = (GA) algorithm;
-        assertEquals("GA", ga.getAlgorithm());
+        StandardGA ga = (StandardGA) algorithm;
+        assertEquals("StandardGA", ga.getAlgorithm());
         assertEquals(100, ga.getPopulationSize());
         assertEquals(50, ga.getGenerations());
         assertEquals(0.8, ga.getCrossoverRate(), 0.001);
@@ -77,7 +77,7 @@ class AlgorithmFactoryTest {
     @Test
     void testCachingMechanism() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
+        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
 
         // When - First load (should use reflection)
         assertEquals(0, AlgorithmFactory.getCacheSize());
@@ -91,14 +91,14 @@ class AlgorithmFactoryTest {
         // Then
         assertNotNull(algorithm1);
         assertNotNull(algorithm2);
-        assertInstanceOf(GA.class, algorithm1);
-        assertInstanceOf(GA.class, algorithm2);
+        assertInstanceOf(StandardGA.class, algorithm1);
+        assertInstanceOf(StandardGA.class, algorithm2);
     }
 
     @Test
     void testMultipleAlgorithmTypesInCache() throws AlgorithmLoadException {
         // Given
-        String gaJsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
+        String gaJsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
         String psoJsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
 
         // When
@@ -113,7 +113,7 @@ class AlgorithmFactoryTest {
         // Then
         assertNotNull(ga);
         assertNotNull(pso);
-        assertInstanceOf(GA.class, ga);
+        assertInstanceOf(StandardGA.class, ga);
         assertInstanceOf(PSO.class, pso);
     }
 
@@ -161,9 +161,9 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testGAExecutesRun() throws AlgorithmLoadException {
+    void testStandardGAExecutesRun() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
+        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
         WFLOP problem = ConfigLoader.loadFromResource(
                 "wflop_problem.json",
@@ -197,7 +197,7 @@ class AlgorithmFactoryTest {
     @Test
     void testClearCache() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/ga/algorithm_instance.json";
+        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
         AlgorithmFactory.loadFromJson(jsonPath);
         assertEquals(1, AlgorithmFactory.getCacheSize());
 
