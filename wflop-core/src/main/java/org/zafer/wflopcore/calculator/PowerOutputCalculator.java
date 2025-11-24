@@ -36,20 +36,25 @@ public class PowerOutputCalculator {
      * @return totalPower: The total power output of the layout under the given wind conditions.
      */
     public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {
+        List<Integer> turbines = turbineLayout.getTurbineIndices();
         double totalPower = 0;
-        List<Integer> turbineIndices = turbineLayout.getTurbineIndices();
-        List<WindProfile> windProfiles = wflop.getWindProfiles();
-
-        for (WindProfile windProfile : windProfiles) {
-            for (int downwindTurbineIndex : turbineIndices) {
-                double downwindTurbineSpeed = wakeCalculatorJensen.calculateReducedSpeedMultiple(
-                        windProfile,
-                        downwindTurbineIndex,
-                        turbineIndices);
-
-                totalPower += powerModel.getPowerOutput(downwindTurbineSpeed);
-            }
+        for (int turbine : turbines) {
+            totalPower += calculatePowerOutput(turbine, turbines);
         }
         return totalPower;
+    }
+
+    public double calculatePowerOutput(int turbine, List<Integer> turbines) {
+        List<WindProfile> windProfiles = wflop.getWindProfiles();
+        double power = 0.0;
+        for (WindProfile windProfile : windProfiles) {
+            double turbineSpeed = wakeCalculatorJensen.calculateReducedSpeedMultiple(
+                windProfile,
+                turbine,
+                turbines
+            );
+            power += powerModel.getPowerOutput(turbineSpeed);
+        }
+        return power;
     }
 }
