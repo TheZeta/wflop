@@ -19,6 +19,7 @@
         <module>wflop-metaheuristic</module>
         <module>wflop-api</module>
         <module>wflop-algorithms</module>
+        <module>wflop-runner</module>
     </modules>
 
 </project>
