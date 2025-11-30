@@ -21,30 +21,35 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     private final double mutationRate;
     private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
     private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
+    private final PowerOutputCalculator powerOutputCalculator;
 
     public WakeBasedMutationStrategy(
         double mutationRate,
         double wakeAnalysisPercentage,
-        double mutationSelectionPercentage
+        double mutationSelectionPercentage,
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         this.mutationRate = mutationRate;
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random();
+        this.powerOutputCalculator = powerOutputCalculator;
     }
 
     public WakeBasedMutationStrategy(
         double mutationRate,
-	double wakeAnalysisPercentage,
-	double mutationSelectionPercentage,
-	long seed
+        double wakeAnalysisPercentage,
+        double mutationSelectionPercentage,
+        long seed,
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         this.mutationRate = mutationRate;
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random(seed);
+        this.powerOutputCalculator = powerOutputCalculator;
     }
 
     @Override
@@ -54,15 +59,14 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
             return individual;
         }
 
-        PowerOutputCalculator powerOutputCalculator = new PowerOutputCalculator(problem);
         List<Integer> turbines = new ArrayList<>(individual.getGenes());
         int countForAnalysis = (int) (turbines.size() * wakeAnalysisPercentage);
         int countForMutation = (int) (countForAnalysis * mutationSelectionPercentage);
 
-	List<Integer> turbinesToRemove = findTurbinesWithLowestPowerOutput(
+        List<Integer> turbinesToRemove = findTurbinesWithLowestPowerOutput(
             powerOutputCalculator,
             turbines,
-	    countForAnalysis,
+            countForAnalysis,
             countForMutation);
         turbines.removeAll(turbinesToRemove);
 

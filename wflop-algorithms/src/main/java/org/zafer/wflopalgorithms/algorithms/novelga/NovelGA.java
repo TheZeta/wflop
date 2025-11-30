@@ -51,10 +51,17 @@ public class NovelGA extends GA {
     }
 
     @Override
-    protected MutationStrategy createMutationStrategy() {
+    protected MutationStrategy createMutationStrategy(
+        PowerOutputCalculator powerOutputCalculator
+    ) {
+
         long seed = getRandom().nextLong();
-        return new WakeBasedMutationStrategy(getMutationRate(), wakeAnalysisPercentage,
-		mutationSelectionPercentage, seed); 
+        return new WakeBasedMutationStrategy(
+            getMutationRate(),
+            wakeAnalysisPercentage,
+            mutationSelectionPercentage,
+            seed,
+            powerOutputCalculator);
     }
 
     // Getters for testing and validation
