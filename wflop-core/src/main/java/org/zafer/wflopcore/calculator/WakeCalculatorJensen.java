@@ -27,6 +27,7 @@ public class WakeCalculatorJensen {
     private final double[] profileIndexToSpeed;       // speed per profile in WFLOP order
     private final int profileCount;
     private final int[] profileToAngleIndex;          // maps profile index -> angle index for matrix lookup
+    private final Map<Long, Integer> profileKeyToIndex;  // maps (angle, speed bits) -> profile index
     private final double inverseTurbineSurfaceArea;
 
     private final int indX = 0;
@@ -57,12 +58,18 @@ public class WakeCalculatorJensen {
         List<Integer> uniqueAngles = new ArrayList<>();
         Map<Integer, Integer> angleToMatrixIndex = new HashMap<>();
         this.profileToAngleIndex = new int[profileCount];
+        this.profileKeyToIndex = new HashMap<>();
 
         for (int i = 0; i < profileCount; i++) {
             WindProfile profile = windProfiles.get(i);
             int angle = profile.getAngle();
+            double speed = profile.getSpeed();
             profileIndexToAngle.add(angle);
-            profileIndexToSpeed[i] = profile.getSpeed();
+            profileIndexToSpeed[i] = speed;
+
+            // Build profile key map for O(1) lookup
+            long profileKey = makeProfileKey(angle, speed);
+            profileKeyToIndex.put(profileKey, i);
 
             Integer matrixIndex = angleToMatrixIndex.get(angle);
             if (matrixIndex == null) {
@@ -133,12 +140,17 @@ public class WakeCalculatorJensen {
     }
 
     private int findProfileIndex(int angle, double speed) {
-        for (int i = 0; i < profileCount; i++) {
-            if (profileIndexToAngle.get(i) == angle && profileIndexToSpeed[i] == speed) {
-                return i;
-            }
+        long profileKey = makeProfileKey(angle, speed);
+        Integer index = profileKeyToIndex.get(profileKey);
+        if (index == null) {
+            throw new IllegalArgumentException("Wind profile with angle " + angle + " and speed " + speed + " is not part of the WFLOP wind profiles");
         }
-        throw new IllegalArgumentException("Wind profile with angle " + angle + " and speed " + speed + " is not part of the WFLOP wind profiles");
+        return index;
+    }
+
+    private static long makeProfileKey(int angle, double speed) {
+        // Use angle in upper bits and raw double bits for speed to avoid floating-point comparison issues
+        return ((long) angle << 32) | (Double.doubleToRawLongBits(speed) & 0xFFFFFFFFL);
     }
 
     private double calculateReducedSpeedSingle(double yDist, double baseSpeed) {
