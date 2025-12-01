@@ -4,12 +4,9 @@ import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WakeCalculatorJensen {
 
@@ -26,10 +23,10 @@ public class WakeCalculatorJensen {
 
     private final int dimension;
     private final double gridWidth;
-    private final List<Integer> angleIndexToAngle;
-    private final Map<Integer, Integer> angleToIndex;
-    private final int[] angleToIndexLookup;
-    private final int angleCount;
+    private final List<Integer> profileIndexToAngle;  // angle per profile in WFLOP order
+    private final double[] profileIndexToSpeed;       // speed per profile in WFLOP order
+    private final int profileCount;
+    private final int[] profileToAngleIndex;          // maps profile index -> angle index for matrix lookup
     private final double inverseTurbineSurfaceArea;
 
     private final int indX = 0;
@@ -46,20 +43,63 @@ public class WakeCalculatorJensen {
 
         this.dimension = wflop.getDimension();
         this.gridWidth = wflop.getGridWidth();
-        this.angleIndexToAngle = buildAngleIndexToAngle(wflop.getWindProfiles());
-        this.angleToIndex = buildAngleToIndex(angleIndexToAngle);
-        this.angleToIndexLookup = buildAngleToIndexLookup(angleIndexToAngle);
-        this.angleCount = angleIndexToAngle.size();
+
+        // Build profile-indexed arrays from WFLOP wind profiles
+        List<WindProfile> windProfiles = wflop.getWindProfiles();
+        if (windProfiles == null || windProfiles.isEmpty()) {
+            throw new IllegalArgumentException("WFLOP must contain at least one wind profile");
+        }
+        this.profileCount = windProfiles.size();
+        this.profileIndexToAngle = new ArrayList<>(profileCount);
+        this.profileIndexToSpeed = new double[profileCount];
+
+        // Build angle deduplication for matrix indexing
+        List<Integer> uniqueAngles = new ArrayList<>();
+        Map<Integer, Integer> angleToMatrixIndex = new HashMap<>();
+        this.profileToAngleIndex = new int[profileCount];
+
+        for (int i = 0; i < profileCount; i++) {
+            WindProfile profile = windProfiles.get(i);
+            int angle = profile.getAngle();
+            profileIndexToAngle.add(angle);
+            profileIndexToSpeed[i] = profile.getSpeed();
+
+            Integer matrixIndex = angleToMatrixIndex.get(angle);
+            if (matrixIndex == null) {
+                matrixIndex = uniqueAngles.size();
+                uniqueAngles.add(angle);
+                angleToMatrixIndex.put(angle, matrixIndex);
+            }
+            profileToAngleIndex[i] = matrixIndex;
+        }
+
         this.inverseTurbineSurfaceArea = 1.0 / turbineSurfaceArea;
 
-        this.distanceMatrix = useDistanceMatrix ? initializeDistanceMatrix() : null;
-        this.intersectedAreaMatrix = useIntersectedAreaMatrix ? initializeIntersectedAreaMatrix() : null;
+        this.distanceMatrix = useDistanceMatrix ? initializeDistanceMatrix(uniqueAngles) : null;
+        this.intersectedAreaMatrix = useIntersectedAreaMatrix ? initializeIntersectedAreaMatrix(uniqueAngles) : null;
     }
 
     public double calculateReducedSpeedMultiple(WindProfile windProfile, int downwind, List<Integer> upwindTurbines) {
+        // Find the profile index by matching angle and speed
         int angle = windProfile.getAngle();
-        int angleIndex = getAngleIndex(angle);
-        double baseSpeed = windProfile.getSpeed();
+        double speed = windProfile.getSpeed();
+        int profileIndex = findProfileIndex(angle, speed);
+        return calculateReducedSpeedMultipleByProfileIndex(profileIndex, downwind, upwindTurbines);
+    }
+
+    /**
+     * Calculate reduced speed using profile index directly.
+     * This method uses the profile index to select precomputed matrix slices.
+     *
+     * @param profileIndex the index of the wind profile in WFLOP order
+     * @param downwind the downwind turbine index
+     * @param upwindTurbines list of upwind turbine indices
+     * @return the reduced wind speed at the downwind turbine
+     */
+    public double calculateReducedSpeedMultipleByProfileIndex(int profileIndex, int downwind, List<Integer> upwindTurbines) {
+        int angle = profileIndexToAngle.get(profileIndex);
+        int angleIndex = profileToAngleIndex[profileIndex];
+        double baseSpeed = profileIndexToSpeed[profileIndex];
         double sum = 0;
 
         for (int upwind : upwindTurbines) {
@@ -83,19 +123,38 @@ public class WakeCalculatorJensen {
         return baseSpeed * (1 - Math.sqrt(sum));
     }
 
+    /**
+     * Returns the number of wind profiles.
+     *
+     * @return the profile count
+     */
+    public int getProfileCount() {
+        return profileCount;
+    }
+
+    private int findProfileIndex(int angle, double speed) {
+        for (int i = 0; i < profileCount; i++) {
+            if (profileIndexToAngle.get(i) == angle && profileIndexToSpeed[i] == speed) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Wind profile with angle " + angle + " and speed " + speed + " is not part of the WFLOP wind profiles");
+    }
+
     private double calculateReducedSpeedSingle(double yDist, double baseSpeed) {
         double wakeRadius = rotorRadius + entrainmentConstant * yDist;
         double ratio = rotorRadius / wakeRadius;
         return baseSpeed * (1 - ratio * ratio * 2 / 3);
     }
 
-    private double[][][][] initializeDistanceMatrix() {
+    private double[][][][] initializeDistanceMatrix(List<Integer> uniqueAngles) {
         int cellCount = wflop.getCellCount();
+        int angleCount = uniqueAngles.size();
         double[][][][] matrix = new double[cellCount][cellCount][angleCount][2];
         for (int i = 0; i < cellCount; i++) {
             for (int j = 0; j < cellCount; j++) {
                 for (int k = 0; k < angleCount; k++) {
-                    int angle = angleIndexToAngle.get(k);
+                    int angle = uniqueAngles.get(k);
                     matrix[i][j][k] = computeRotatedDistance(i, j, angle);
                 }
             }
@@ -103,13 +162,14 @@ public class WakeCalculatorJensen {
         return matrix;
     }
 
-    private double[][][] initializeIntersectedAreaMatrix() {
+    private double[][][] initializeIntersectedAreaMatrix(List<Integer> uniqueAngles) {
         int cellCount = wflop.getCellCount();
+        int angleCount = uniqueAngles.size();
         double[][][] matrix = new double[cellCount][cellCount][angleCount];
         for (int i = 0; i < cellCount; i++) {
             for (int j = 0; j < cellCount; j++) {
                 for (int k = 0; k < angleCount; k++) {
-                    int angle = angleIndexToAngle.get(k);
+                    int angle = uniqueAngles.get(k);
                     double[] dist = useDistanceMatrix && distanceMatrix != null
                             ? distanceMatrix[i][j][k]
                             : computeRotatedDistance(i, j, angle);
@@ -164,57 +224,5 @@ public class WakeCalculatorJensen {
         double beta = Math.acos((R * R + dx * dx - r * r) / (2 * R * dx));
         double gamma = Math.acos((r * r + dx * dx - R * R) / (2 * r * dx));
         return Math.PI * r * r - (Math.PI - gamma) * r * r + R * dx * Math.sin(beta) - beta * R * R;
-    }
-
-    private List<Integer> buildAngleIndexToAngle(List<WindProfile> windProfiles) {
-        if (windProfiles == null || windProfiles.isEmpty()) {
-            throw new IllegalArgumentException("WFLOP must contain at least one wind profile");
-        }
-
-        List<Integer> indices = new ArrayList<>();
-        Set<Integer> seen = new HashSet<>();
-        for (WindProfile profile : windProfiles) {
-            int angle = profile.getAngle();
-            if (seen.add(angle)) {
-                indices.add(angle);
-            }
-        }
-
-        return indices;
-    }
-
-    private Map<Integer, Integer> buildAngleToIndex(List<Integer> angles) {
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < angles.size(); i++) {
-            map.put(angles.get(i), i);
-        }
-        return map;
-    }
-
-    private int[] buildAngleToIndexLookup(List<Integer> angles) {
-        int[] lookup = new int[360];
-        Arrays.fill(lookup, -1);
-        for (int i = 0; i < angles.size(); i++) {
-            int angle = angles.get(i);
-            if (angle >= 0 && angle < lookup.length) {
-                lookup[angle] = i;
-            }
-        }
-        return lookup;
-    }
-
-    private int getAngleIndex(int angle) {
-        if (angle >= 0 && angle < angleToIndexLookup.length) {
-            int cached = angleToIndexLookup[angle];
-            if (cached >= 0) {
-                return cached;
-            }
-        }
-
-        Integer fallback = angleToIndex.get(angle);
-        if (fallback == null) {
-            throw new IllegalArgumentException("Wind angle " + angle + " is not part of the WFLOP wind profiles");
-        }
-        return fallback;
     }
 }
