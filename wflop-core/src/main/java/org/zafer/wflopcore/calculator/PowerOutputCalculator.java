@@ -5,7 +5,6 @@ import org.zafer.wflopcore.model.PowerModel;
 import org.zafer.wflopcore.model.PowerModelProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
-import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.List;
 
@@ -45,11 +44,11 @@ public class PowerOutputCalculator {
     }
 
     public double calculatePowerOutput(int turbine, List<Integer> turbines) {
-        List<WindProfile> windProfiles = wflop.getWindProfiles();
+        int profileCount = wakeCalculatorJensen.getProfileCount();
         double power = 0.0;
-        for (WindProfile windProfile : windProfiles) {
-            double turbineSpeed = wakeCalculatorJensen.calculateReducedSpeedMultiple(
-                windProfile,
+        for (int profileIndex = 0; profileIndex < profileCount; profileIndex++) {
+            double turbineSpeed = wakeCalculatorJensen.calculateReducedSpeedMultipleByProfileIndex(
+                profileIndex,
                 turbine,
                 turbines
             );
