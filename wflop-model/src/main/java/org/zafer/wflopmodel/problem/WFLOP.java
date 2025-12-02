@@ -52,6 +52,14 @@ public class WFLOP {
         }
 
         this.numberOfTurbines = numberOfTurbines;
+
+        int i = 0;
+        for (WindProfile windProfile : windProfiles) {
+            windProfile.setIndex(i);
+            i++;
+        }
+        WindProfile.setAngleCount(i + 1);
+
         this.windProfiles = windProfiles;
 
         this.axialInductionFactor = 1 - Math.sqrt(1 - thrustCoefficient);
