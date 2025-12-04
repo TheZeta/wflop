@@ -127,7 +127,7 @@ public abstract class GA implements Metaheuristic {
             // Notify listeners if present
             if (!listeners.isEmpty()) {
                 double avg = population.stream().mapToDouble(Individual::getFitness).average().orElse(0);
-                ProgressEvent event = new ProgressEvent(gen + 1, best.getFitness(), avg);
+                ProgressEvent event = new ProgressEvent(gen + 1, generations, best.getFitness(), avg);
                 for (ProgressListener listener : listeners) {
                     listener.onIteration(event);
                 }
