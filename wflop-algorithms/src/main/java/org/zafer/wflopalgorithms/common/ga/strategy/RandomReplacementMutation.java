@@ -15,25 +15,17 @@ import java.util.Set;
 public class RandomReplacementMutation implements MutationStrategy {
 
     private final Random random;
-    private final double mutationRate;
 
-    public RandomReplacementMutation(double mutationRate) {
-        this.mutationRate = mutationRate;
+    public RandomReplacementMutation() {
         this.random = new Random();
     }
 
-    public RandomReplacementMutation(double mutationRate, long seed) {
-        this.mutationRate = mutationRate;
+    public RandomReplacementMutation(long seed) {
         this.random = new Random(seed);
     }
 
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
-        if (random.nextDouble() > mutationRate) {
-            // No mutation
-            return individual;
-        }
-
         List<Integer> genes = individual.getGenes();
         Set<Integer> existingGenes = new HashSet<>(genes);
         

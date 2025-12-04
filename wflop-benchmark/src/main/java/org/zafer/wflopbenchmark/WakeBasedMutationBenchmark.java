@@ -34,7 +34,6 @@ public class WakeBasedMutationBenchmark {
     private Individual originalIndividual;
     private WFLOP wflop;
     private PowerOutputCalculator powerOutputCalculator;
-    private double mutationRate = 1.0;
     private double wakeAnalysisPercentage = 0.4;
     private double mutationSelectionPercentage = 0.5; 
 
@@ -45,7 +44,6 @@ public class WakeBasedMutationBenchmark {
             new TypeReference<WFLOP>() {});
         this.powerOutputCalculator = new PowerOutputCalculator(wflop);
         this.wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
-            mutationRate,
             wakeAnalysisPercentage,
             mutationSelectionPercentage,
             powerOutputCalculator);

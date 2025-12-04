@@ -47,7 +47,7 @@ public class NovelGA extends GA {
     @Override
     protected CrossoverStrategy createCrossoverStrategy() {
         long seed = getRandom().nextLong();
-        return new WakeBasedCrossoverStrategy(getCrossoverRate(), seed);
+        return new WakeBasedCrossoverStrategy(seed);
     }
 
     @Override
@@ -57,7 +57,6 @@ public class NovelGA extends GA {
 
         long seed = getRandom().nextLong();
         return new WakeBasedMutationStrategy(
-            getMutationRate(),
             wakeAnalysisPercentage,
             mutationSelectionPercentage,
             seed,

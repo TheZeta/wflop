@@ -13,26 +13,17 @@ import java.util.*;
 public class SinglePointCrossover implements CrossoverStrategy {
 
     private final Random random;
-    private final double crossoverRate;
 
-    public SinglePointCrossover(double crossoverRate) {
-        this.crossoverRate = crossoverRate;
+    public SinglePointCrossover() {
         this.random = new Random();
     }
 
-    public SinglePointCrossover(double crossoverRate, long seed) {
-        this.crossoverRate = crossoverRate;
+    public SinglePointCrossover(long seed) {
         this.random = new Random(seed);
     }
 
     @Override
     public Individual crossover(Individual parent1, Individual parent2, WFLOP problem) {
-        // Decide whether to perform crossover
-        if (random.nextDouble() > crossoverRate) {
-            // No crossover, return copy of parent1
-            return new Individual(parent1.getGenes());
-        }
-
         List<Integer> genes1 = parent1.getGenes();
         List<Integer> genes2 = parent2.getGenes();
         

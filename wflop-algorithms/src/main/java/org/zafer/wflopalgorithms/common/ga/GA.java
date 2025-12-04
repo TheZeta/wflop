@@ -101,9 +101,16 @@ public abstract class GA implements Metaheuristic {
             while (newPopulation.size() < populationSize) {
                 Individual parent1 = selectionStrategyImpl.select(population);
                 Individual parent2 = selectionStrategyImpl.select(population);
+                Individual child;
+                if (random.nextDouble() < crossoverRate) {
+                    child = crossoverStrategyImpl.crossover(parent1, parent2, problem);
+                } else {
+                    child = new Individual(parent1.getGenes());
+                }
 
-                Individual child = crossoverStrategyImpl.crossover(parent1, parent2, problem);
-                child = mutationStrategyImpl.mutate(child, problem);
+                if (random.nextDouble() < mutationRate) {
+                    child = mutationStrategyImpl.mutate(child, problem);
+                }
 
                 double fitness = computeFitness(child, calculator);
                 child.setFitness(fitness);
@@ -175,9 +182,9 @@ public abstract class GA implements Metaheuristic {
         long seed = random.nextLong();
         return switch (crossoverStrategy.toLowerCase()) {
             case "singlepoint", "single-point", "single_point" -> 
-                new SinglePointCrossover(crossoverRate, seed);
+                new SinglePointCrossover(seed);
             default -> 
-                new SinglePointCrossover(crossoverRate, seed);
+                new SinglePointCrossover(seed);
         };
     }
 
@@ -187,12 +194,12 @@ public abstract class GA implements Metaheuristic {
 
         long seed = random.nextLong();
         return switch (mutationStrategy.toLowerCase()) {
-            case "randomreplacement", "random-replacement", "random_replacement" -> 
-                new RandomReplacementMutation(mutationRate, seed);
-            case "swap" -> 
-                new SwapMutation(mutationRate, seed);
+            case "randomreplacement", "random-replacement", "random_replacement" ->
+                new RandomReplacementMutation(seed);
+            case "swap" ->
+                new SwapMutation(seed);
             default -> 
-                new RandomReplacementMutation(mutationRate, seed);
+                new RandomReplacementMutation(seed);
         };
     }
 

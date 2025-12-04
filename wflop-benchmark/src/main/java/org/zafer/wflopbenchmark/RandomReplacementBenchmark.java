@@ -33,15 +33,13 @@ public class RandomReplacementBenchmark {
     private RandomReplacementMutation randomReplacementMutation;
     private Individual originalIndividual;
     private WFLOP wflop;
-    private double mutationRate = 1.0;
 
     @Setup(Level.Trial)
     public void setup() {
         this.wflop = ConfigLoader.loadFromResource(
                 "wflop_problem.json",
                 new TypeReference<WFLOP>() {});
-        this.randomReplacementMutation = new RandomReplacementMutation(
-                mutationRate);
+        this.randomReplacementMutation = new RandomReplacementMutation();
 
         originalIndividual = new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(
                 wflop.getNumberOfTurbines(),

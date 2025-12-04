@@ -29,7 +29,6 @@ class WakeBasedMutationTest {
             new TypeReference<WFLOP>() {});
         powerOutputCalculator = new PowerOutputCalculator(wflop); 
         wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
-            1.0,
             0.5,
             1.0,
             powerOutputCalculator);

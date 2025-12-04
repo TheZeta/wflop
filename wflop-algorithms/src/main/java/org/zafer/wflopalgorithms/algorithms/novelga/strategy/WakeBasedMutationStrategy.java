@@ -18,19 +18,16 @@ import org.zafer.wflopmodel.problem.WFLOP;
 public class WakeBasedMutationStrategy implements MutationStrategy {
 
     private final Random random;
-    private final double mutationRate;
     private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
     private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
     private final PowerOutputCalculator powerOutputCalculator;
 
     public WakeBasedMutationStrategy(
-        double mutationRate,
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
         PowerOutputCalculator powerOutputCalculator
     ) {
 
-        this.mutationRate = mutationRate;
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random();
@@ -38,14 +35,12 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     public WakeBasedMutationStrategy(
-        double mutationRate,
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
         long seed,
         PowerOutputCalculator powerOutputCalculator
     ) {
 
-        this.mutationRate = mutationRate;
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random(seed);
@@ -54,10 +49,6 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
 
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
-        if (random.nextDouble() > mutationRate) {
-            // No mutation
-            return individual;
-        }
 
         List<Integer> turbines = new ArrayList<>(individual.getGenes());
         int countForAnalysis = (int) (turbines.size() * wakeAnalysisPercentage);

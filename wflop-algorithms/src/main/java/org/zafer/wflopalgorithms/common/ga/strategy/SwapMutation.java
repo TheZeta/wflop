@@ -13,25 +13,17 @@ import java.util.Random;
 public class SwapMutation implements MutationStrategy {
 
     private final Random random;
-    private final double mutationRate;
 
-    public SwapMutation(double mutationRate) {
-        this.mutationRate = mutationRate;
+    public SwapMutation() {
         this.random = new Random();
     }
 
-    public SwapMutation(double mutationRate, long seed) {
-        this.mutationRate = mutationRate;
+    public SwapMutation(long seed) {
         this.random = new Random(seed);
     }
 
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
-        if (random.nextDouble() > mutationRate) {
-            // No mutation
-            return individual;
-        }
-
         List<Integer> genes = individual.getGenes();
         
         if (genes.size() < 2) {
