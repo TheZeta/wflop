@@ -20,6 +20,7 @@ import org.zafer.wflopalgorithms.common.ga.strategy.SinglePointCrossover;
 import org.zafer.wflopalgorithms.common.ga.strategy.SwapMutation;
 import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.calculator.PowerOutputCalculator;
+import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.ProgressListener;
@@ -88,7 +89,7 @@ public abstract class GA implements Metaheuristic {
     private Solution runInternal(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
         SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
-        MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator);
+        MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator.getWakeCalculatorJensen());
 
         List<Individual> population = initializePopulation(problem);
         evaluateFitness(population, calculator);
@@ -189,7 +190,7 @@ public abstract class GA implements Metaheuristic {
     }
 
     protected MutationStrategy createMutationStrategy(
-        PowerOutputCalculator powerOutputCalculator
+        WakeCalculatorJensen wakeCalculatorJensen
     ) {
 
         long seed = random.nextLong();

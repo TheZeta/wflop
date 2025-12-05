@@ -48,6 +48,15 @@ public class WakeCalculatorJensen {
         this.intersectedAreaMatrix = useIntersectedAreaMatrix ? initializeIntersectedAreaMatrix() : null;
     }
 
+    public double calculateReducedSpeedMultiple(int downwind, List<Integer> upwindTurbines) {
+        List<WindProfile> windProfiles = wflop.getWindProfiles();
+        double sum = 0;
+        for (WindProfile windProfile : windProfiles) {
+            sum += calculateReducedSpeedMultiple(windProfile, downwind, upwindTurbines);
+        }
+        return sum;
+    }
+
     public double calculateReducedSpeedMultiple(WindProfile windProfile, int downwind, List<Integer> upwindTurbines) {
         int angle = windProfile.getAngle();
         double baseSpeed = windProfile.getSpeed();

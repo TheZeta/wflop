@@ -61,4 +61,8 @@ public class PowerOutputCalculator {
         }
         return power;
     }
+
+    public WakeCalculatorJensen getWakeCalculatorJensen() {
+        return wakeCalculatorJensen;
+    }
 }

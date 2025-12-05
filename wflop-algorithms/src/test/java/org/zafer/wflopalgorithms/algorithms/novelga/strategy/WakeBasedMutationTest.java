@@ -31,7 +31,7 @@ class WakeBasedMutationTest {
         wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
             0.5,
             1.0,
-            powerOutputCalculator);
+            powerOutputCalculator.getWakeCalculatorJensen());
 
         if (wflop == null) {
             System.out.println("WFLOP is null!");

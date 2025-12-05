@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
 import org.zafer.wflopcore.calculator.PowerOutputCalculator;
+import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 public class WakeBasedMutationStrategy implements MutationStrategy {
@@ -20,31 +21,31 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     private final Random random;
     private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
     private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
-    private final PowerOutputCalculator powerOutputCalculator;
+    private final WakeCalculatorJensen wakeCalculatorJensen;
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
-        PowerOutputCalculator powerOutputCalculator
+        WakeCalculatorJensen wakeCalculatorJensen
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random();
-        this.powerOutputCalculator = powerOutputCalculator;
+        this.wakeCalculatorJensen = wakeCalculatorJensen;
     }
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
         long seed,
-        PowerOutputCalculator powerOutputCalculator
+        WakeCalculatorJensen wakeCalculatorJensen
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random(seed);
-        this.powerOutputCalculator = powerOutputCalculator;
+        this.wakeCalculatorJensen = wakeCalculatorJensen;
     }
 
     @Override
@@ -55,14 +56,14 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
         int countForMutation = (int) (countForAnalysis * mutationSelectionPercentage);
 
         List<Integer> turbinesToRemove = findTurbinesWithLowestPowerOutput(
-            powerOutputCalculator,
+            wakeCalculatorJensen,
             turbines,
             countForAnalysis,
             countForMutation);
         turbines.removeAll(turbinesToRemove);
 
         List<Integer> turbinesToAdd = findCellsWithHighestPowerOutput(
-            powerOutputCalculator,
+            wakeCalculatorJensen,
             turbines,
             countForAnalysis,
 	    countForMutation,
@@ -73,7 +74,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findTurbinesWithLowestPowerOutput(
-        PowerOutputCalculator powerOutputCalculator,
+        WakeCalculatorJensen wakeCalculatorJensen,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation
@@ -81,7 +82,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
 
         Map<Integer, Double> turbinePowerOutputMap = new HashMap<>();
         for(Integer turbine : turbines) {
-            turbinePowerOutputMap.put(turbine, powerOutputCalculator.calculatePowerOutput(
+            turbinePowerOutputMap.put(turbine, wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 turbine,
                 turbines
             ));
@@ -101,7 +102,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findCellsWithHighestPowerOutput( 
-        PowerOutputCalculator powerOutputCalculator,
+        WakeCalculatorJensen wakeCalculatorJensen,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation,
@@ -118,7 +119,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
 
         Map<Integer, Double> cellPowerOutputMap = new HashMap<>();
         for(Integer cell : cells) {
-            cellPowerOutputMap.put(cell, powerOutputCalculator.calculatePowerOutput(
+            cellPowerOutputMap.put(cell, wakeCalculatorJensen.calculateReducedSpeedMultiple(
                 cell,
                 turbines
             ));
