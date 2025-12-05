@@ -39,7 +39,7 @@ public class WFLOPBenchmark {
         PowerModelProvider powerModelProvider = new DefaultPowerModelProvider();
         WakeCalculationPolicy wakeCalculationPolicy = new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix);
         WakeCalculatorProvider wakeCalculatorProvider = new ConfigurableWakeCalculatorProvider(wakeCalculationPolicy);
-        powerCalculator = new PowerOutputCalculator(wflop, powerModelProvider, wakeCalculatorProvider);
+        powerCalculator = new PowerOutputCalculator(wflop, wakeCalculatorProvider);
     }
 
     @Setup(Level.Iteration)
