@@ -34,7 +34,7 @@ public class WakeBasedMutationBenchmark {
     private Individual originalIndividual;
     private WFLOP wflop;
     private PowerOutputCalculator powerOutputCalculator;
-    private double wakeAnalysisPercentage = 0.4;
+    private double wakeAnalysisPercentage = 0.1;
     private double mutationSelectionPercentage = 0.5; 
 
     @Setup(Level.Trial)
