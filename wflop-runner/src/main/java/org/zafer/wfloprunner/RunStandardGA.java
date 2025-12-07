@@ -16,7 +16,7 @@ public class RunStandardGA {
 
     public static void main(String[] args) {
         System.out.println("Starting Standard GA...");
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
+        String jsonPath = "wflop-runner/configs/standardga.json";
         Metaheuristic algorithm = null;
         try {
             algorithm = AlgorithmFactory.loadFromJson(jsonPath);

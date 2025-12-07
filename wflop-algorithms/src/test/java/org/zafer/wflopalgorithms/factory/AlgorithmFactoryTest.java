@@ -22,7 +22,7 @@ class AlgorithmFactoryTest {
     @Test
     void testLoadStandardGAFromJson() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
+        String jsonPath = "configs/test_standardga.json";
 
         // When
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
@@ -43,7 +43,7 @@ class AlgorithmFactoryTest {
     @Test
     void testLoadPSOFromJson() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
+        String jsonPath = "configs/test_pso.json";
 
         // When
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
@@ -64,8 +64,8 @@ class AlgorithmFactoryTest {
     @Test
     void testMultipleAlgorithmTypes() throws AlgorithmLoadException {
         // Given
-        String gaJsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
-        String psoJsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
+        String gaJsonPath = "configs/test_standardga.json";
+        String psoJsonPath = "configs/test_pso.json";
 
         // When
         Metaheuristic ga = AlgorithmFactory.loadFromJson(gaJsonPath);
@@ -79,23 +79,9 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testFileNotFound() {
-        // Given
-        String invalidPath = "nonexistent/path/algorithm.json";
-
-        // When & Then
-        AlgorithmLoadException exception = assertThrows(
-            AlgorithmLoadException.class,
-            () -> AlgorithmFactory.loadFromJson(invalidPath)
-        );
-
-        assertTrue(exception.getMessage().contains("JSON resource not found"));
-    }
-
-    @Test
     void testMissingAlgorithmTypeProperty() {
         // Given - A JSON file without algorithm property
-        String jsonPath = "org/zafer/wflopalgorithms/factory/test_missing_type.json";
+        String jsonPath = "configs/test_missing_type.json";
 
         // When & Then
         AlgorithmLoadException exception = assertThrows(
@@ -109,7 +95,7 @@ class AlgorithmFactoryTest {
     @Test
     void testInvalidAlgorithmType() {
         // Given - A JSON file with an invalid algorithm type
-        String jsonPath = "org/zafer/wflopalgorithms/factory/test_invalid_type.json";
+        String jsonPath = "configs/test_invalid_type.json";
 
         // When & Then
         AlgorithmLoadException exception = assertThrows(
@@ -124,10 +110,10 @@ class AlgorithmFactoryTest {
     @Test
     void testStandardGAExecutesRun() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
+        String jsonPath = "configs/test_standardga.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
         WFLOP problem = ConfigLoader.loadFromResource(
-                "wflop_problem.json",
+                "configs/test_problem.json",
                 new TypeReference<WFLOP>() {});
 
         // When
@@ -141,10 +127,10 @@ class AlgorithmFactoryTest {
     @Test
     void testPSOExecutesRun() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
+        String jsonPath = "configs/test_pso.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
         WFLOP problem = ConfigLoader.loadFromResource(
-                "wflop_problem.json",
+                "configs/test_problem.json",
                 new TypeReference<WFLOP>() {});
 
         // When

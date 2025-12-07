@@ -19,7 +19,7 @@ public class RunNovelGA {
 
     public static void main(String[] args) {
         System.out.println("Starting Novel GA...");
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/novelga/algorithm_instance.json";
+        String jsonPath = "wflop-runner/configs/novelga.json";
         Metaheuristic algorithm = null;
         try {
             algorithm = AlgorithmFactory.loadFromJson(jsonPath);

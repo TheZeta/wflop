@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
-import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationStrategy;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.calculator.PowerOutputCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
@@ -25,7 +24,7 @@ class WakeBasedMutationTest {
     @BeforeEach
     void setUp() {
         wflop = ConfigLoader.loadFromResource(
-            "org/zafer/wflopalgorithms/algorithms/novelga/strategy/problem_instance_small.json",
+                "configs/test_problem_small.json",
             new TypeReference<WFLOP>() {});
         powerOutputCalculator = new PowerOutputCalculator(wflop); 
         wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
