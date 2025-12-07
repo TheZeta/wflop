@@ -1,7 +1,5 @@
 package org.zafer.wflopalgorithms.factory;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
 import org.zafer.wflopalgorithms.algorithms.pso.PSO;
@@ -17,21 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for AlgorithmFactory.
- * Tests the registration-based factory pattern with reflection and caching.
+ * Tests the registration-based factory pattern using AlgorithmRegistry.
  */
 class AlgorithmFactoryTest {
-
-    @BeforeEach
-    void setUp() {
-        // Clear cache before each test to ensure isolation
-        AlgorithmFactory.clearCache();
-    }
-
-    @AfterEach
-    void tearDown() {
-        // Clear cache after each test
-        AlgorithmFactory.clearCache();
-    }
 
     @Test
     void testLoadStandardGAFromJson() throws AlgorithmLoadException {
@@ -76,40 +62,14 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testCachingMechanism() throws AlgorithmLoadException {
-        // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
-
-        // When - First load (should use reflection)
-        assertEquals(0, AlgorithmFactory.getCacheSize());
-        Metaheuristic algorithm1 = AlgorithmFactory.loadFromJson(jsonPath);
-        assertEquals(1, AlgorithmFactory.getCacheSize());
-
-        // Second load (should use cache)
-        Metaheuristic algorithm2 = AlgorithmFactory.loadFromJson(jsonPath);
-        assertEquals(1, AlgorithmFactory.getCacheSize());
-
-        // Then
-        assertNotNull(algorithm1);
-        assertNotNull(algorithm2);
-        assertInstanceOf(StandardGA.class, algorithm1);
-        assertInstanceOf(StandardGA.class, algorithm2);
-    }
-
-    @Test
-    void testMultipleAlgorithmTypesInCache() throws AlgorithmLoadException {
+    void testMultipleAlgorithmTypes() throws AlgorithmLoadException {
         // Given
         String gaJsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
         String psoJsonPath = "org/zafer/wflopalgorithms/algorithms/pso/algorithm_instance.json";
 
         // When
-        assertEquals(0, AlgorithmFactory.getCacheSize());
-        
         Metaheuristic ga = AlgorithmFactory.loadFromJson(gaJsonPath);
-        assertEquals(1, AlgorithmFactory.getCacheSize());
-        
         Metaheuristic pso = AlgorithmFactory.loadFromJson(psoJsonPath);
-        assertEquals(2, AlgorithmFactory.getCacheSize());
 
         // Then
         assertNotNull(ga);
@@ -157,7 +117,7 @@ class AlgorithmFactoryTest {
             () -> AlgorithmFactory.loadFromJson(jsonPath)
         );
 
-        assertTrue(exception.getMessage().contains("Algorithm class not found") ||
+        assertTrue(exception.getMessage().contains("is not registered") ||
                    exception.getMessage().contains("JSON resource not found"));
     }
 
@@ -196,16 +156,11 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testClearCache() throws AlgorithmLoadException {
-        // Given
-        String jsonPath = "org/zafer/wflopalgorithms/algorithms/standardga/algorithm_instance.json";
-        AlgorithmFactory.loadFromJson(jsonPath);
-        assertEquals(1, AlgorithmFactory.getCacheSize());
-
-        // When
-        AlgorithmFactory.clearCache();
-
-        // Then
-        assertEquals(0, AlgorithmFactory.getCacheSize());
+    void testRegistryContainsAlgorithms() {
+        // Given & When
+        assertTrue(AlgorithmRegistry.isRegistered("StandardGA"));
+        assertTrue(AlgorithmRegistry.isRegistered("PSO"));
+        assertTrue(AlgorithmRegistry.isRegistered("NovelGA"));
+        assertFalse(AlgorithmRegistry.isRegistered("NonExistentAlgorithm"));
     }
 }
