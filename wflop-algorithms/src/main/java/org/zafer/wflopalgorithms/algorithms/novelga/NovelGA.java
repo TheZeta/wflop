@@ -63,7 +63,7 @@ public class NovelGA extends GA {
 
     @Override
     protected MutationStrategy createMutationStrategy(
-        WakeCalculatorJensen wakeCalculatorJensen
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         long seed = getRandom().nextLong();
@@ -71,7 +71,7 @@ public class NovelGA extends GA {
             wakeAnalysisPercentage,
             mutationSelectionPercentage,
             seed,
-            wakeCalculatorJensen);
+            powerOutputCalculator);
     }
 
     // Getters for testing and validation

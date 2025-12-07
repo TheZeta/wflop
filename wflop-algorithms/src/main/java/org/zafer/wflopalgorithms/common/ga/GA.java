@@ -93,7 +93,7 @@ public abstract class GA implements Metaheuristic {
     private Solution runInternal(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
         SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
-        MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator.getWakeCalculatorJensen());
+        MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator);
 
         terminationCondition.onStart();
 

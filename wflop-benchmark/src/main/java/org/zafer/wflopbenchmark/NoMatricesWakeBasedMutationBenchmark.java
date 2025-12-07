@@ -36,7 +36,7 @@ public class NoMatricesWakeBasedMutationBenchmark {
         this.wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
                 wakeAnalysisPercentage,
                 mutationSelectionPercentage,
-                powerOutputCalculator.getWakeCalculatorJensen());
+                powerOutputCalculator);
 
         originalIndividual = new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(
                 wflop.getNumberOfTurbines(),

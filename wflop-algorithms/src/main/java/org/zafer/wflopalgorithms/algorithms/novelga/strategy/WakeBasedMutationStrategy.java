@@ -21,31 +21,31 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     private final Random random;
     private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
     private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
-    private final WakeCalculatorJensen wakeCalculatorJensen;
+    private final PowerOutputCalculator powerOutputCalculator;
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
-        WakeCalculatorJensen wakeCalculatorJensen
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random();
-        this.wakeCalculatorJensen = wakeCalculatorJensen;
+        this.powerOutputCalculator = powerOutputCalculator;
     }
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
         long seed,
-        WakeCalculatorJensen wakeCalculatorJensen
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random(seed);
-        this.wakeCalculatorJensen = wakeCalculatorJensen;
+        this.powerOutputCalculator = powerOutputCalculator;
     }
 
     @Override
@@ -56,14 +56,14 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
         int countForMutation = (int) (countForAnalysis * mutationSelectionPercentage);
 
         List<Integer> turbinesToRemove = findTurbinesWithLowestPowerOutput(
-            wakeCalculatorJensen,
+            powerOutputCalculator,
             turbines,
             countForAnalysis,
             countForMutation);
         turbines.removeAll(turbinesToRemove);
 
         List<Integer> turbinesToAdd = findCellsWithHighestPowerOutput(
-            wakeCalculatorJensen,
+            powerOutputCalculator,
             turbines,
             countForAnalysis,
 	    countForMutation,
@@ -74,18 +74,16 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findTurbinesWithLowestPowerOutput(
-        WakeCalculatorJensen wakeCalculatorJensen,
+        PowerOutputCalculator powerOutputCalculator,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation
     ) {
-
+        WakeCalculatorJensen wakeCalculatorJensen = powerOutputCalculator.getWakeCalculatorJensen();
         Map<Integer, Double> turbinePowerOutputMap = new HashMap<>();
         for(Integer turbine : turbines) {
-            turbinePowerOutputMap.put(turbine, wakeCalculatorJensen.calculateReducedSpeedMultiple(
-                turbine,
-                turbines
-            ));
+            double value = powerOutputCalculator.calculatePowerOutput(turbine, turbines);
+            turbinePowerOutputMap.put(turbine, value);
         }
 
         List<Integer> lowest = turbinePowerOutputMap.entrySet()
@@ -102,13 +100,13 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findCellsWithHighestPowerOutput( 
-        WakeCalculatorJensen wakeCalculatorJensen,
+        PowerOutputCalculator powerOutputCalculator,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation,
         int cellCount
     ) {
-
+        WakeCalculatorJensen wakeCalculatorJensen = powerOutputCalculator.getWakeCalculatorJensen();
         Set<Integer> excludeSet = new HashSet<>(turbines);
         List<Integer> cells = new ArrayList<>(cellCount);
         for (int i = 0; i < cellCount; i++) {
@@ -119,10 +117,8 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
 
         Map<Integer, Double> cellPowerOutputMap = new HashMap<>();
         for(Integer cell : cells) {
-            cellPowerOutputMap.put(cell, wakeCalculatorJensen.calculateReducedSpeedMultiple(
-                cell,
-                turbines
-            ));
+            double value = powerOutputCalculator.calculatePowerOutput(cell, turbines);
+            cellPowerOutputMap.put(cell, value);
         }
 
         List<Integer> highest = cellPowerOutputMap.entrySet()
