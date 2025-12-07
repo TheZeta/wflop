@@ -16,6 +16,7 @@ import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.ProgressListener;
 import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.problem.WFLOP;
 
@@ -33,10 +34,19 @@ public class NovelGA extends GA {
             @JsonProperty("mutationRate") double mutationRate,
             @JsonProperty("selectionStrategy") String selectionStrategy,
             @JsonProperty("wakeAnalysisPercentage") Double wakeAnalysisPercentage,
-            @JsonProperty("mutationSelectionPercentage") Double mutationSelectionPercentage
+            @JsonProperty("mutationSelectionPercentage") Double mutationSelectionPercentage,
+            @JsonProperty("termination") TerminationConditionConfig terminationConfig
     ) {
-        super(algorithm, populationSize, generations, crossoverRate, mutationRate,
-            selectionStrategy, "wakeBasedCrossover", "wakeBasedMutation");
+        super(
+            algorithm,
+            populationSize,
+            crossoverRate,
+            mutationRate,
+            selectionStrategy,
+            "wakeBasedCrossover",
+            "wakeBasedMutation",
+            terminationConfig
+        );
         this.wakeAnalysisPercentage = wakeAnalysisPercentage != null 
             ? wakeAnalysisPercentage
             : 0.1;

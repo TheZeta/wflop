@@ -25,6 +25,10 @@ import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.ProgressListener;
 import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
+import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
+import org.zafer.wflopmetaheuristic.termination.TerminationConditionFactory;
+import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.problem.WFLOP;
 
@@ -32,33 +36,33 @@ public abstract class GA implements Metaheuristic {
 
     private final String algorithm;
     private final int populationSize;
-    private final int generations;
     private final double crossoverRate;
     private final double mutationRate;
     private final String selectionStrategy;
     private final String crossoverStrategy;
     private final String mutationStrategy;
+    private final TerminationCondition terminationCondition;
     private final Random random;
 
     @JsonCreator
     public GA(
             @JsonProperty("algorithm") String algorithm,
             @JsonProperty("populationSize") int populationSize,
-            @JsonProperty("generations") int generations,
             @JsonProperty("crossoverRate") double crossoverRate,
             @JsonProperty("mutationRate") double mutationRate,
             @JsonProperty("selectionStrategy") String selectionStrategy,
             @JsonProperty("crossoverStrategy") String crossoverStrategy,
-            @JsonProperty("mutationStrategy") String mutationStrategy
+            @JsonProperty("mutationStrategy") String mutationStrategy,
+            @JsonProperty("termination") TerminationConditionConfig terminationConfig
     ) {
         this.algorithm = algorithm;
         this.populationSize = populationSize;
-        this.generations = generations;
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;
         this.selectionStrategy = selectionStrategy != null ? selectionStrategy : "tournament";
         this.crossoverStrategy = crossoverStrategy != null ? crossoverStrategy : "singlepoint";
         this.mutationStrategy = mutationStrategy != null ? mutationStrategy : "randomreplacement";
+        this.terminationCondition = TerminationConditionFactory.fromConfig(terminationConfig);
         this.random = new Random();
     }
 
@@ -91,12 +95,15 @@ public abstract class GA implements Metaheuristic {
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
         MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator.getWakeCalculatorJensen());
 
+        terminationCondition.onStart();
+
         List<Individual> population = initializePopulation(problem);
         evaluateFitness(population, calculator);
 
         Individual best = Collections.max(population, Comparator.comparingDouble(Individual::getFitness));
 
-        for (int gen = 0; gen < generations; gen++) {
+        int gen = 0;
+        while (!terminationCondition.shouldTerminate()) {
             List<Individual> newPopulation = new ArrayList<>();
 
             while (newPopulation.size() < populationSize) {
@@ -124,11 +131,20 @@ public abstract class GA implements Metaheuristic {
             if (currentBest.getFitness() > best.getFitness()) {
                 best = currentBest;
             }
+            terminationCondition.onGeneration(++gen);
 
             // Notify listeners if present
             if (!listeners.isEmpty()) {
                 double avg = population.stream().mapToDouble(Individual::getFitness).average().orElse(0);
-                ProgressEvent event = new ProgressEvent(gen + 1, generations, best.getFitness(), avg);
+                TerminationProgress tp = terminationCondition.getProgress();
+
+                ProgressEvent event = new ProgressEvent(
+                        gen,
+                        best.getFitness(),
+                        avg,
+                        tp
+                );
+
                 for (ProgressListener listener : listeners) {
                     listener.onIteration(event);
                 }
@@ -190,7 +206,7 @@ public abstract class GA implements Metaheuristic {
     }
 
     protected MutationStrategy createMutationStrategy(
-        WakeCalculatorJensen wakeCalculatorJensen
+        PowerOutputCalculator powerOutputCalculator
     ) {
 
         long seed = random.nextLong();
@@ -213,10 +229,6 @@ public abstract class GA implements Metaheuristic {
         return populationSize;
     }
 
-    public int getGenerations() {
-        return generations;
-    }
-
     public double getCrossoverRate() {
         return crossoverRate;
     }
@@ -235,6 +247,10 @@ public abstract class GA implements Metaheuristic {
 
     public String getMutationStrategy() {
         return mutationStrategy;
+    }
+
+    public TerminationCondition getTerminationCondition() {
+        return terminationCondition;
     }
 
     public Random getRandom() {

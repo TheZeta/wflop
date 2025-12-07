@@ -1,25 +1,33 @@
 package org.zafer.wflopmetaheuristic;
 
+import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
+
 public class ProgressEvent {
 
     private final int iteration;
-    private final int generations;
     private final double bestFitness;
     private final double averageFitness;
 
-    public ProgressEvent(int iteration, int generations, double bestFitness, double averageFitness) {
+    private final TerminationProgress terminationProgress;
+
+    public ProgressEvent(
+        int iteration,
+        double bestFitness,
+        double averageFitness,
+        TerminationProgress terminationProgress
+    ) {
         this.iteration = iteration;
-        this.generations = generations;
         this.bestFitness = bestFitness;
         this.averageFitness = averageFitness;
+        this.terminationProgress = terminationProgress;
+    }
+
+    public TerminationProgress getTerminationProgress() {
+        return terminationProgress;
     }
 
     public int getIteration() {
         return iteration;
-    }
-
-    public int getGenerations() {
-        return generations;
     }
 
     public double getBestFitness() {
@@ -30,5 +38,3 @@ public class ProgressEvent {
         return averageFitness;
     }
 }
-
-

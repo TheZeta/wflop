@@ -8,6 +8,7 @@ import org.zafer.wflopalgorithms.algorithms.pso.PSO;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopmetaheuristic.termination.GenerationBasedTermination;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,10 +48,10 @@ class AlgorithmFactoryTest {
         StandardGA ga = (StandardGA) algorithm;
         assertEquals("StandardGA", ga.getAlgorithm());
         assertEquals(100, ga.getPopulationSize());
-        assertEquals(50, ga.getGenerations());
         assertEquals(0.8, ga.getCrossoverRate(), 0.001);
         assertEquals(0.01, ga.getMutationRate(), 0.001);
         assertEquals("tournament", ga.getSelectionStrategy());
+        assertEquals(new GenerationBasedTermination(200), ga.getTerminationCondition());
     }
 
     @Test
@@ -208,5 +209,3 @@ class AlgorithmFactoryTest {
         assertEquals(0, AlgorithmFactory.getCacheSize());
     }
 }
-
-

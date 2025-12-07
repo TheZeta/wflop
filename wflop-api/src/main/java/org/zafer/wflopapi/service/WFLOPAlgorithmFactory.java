@@ -1,8 +1,11 @@
 package org.zafer.wflopapi.service;
 
 import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
+import org.zafer.wflopalgorithms.factory.AlgorithmFactory;
+import org.zafer.wflopalgorithms.factory.AlgorithmLoadException;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.springframework.stereotype.Component;
+import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 
 @Component
 public class WFLOPAlgorithmFactory {
@@ -12,16 +15,15 @@ public class WFLOPAlgorithmFactory {
      * For production, consider loading from JSON config.
      */
     public Metaheuristic createDefaultGA() {
-        // Create GA with default parameters (matches the old wflop-ga config)
-        return new StandardGA(
-                "GA",
-                100,        // populationSize
-                200,        // generations
-                0.7,        // crossoverRate
-                0.1,        // mutationRate
-                "tournament",        // selectionStrategy
-                "singlepoint",       // crossoverStrategy
-                "randomreplacement"  // mutationStrategy
-        );
+        String jsonPath = "org/zafer/wflopalgorithms/algorithms/novelga/algorithm_instance.json";
+        Metaheuristic algorithm = null;
+
+        try {
+            algorithm = AlgorithmFactory.loadFromJson(jsonPath);
+        } catch (AlgorithmLoadException e) {
+            throw new RuntimeException(e);
+        }
+
+        return algorithm;
     }
 }
