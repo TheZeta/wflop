@@ -1,25 +1,191 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="
+           http://maven.apache.org/POM/4.0.0
+           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- ========================= -->
+    <!-- Coordinates -->
+    <!-- ========================= -->
     <groupId>org.zafer</groupId>
     <artifactId>wflop</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>wflop multi-module project</name>
 
+    <name>wflop :: parent</name>
+    <description>Parent POM for the WFLOP research codebase</description>
+
+    <!-- ========================= -->
+    <!-- Modules -->
+    <!-- ========================= -->
     <modules>
         <module>wflop-config</module>
-        <module>wflop-benchmark</module>
-        <module>wflop-core</module>
         <module>wflop-model</module>
-        <module>wflop-testdata</module>
+        <module>wflop-core</module>
+        <module>wflop-algorithms</module>
         <module>wflop-metaheuristic</module>
         <module>wflop-api</module>
-        <module>wflop-algorithms</module>
         <module>wflop-runner</module>
+        <module>wflop-testdata</module>
+        <module>wflop-benchmark</module>
     </modules>
+
+    <!-- ========================= -->
+    <!-- Global properties -->
+    <!-- ========================= -->
+    <properties>
+        <!-- Java -->
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency versions -->
+        <jmh.version>1.37</jmh.version>
+        <jackson.version>2.18.1</jackson.version>
+        <junit.version>5.10.2</junit.version>
+
+        <!-- Plugin versions -->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>3.2.5</maven.failsafe.plugin.version>
+        <maven.shade.plugin.version>3.5.1</maven.shade.plugin.version>
+    </properties>
+
+    <!-- ========================= -->
+    <!-- Dependency management -->
+    <!-- ========================= -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- ===== Internal modules (same version as parent) ===== -->
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-algorithms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-metaheuristic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-runner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zafer</groupId>
+                <artifactId>wflop-testdata</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- ===== External libraries ===== -->
+
+            <!-- JMH -->
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- JUnit (unit tests) -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ========================= -->
+    <!-- Plugin management -->
+    <!-- ========================= -->
+    <build>
+        <pluginManagement>
+            <plugins>
+
+                <!-- Compiler -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <release>${maven.compiler.release}</release>
+                    </configuration>
+                </plugin>
+
+                <!-- Unit tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+
+                <!-- Integration tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven.failsafe.plugin.version}</version>
+                </plugin>
+
+                <!-- Shading (used by benchmark / runner) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven.shade.plugin.version}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
