@@ -12,7 +12,6 @@ import java.util.Set;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
 import org.zafer.wflopcore.power.PowerOutputCalculator;
-import org.zafer.wflopcore.wake.JensenWakeCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 public class WakeBasedMutationStrategy implements MutationStrategy {
@@ -78,7 +77,6 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
         int countForAnalysis,
         int countForMutation
     ) {
-        JensenWakeCalculator jensenWakeCalculator = powerOutputCalculator.getJensenWakeCalculator();
         Map<Integer, Double> turbinePowerOutputMap = new HashMap<>();
         for(Integer turbine : turbines) {
             double value = powerOutputCalculator.calculatePowerOutput(turbine, turbines);
@@ -105,7 +103,6 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
         int countForMutation,
         int cellCount
     ) {
-        JensenWakeCalculator jensenWakeCalculator = powerOutputCalculator.getJensenWakeCalculator();
         Set<Integer> excludeSet = new HashSet<>(turbines);
         List<Integer> cells = new ArrayList<>(cellCount);
         for (int i = 0; i < cellCount; i++) {
