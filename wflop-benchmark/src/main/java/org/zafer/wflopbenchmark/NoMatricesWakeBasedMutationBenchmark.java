@@ -6,8 +6,8 @@ import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationSt
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.calculator.NoMatricesWakeCalculatorProvider;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
+import org.zafer.wflopcore.wake.NoMatricesWakeCalculatorProvider;
+import org.zafer.wflopcore.power.PowerOutputCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 import java.util.concurrent.TimeUnit;

@@ -19,7 +19,6 @@ import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.RandomReplacementMutation;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 @BenchmarkMode(Mode.AverageTime)

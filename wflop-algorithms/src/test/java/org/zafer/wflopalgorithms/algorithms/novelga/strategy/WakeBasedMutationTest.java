@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerOutputCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 class WakeBasedMutationTest {

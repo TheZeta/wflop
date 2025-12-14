@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
-import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
+import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.wake.WakeCalculatorJensen;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 public class WakeBasedMutationStrategy implements MutationStrategy {

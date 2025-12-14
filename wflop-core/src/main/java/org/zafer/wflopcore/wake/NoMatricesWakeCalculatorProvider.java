@@ -1,4 +1,4 @@
-package org.zafer.wflopcore.calculator;
+package org.zafer.wflopcore.wake;
 
 import org.zafer.wflopmodel.problem.WFLOP;
 

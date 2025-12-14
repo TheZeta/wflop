@@ -1,4 +1,4 @@
-package org.zafer.wflopcore.model;
+package org.zafer.wflopcore.power;
 
 public class GEOnePointFiveSLEPowerModel implements PowerModel {
 

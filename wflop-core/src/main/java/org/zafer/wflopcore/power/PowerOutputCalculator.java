@@ -1,8 +1,8 @@
-package org.zafer.wflopcore.calculator;
+package org.zafer.wflopcore.power;
 
-import org.zafer.wflopcore.model.DefaultPowerModelProvider;
-import org.zafer.wflopcore.model.PowerModel;
-import org.zafer.wflopcore.model.PowerModelProvider;
+import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
+import org.zafer.wflopcore.wake.WakeCalculatorJensen;
+import org.zafer.wflopcore.wake.WakeCalculatorProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;

@@ -1,7 +1,5 @@
 package org.zafer.wflopalgorithms.algorithms.novelga;
 
-import java.util.Random;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,15 +8,8 @@ import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationSt
 import org.zafer.wflopalgorithms.common.ga.GA;
 import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
-import org.zafer.wflopcore.calculator.PowerOutputCalculator;
-import org.zafer.wflopcore.calculator.WakeCalculatorJensen;
-import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmetaheuristic.ProgressEvent;
-import org.zafer.wflopmetaheuristic.ProgressListener;
-import org.zafer.wflopmetaheuristic.Solution;
+import org.zafer.wflopcore.power.PowerOutputCalculator;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
-import org.zafer.wflopmodel.layout.TurbineLayout;
-import org.zafer.wflopmodel.problem.WFLOP;
 
 public class NovelGA extends GA {
 
