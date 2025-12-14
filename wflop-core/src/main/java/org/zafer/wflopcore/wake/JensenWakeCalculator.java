@@ -5,7 +5,7 @@ import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.List;
 
-public class JensenWakeCalculator {
+public class JensenWakeCalculator implements WakeCalculator {
 
     private final WFLOP wflop;
     private final boolean useDistanceMatrix;
@@ -42,21 +42,25 @@ public class JensenWakeCalculator {
         this.intersectedAreaMatrix = useIntersectedAreaMatrix ? initializeIntersectedAreaMatrix() : null;
     }
 
-    public double calculateReducedSpeedMultiple(WindProfile windProfile, int downwind, List<Integer> upwindTurbines) {
+    public double calculateEffectiveSpeed(
+            int turbine,
+            List<Integer> turbines,
+            WindProfile windProfile
+    ) {
         int angle = windProfile.getAngle();
         double baseSpeed = windProfile.getSpeed();
-        double sum = 0;
 
-        for (int upwind : upwindTurbines) {
+        double sum = 0;
+        for (int upwind : turbines) {
             double[] rotated = useDistanceMatrix && distanceMatrix != null
-                    ? distanceMatrix[downwind][upwind][windProfile.getIndex()]
-                    : computeRotatedDistance(downwind, upwind, angle);
+                    ? distanceMatrix[turbine][upwind][windProfile.getIndex()]
+                    : computeRotatedDistance(turbine, upwind, angle);
 
             if (rotated[indY] <= 0) continue;
 
-            double single = calculateReducedSpeedSingle(rotated[indY], baseSpeed);
+            double single = calculateSingleWakeSpeed(rotated[indY], baseSpeed);
             double overlap = useIntersectedAreaMatrix && intersectedAreaMatrix != null
-                    ? intersectedAreaMatrix[downwind][upwind][windProfile.getIndex()]
+                    ? intersectedAreaMatrix[turbine][upwind][windProfile.getIndex()]
                     : computeIntersectedArea(rotated[indX], rotated[indY]);
 
             double ratio = 1 - single / baseSpeed;
@@ -68,7 +72,7 @@ public class JensenWakeCalculator {
         return baseSpeed * (1 - Math.sqrt(sum));
     }
 
-    private double calculateReducedSpeedSingle(double yDist, double baseSpeed) {
+    private double calculateSingleWakeSpeed(double yDist, double baseSpeed) {
         double wakeRadius = rotorRadius + entrainmentConstant * yDist;
         double ratio = rotorRadius / wakeRadius;
         return baseSpeed * (1 - ratio * ratio * 2 / 3);

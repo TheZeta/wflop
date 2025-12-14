@@ -6,8 +6,9 @@ import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationSt
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.wake.NoMatricesWakeCalculatorProvider;
 import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
+import org.zafer.wflopcore.wake.WakeCalculationPolicy;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,11 @@ public class NoMatricesWakeBasedMutationBenchmark {
         this.wflop = ConfigLoader.loadFromResource(
                 "wflop_problem.json",
                 new TypeReference<WFLOP>() {});
-        this.powerOutputCalculator = new PowerOutputCalculator(wflop, new NoMatricesWakeCalculatorProvider());
+        this.powerOutputCalculator = new PowerOutputCalculator(
+                wflop,
+                new DefaultWakeCalculatorProvider(),
+                new WakeCalculationPolicy(false, false));
+
         this.wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
                 wakeAnalysisPercentage,
                 mutationSelectionPercentage,
