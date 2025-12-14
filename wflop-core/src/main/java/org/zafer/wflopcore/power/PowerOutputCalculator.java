@@ -1,7 +1,7 @@
 package org.zafer.wflopcore.power;
 
 import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
-import org.zafer.wflopcore.wake.WakeCalculatorJensen;
+import org.zafer.wflopcore.wake.JensenWakeCalculator;
 import org.zafer.wflopcore.wake.WakeCalculatorProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PowerOutputCalculator {
 
-    private final WakeCalculatorJensen wakeCalculatorJensen;
+    private final JensenWakeCalculator jensenWakeCalculator;
     private final PowerModel powerModel;
     private final WFLOP wflop;
 
@@ -29,7 +29,7 @@ public class PowerOutputCalculator {
             PowerModelProvider powerModelProvider
     ) {
         this.wflop = wflop;
-        this.wakeCalculatorJensen = calculatorProvider.create(wflop);
+        this.jensenWakeCalculator = calculatorProvider.create(wflop);
         this.powerModel = powerModelProvider.create();
     }
 
@@ -52,7 +52,7 @@ public class PowerOutputCalculator {
         List<WindProfile> windProfiles = wflop.getWindProfiles();
         double power = 0.0;
         for (WindProfile windProfile : windProfiles) {
-            double turbineSpeed = wakeCalculatorJensen.calculateReducedSpeedMultiple(
+            double turbineSpeed = jensenWakeCalculator.calculateReducedSpeedMultiple(
                 windProfile,
                 turbine,
                 turbines
@@ -62,7 +62,7 @@ public class PowerOutputCalculator {
         return power;
     }
 
-    public WakeCalculatorJensen getWakeCalculatorJensen() {
-        return wakeCalculatorJensen;
+    public JensenWakeCalculator getJensenWakeCalculator() {
+        return jensenWakeCalculator;
     }
 }

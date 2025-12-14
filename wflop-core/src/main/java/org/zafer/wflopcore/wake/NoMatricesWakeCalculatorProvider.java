@@ -5,8 +5,8 @@ import org.zafer.wflopmodel.problem.WFLOP;
 public class NoMatricesWakeCalculatorProvider implements WakeCalculatorProvider {
 
     @Override
-    public WakeCalculatorJensen create(WFLOP wflop) {
+    public JensenWakeCalculator create(WFLOP wflop) {
         WakeCalculationPolicy policy = new WakeCalculationPolicy(false, false);
-        return new WakeCalculatorJensen(wflop, policy);
+        return new JensenWakeCalculator(wflop, policy);
     }
 }
