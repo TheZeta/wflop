@@ -3,26 +3,19 @@ package org.zafer.wflopbenchmark;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationStrategy;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
+import org.zafer.wflopcore.wake.WakeCalculationPolicy;
 import org.zafer.wflopmodel.problem.WFLOP;
 
-@BenchmarkMode(Mode.AverageTime)
+@BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Warmup(iterations = 3, time = 1)
 @Measurement(iterations = 5, time = 1)
@@ -30,35 +23,48 @@ import org.zafer.wflopmodel.problem.WFLOP;
 @State(Scope.Benchmark)
 public class WakeBasedMutationBenchmark {
 
+    @Param({"true,true", "true, false", "false, true", "false,false"})
+    public String policy;
+
     private WakeBasedMutationStrategy wakeBasedMutationStrategy;
     private Individual originalIndividual;
     private WFLOP wflop;
-    private PowerOutputCalculator powerOutputCalculator;
-    private double wakeAnalysisPercentage = 0.1;
-    private double mutationSelectionPercentage = 0.5; 
 
     @Setup(Level.Trial)
     public void setup() {
-        this.wflop = ConfigLoader.loadFromResource(
-            "wflop_problem.json",
-            new TypeReference<WFLOP>() {});
-        this.powerOutputCalculator = new PowerOutputCalculator(wflop);
-        this.wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
-            wakeAnalysisPercentage,
-            mutationSelectionPercentage,
-            powerOutputCalculator);
+        boolean useDistanceMatrix;
+        boolean useIntersectedAreaMatrix;
 
-        originalIndividual = new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(
-            wflop.getNumberOfTurbines(),
-            wflop.getCellCount()));
+        String[] parts = policy.split(",");
+        useDistanceMatrix = Boolean.parseBoolean(parts[0]);
+        useIntersectedAreaMatrix = Boolean.parseBoolean(parts[1]);
+
+        this.wflop = ConfigLoader.loadFromResource(
+                "wflop_problem.json",
+                new TypeReference<WFLOP>() {}
+        );
+
+        PowerOutputCalculator powerOutputCalculator =
+                new PowerOutputCalculator(
+                        wflop,
+                        new DefaultWakeCalculatorProvider(),
+                        new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix)
+                );
+
+        this.wakeBasedMutationStrategy =
+                new WakeBasedMutationStrategy(0.1, 0.5, powerOutputCalculator);
+
+        originalIndividual =
+                new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(
+                        wflop.getNumberOfTurbines(),
+                        wflop.getCellCount()));
     }
 
     @Benchmark
-    public Individual benchmarkMutation() {
+    public void benchmarkMutation(Blackhole bh) {
         Individual copy = new Individual(originalIndividual.getGenes());
 
         wakeBasedMutationStrategy.mutate(copy, wflop);
-
-        return copy;
+        bh.consume(copy);
     }
 }

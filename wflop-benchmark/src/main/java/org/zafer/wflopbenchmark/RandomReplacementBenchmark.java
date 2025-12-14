@@ -15,6 +15,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import org.openjdk.jmh.infra.Blackhole;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.RandomReplacementMutation;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
@@ -46,11 +47,10 @@ public class RandomReplacementBenchmark {
     }
 
     @Benchmark
-    public Individual benchmarkMutation() {
+    public void benchmarkMutation(Blackhole bh) {
         Individual copy = new Individual(originalIndividual.getGenes());
 
         randomReplacementMutation.mutate(copy, wflop);
-
-        return copy;
+        bh.consume(copy);
     }
 }
