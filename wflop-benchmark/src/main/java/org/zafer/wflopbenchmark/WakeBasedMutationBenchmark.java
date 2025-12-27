@@ -10,7 +10,7 @@ import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationSt
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
 import org.zafer.wflopcore.wake.WakeModelPolicy;
 import org.zafer.wflopmodel.problem.WFLOP;
@@ -44,15 +44,15 @@ public class WakeBasedMutationBenchmark {
                 new TypeReference<WFLOP>() {}
         );
 
-        PowerOutputCalculator powerOutputCalculator =
-                new PowerOutputCalculator(
+        PowerCalculator powerCalculator =
+                new PowerCalculator(
                         wflop,
                         new DefaultWakeModelProvider(),
                         new WakeModelPolicy(useDistanceMatrix, useIntersectedAreaMatrix)
                 );
 
         this.wakeBasedMutationStrategy =
-                new WakeBasedMutationStrategy(0.1, 0.5, powerOutputCalculator);
+                new WakeBasedMutationStrategy(0.1, 0.5, powerCalculator);
 
         originalIndividual =
                 new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(

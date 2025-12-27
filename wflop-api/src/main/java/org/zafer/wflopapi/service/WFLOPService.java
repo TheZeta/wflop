@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.zafer.wflopapi.dto.ProblemDTO;
 import org.zafer.wflopapi.dto.SolutionDTO;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.MetaheuristicRunner;
 import org.zafer.wflopmetaheuristic.RunResult;
@@ -88,12 +88,12 @@ public class WFLOPService {
         // Create an Individual with the given layout and evaluate its fitness
         Individual individual = new Individual(solutionDto.layout);
         
-        // Evaluate fitness using PowerOutputCalculator
-        PowerOutputCalculator calculator =
-            new PowerOutputCalculator(problem);
+        // Evaluate fitness using PowerCalculator
+        PowerCalculator calculator =
+            new PowerCalculator(problem);
         org.zafer.wflopmodel.layout.TurbineLayout layout = 
             new org.zafer.wflopmodel.layout.TurbineLayout(individual.getGenes());
-        double fitness = calculator.calculateTotalPowerOutput(layout);
+        double fitness = calculator.calculateTotalPower(layout);
 
         return new SolutionDTO(solutionDto.layout, fitness);
     }

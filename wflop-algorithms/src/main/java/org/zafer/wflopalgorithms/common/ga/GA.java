@@ -19,7 +19,7 @@ import org.zafer.wflopalgorithms.common.ga.strategy.SelectionStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.SinglePointCrossover;
 import org.zafer.wflopalgorithms.common.ga.strategy.SwapMutation;
 import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.ProgressListener;
@@ -71,25 +71,25 @@ public abstract class GA implements Metaheuristic {
 
     @Override
     public Solution run(WFLOP problem) {
-        PowerOutputCalculator calculator = new PowerOutputCalculator(problem);
+        PowerCalculator calculator = new PowerCalculator(problem);
         return runInternal(problem, calculator, Collections.emptyList());
     }
 
     @Override
     public Solution runWithListeners(WFLOP problem, List<ProgressListener> listeners) {
-        PowerOutputCalculator calculator = new PowerOutputCalculator(problem);
+        PowerCalculator calculator = new PowerCalculator(problem);
         return runInternal(problem, calculator, listeners);
     }
 
-    public Solution run(WFLOP problem, PowerOutputCalculator calculator) {
+    public Solution run(WFLOP problem, PowerCalculator calculator) {
         return runInternal(problem, calculator, Collections.emptyList());
     }
 
-    public Solution runWithListeners(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
+    public Solution runWithListeners(WFLOP problem, PowerCalculator calculator, List<ProgressListener> listeners) {
         return runInternal(problem, calculator, listeners);
     }
 
-    private Solution runInternal(WFLOP problem, PowerOutputCalculator calculator, List<ProgressListener> listeners) {
+    private Solution runInternal(WFLOP problem, PowerCalculator calculator, List<ProgressListener> listeners) {
         SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
         MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator);
@@ -170,16 +170,16 @@ public abstract class GA implements Metaheuristic {
         return population;
     }
 
-    private void evaluateFitness(List<Individual> population, PowerOutputCalculator calculator) {
+    private void evaluateFitness(List<Individual> population, PowerCalculator calculator) {
         for (Individual individual : population) {
             double fitness = computeFitness(individual, calculator);
             individual.setFitness(fitness);
         }
     }
 
-    private double computeFitness(Individual individual, PowerOutputCalculator calculator) {
+    private double computeFitness(Individual individual, PowerCalculator calculator) {
         TurbineLayout layout = new TurbineLayout(individual.getGenes());
-        return calculator.calculateTotalPowerOutput(layout);
+        return calculator.calculateTotalPower(layout);
     }
 
 
@@ -205,7 +205,7 @@ public abstract class GA implements Metaheuristic {
     }
 
     protected MutationStrategy createMutationStrategy(
-        PowerOutputCalculator powerOutputCalculator
+        PowerCalculator powerCalculator
     ) {
 
         long seed = random.nextLong();

@@ -8,7 +8,7 @@ import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationSt
 import org.zafer.wflopalgorithms.common.ga.GA;
 import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 
 public class NovelGA extends GA {
@@ -54,7 +54,7 @@ public class NovelGA extends GA {
 
     @Override
     protected MutationStrategy createMutationStrategy(
-        PowerOutputCalculator powerOutputCalculator
+        PowerCalculator powerCalculator
     ) {
 
         long seed = getRandom().nextLong();
@@ -62,7 +62,7 @@ public class NovelGA extends GA {
             wakeAnalysisPercentage,
             mutationSelectionPercentage,
             seed,
-            powerOutputCalculator);
+                powerCalculator);
     }
 
     // Getters for testing and validation

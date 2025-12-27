@@ -10,13 +10,13 @@ import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.List;
 
-public class PowerOutputCalculator {
+public class PowerCalculator {
 
     private final WakeModel wakeModel;
     private final PowerModel powerModel;
     private final WFLOP wflop;
 
-    public PowerOutputCalculator(WFLOP wflop) {
+    public PowerCalculator(WFLOP wflop) {
         this(
                 wflop,
                 new DefaultWakeModelProvider(),
@@ -25,7 +25,7 @@ public class PowerOutputCalculator {
         );
     }
 
-    public PowerOutputCalculator(
+    public PowerCalculator(
             WFLOP wflop,
             WakeModelProvider wakeModelProvider
     ) {
@@ -37,7 +37,7 @@ public class PowerOutputCalculator {
         );
     }
 
-    public PowerOutputCalculator(
+    public PowerCalculator(
             WFLOP wflop,
             WakeModelProvider wakeModelProvider,
             WakeModelPolicy policy
@@ -50,7 +50,7 @@ public class PowerOutputCalculator {
         );
     }
 
-    public PowerOutputCalculator(
+    public PowerCalculator(
             WFLOP wflop,
             WakeModelProvider wakeModelProvider,
             WakeModelPolicy policy,
@@ -67,16 +67,16 @@ public class PowerOutputCalculator {
      * @param turbineLayout the layout configuration containing the positions of wind turbines
      * @return totalPower: The total power output of the layout under the given wind conditions.
      */
-    public double calculateTotalPowerOutput(TurbineLayout turbineLayout) {
+    public double calculateTotalPower(TurbineLayout turbineLayout) {
         List<Integer> turbines = turbineLayout.getTurbineIndices();
         double totalPower = 0;
         for (int turbine : turbines) {
-            totalPower += calculatePowerOutput(turbine, turbines);
+            totalPower += calculatePower(turbine, turbines);
         }
         return totalPower;
     }
 
-    public double calculatePowerOutput(int turbine, List<Integer> turbines) {
+    public double calculatePower(int turbine, List<Integer> turbines) {
         List<WindProfile> windProfiles = wflop.getWindProfiles();
         double power = 0.0;
         for (WindProfile windProfile : windProfiles) {

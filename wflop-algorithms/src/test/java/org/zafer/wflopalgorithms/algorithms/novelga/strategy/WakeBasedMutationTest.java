@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 class WakeBasedMutationTest {
 
     private WFLOP wflop;
-    private PowerOutputCalculator powerOutputCalculator;
+    private PowerCalculator powerCalculator;
     private WakeBasedMutationStrategy wakeBasedMutationStrategy;
 
     @BeforeEach
@@ -26,17 +26,17 @@ class WakeBasedMutationTest {
         wflop = ConfigLoader.loadFromResource(
                 "configs/test_problem_small.json",
             new TypeReference<WFLOP>() {});
-        powerOutputCalculator = new PowerOutputCalculator(wflop); 
+        powerCalculator = new PowerCalculator(wflop);
         wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
             0.5,
             1.0,
-            powerOutputCalculator);
+                powerCalculator);
 
         if (wflop == null) {
             System.out.println("WFLOP is null!");
         }
-        if (powerOutputCalculator == null) {
-            System.out.println("PowerOutputCalculator is null!");
+        if (powerCalculator == null) {
+            System.out.println("PowerCalculator is null!");
         }
         if (wakeBasedMutationStrategy == null) {
             System.out.println("WakeBasedMutationStrategy is null!");

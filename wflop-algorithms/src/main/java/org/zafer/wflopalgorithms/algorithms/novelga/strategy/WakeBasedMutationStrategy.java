@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
-import org.zafer.wflopcore.power.PowerOutputCalculator;
+import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 public class WakeBasedMutationStrategy implements MutationStrategy {
@@ -19,31 +19,31 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     private final Random random;
     private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
     private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
-    private final PowerOutputCalculator powerOutputCalculator;
+    private final PowerCalculator powerCalculator;
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
-        PowerOutputCalculator powerOutputCalculator
+        PowerCalculator powerCalculator
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random();
-        this.powerOutputCalculator = powerOutputCalculator;
+        this.powerCalculator = powerCalculator;
     }
 
     public WakeBasedMutationStrategy(
         double wakeAnalysisPercentage,
         double mutationSelectionPercentage,
         long seed,
-        PowerOutputCalculator powerOutputCalculator
+        PowerCalculator powerCalculator
     ) {
 
         this.wakeAnalysisPercentage = wakeAnalysisPercentage;
         this.mutationSelectionPercentage = mutationSelectionPercentage;
         this.random = new Random(seed);
-        this.powerOutputCalculator = powerOutputCalculator;
+        this.powerCalculator = powerCalculator;
     }
 
     @Override
@@ -54,14 +54,14 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
         int countForMutation = (int) (countForAnalysis * mutationSelectionPercentage);
 
         List<Integer> turbinesToRemove = findTurbinesWithLowestPowerOutput(
-            powerOutputCalculator,
+                powerCalculator,
             turbines,
             countForAnalysis,
             countForMutation);
         turbines.removeAll(turbinesToRemove);
 
         List<Integer> turbinesToAdd = findCellsWithHighestPowerOutput(
-            powerOutputCalculator,
+                powerCalculator,
             turbines,
             countForAnalysis,
 	    countForMutation,
@@ -72,14 +72,14 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findTurbinesWithLowestPowerOutput(
-        PowerOutputCalculator powerOutputCalculator,
+        PowerCalculator powerCalculator,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation
     ) {
         Map<Integer, Double> turbinePowerOutputMap = new HashMap<>();
         for(Integer turbine : turbines) {
-            double value = powerOutputCalculator.calculatePowerOutput(turbine, turbines);
+            double value = powerCalculator.calculatePower(turbine, turbines);
             turbinePowerOutputMap.put(turbine, value);
         }
 
@@ -97,7 +97,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     }
 
     private List<Integer> findCellsWithHighestPowerOutput( 
-        PowerOutputCalculator powerOutputCalculator,
+        PowerCalculator powerCalculator,
         List<Integer> turbines,
         int countForAnalysis,
         int countForMutation,
@@ -113,7 +113,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
 
         Map<Integer, Double> cellPowerOutputMap = new HashMap<>();
         for(Integer cell : cells) {
-            double value = powerOutputCalculator.calculatePowerOutput(cell, turbines);
+            double value = powerCalculator.calculatePower(cell, turbines);
             cellPowerOutputMap.put(cell, value);
         }
 
