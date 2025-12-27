@@ -12,7 +12,7 @@ import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
-import org.zafer.wflopcore.wake.WakeModelPolicy;
+import org.zafer.wflopcore.wake.WakeOptimization;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 @BenchmarkMode(Mode.Throughput)
@@ -23,8 +23,13 @@ import org.zafer.wflopmodel.problem.WFLOP;
 @State(Scope.Benchmark)
 public class WakeBasedMutationBenchmark {
 
-    @Param({"true,true", "true, false", "false, true", "false,false"})
-    public String policy;
+    @Param({
+        "NONE",
+        "DISTANCE_MATRIX",
+        "INTERSECTION_MATRIX",
+        "BOTH"
+    })
+    public WakeOptimization optimization;
 
     private WakeBasedMutationStrategy wakeBasedMutationStrategy;
     private Individual originalIndividual;
@@ -32,13 +37,6 @@ public class WakeBasedMutationBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
-        boolean useDistanceMatrix;
-        boolean useIntersectedAreaMatrix;
-
-        String[] parts = policy.split(",");
-        useDistanceMatrix = Boolean.parseBoolean(parts[0]);
-        useIntersectedAreaMatrix = Boolean.parseBoolean(parts[1]);
-
         this.wflop = ConfigLoader.loadFromResource(
                 "wflop_problem.json",
                 new TypeReference<WFLOP>() {}
@@ -48,7 +46,7 @@ public class WakeBasedMutationBenchmark {
                 new PowerCalculator(
                         wflop,
                         new DefaultWakeModelProvider(),
-                        new WakeModelPolicy(useDistanceMatrix, useIntersectedAreaMatrix)
+                        optimization
                 );
 
         this.wakeBasedMutationStrategy =

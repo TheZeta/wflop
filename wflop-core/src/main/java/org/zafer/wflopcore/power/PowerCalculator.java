@@ -1,9 +1,6 @@
 package org.zafer.wflopcore.power;
 
-import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
-import org.zafer.wflopcore.wake.WakeModelPolicy;
-import org.zafer.wflopcore.wake.WakeModel;
-import org.zafer.wflopcore.wake.WakeModelProvider;
+import org.zafer.wflopcore.wake.*;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
@@ -20,7 +17,7 @@ public class PowerCalculator {
         this(
                 wflop,
                 new DefaultWakeModelProvider(),
-                new WakeModelPolicy(true, true),
+                WakeOptimization.BOTH,
                 new DefaultPowerModelProvider()
         );
     }
@@ -32,7 +29,7 @@ public class PowerCalculator {
         this(
                 wflop,
                 wakeModelProvider,
-                new WakeModelPolicy(true, true),
+                WakeOptimization.BOTH,
                 new DefaultPowerModelProvider()
         );
     }
@@ -40,12 +37,12 @@ public class PowerCalculator {
     public PowerCalculator(
             WFLOP wflop,
             WakeModelProvider wakeModelProvider,
-            WakeModelPolicy policy
+            WakeOptimization optimization
     ) {
         this(
                 wflop,
                 wakeModelProvider,
-                policy,
+                optimization,
                 new DefaultPowerModelProvider()
         );
     }
@@ -53,11 +50,11 @@ public class PowerCalculator {
     public PowerCalculator(
             WFLOP wflop,
             WakeModelProvider wakeModelProvider,
-            WakeModelPolicy policy,
+            WakeOptimization optimization,
             PowerModelProvider powerModelProvider
     ) {
         this.wflop = wflop;
-        this.wakeModel = wakeModelProvider.create(wflop, policy);
+        this.wakeModel = wakeModelProvider.create(wflop, optimization);
         this.powerModel = powerModelProvider.create();
     }
 

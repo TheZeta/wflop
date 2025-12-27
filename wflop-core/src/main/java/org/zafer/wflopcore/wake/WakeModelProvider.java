@@ -4,5 +4,5 @@ import org.zafer.wflopmodel.problem.WFLOP;
 
 public interface WakeModelProvider {
 
-    WakeModel create(WFLOP wflop, WakeModelPolicy policy);
+    WakeModel create(WFLOP wflop, WakeOptimization optimization);
 }

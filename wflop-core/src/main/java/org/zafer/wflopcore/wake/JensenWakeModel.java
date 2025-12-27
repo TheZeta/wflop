@@ -7,39 +7,52 @@ import java.util.List;
 
 public class JensenWakeModel implements WakeModel {
 
+    // 1. Core Dependencies
     private final WFLOP wflop;
+
+    // 2. Optimization Toggles
     private final boolean useDistanceMatrix;
     private final boolean useIntersectedAreaMatrix;
 
+    // 3. Cached Data Structures
     private final double[][][][] distanceMatrix;
     private final double[][][] intersectedAreaMatrix;
 
+    // 4. Model Constants (Physical Parameters)
     private final double rotorRadius;
     private final double turbineSurfaceArea;
+    private final double inverseTurbineSurfaceArea;
     private final double entrainmentConstant;
 
+    // 5. Dimensionality and Grid
     private final int dimension;
     private final double gridWidth;
-    private final double inverseTurbineSurfaceArea;
 
-    private final int indX = 0;
-    private final int indY = 1;
+    // 6. Implementation Constants (Index Helpers)
+    private static final int indX = 0;
+    private static final int indY = 1;
 
-    public JensenWakeModel(WFLOP wflop, WakeModelPolicy policy) {
+    public JensenWakeModel(WFLOP wflop, WakeOptimization optimization) {
         this.wflop = wflop;
+
+        this.useDistanceMatrix = optimization.useDistanceMatrix();
+        this.useIntersectedAreaMatrix = optimization.useIntersectionMatrix();
+
         this.rotorRadius = wflop.getRotorRadius();
         this.turbineSurfaceArea = Math.PI * rotorRadius * rotorRadius;
+        this.inverseTurbineSurfaceArea = 1.0 / turbineSurfaceArea;
         this.entrainmentConstant = wflop.getEntrainmentConstant();
-
-        useDistanceMatrix = policy.useDistanceMatrix();
-        useIntersectedAreaMatrix = policy.useIntersectedAreaMatrix();
 
         this.dimension = wflop.getDimension();
         this.gridWidth = wflop.getGridWidth();
-        this.inverseTurbineSurfaceArea = 1.0 / turbineSurfaceArea;
 
-        this.distanceMatrix = useDistanceMatrix ? initializeDistanceMatrix() : null;
-        this.intersectedAreaMatrix = useIntersectedAreaMatrix ? initializeIntersectedAreaMatrix() : null;
+        this.distanceMatrix = useDistanceMatrix
+                ? initializeDistanceMatrix()
+                : null;
+
+        this.intersectedAreaMatrix = useIntersectedAreaMatrix
+                ? initializeIntersectedAreaMatrix()
+                : null;
     }
 
     public double calculateEffectiveSpeed(
