@@ -11,8 +11,8 @@ import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopcore.power.PowerOutputCalculator;
-import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
-import org.zafer.wflopcore.wake.WakeCalculationPolicy;
+import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
+import org.zafer.wflopcore.wake.WakeModelPolicy;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 @BenchmarkMode(Mode.Throughput)
@@ -47,8 +47,8 @@ public class WakeBasedMutationBenchmark {
         PowerOutputCalculator powerOutputCalculator =
                 new PowerOutputCalculator(
                         wflop,
-                        new DefaultWakeCalculatorProvider(),
-                        new WakeCalculationPolicy(useDistanceMatrix, useIntersectedAreaMatrix)
+                        new DefaultWakeModelProvider(),
+                        new WakeModelPolicy(useDistanceMatrix, useIntersectedAreaMatrix)
                 );
 
         this.wakeBasedMutationStrategy =

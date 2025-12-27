@@ -1,9 +1,9 @@
 package org.zafer.wflopcore.power;
 
-import org.zafer.wflopcore.wake.DefaultWakeCalculatorProvider;
-import org.zafer.wflopcore.wake.WakeCalculationPolicy;
-import org.zafer.wflopcore.wake.WakeCalculator;
-import org.zafer.wflopcore.wake.WakeCalculatorProvider;
+import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
+import org.zafer.wflopcore.wake.WakeModelPolicy;
+import org.zafer.wflopcore.wake.WakeModel;
+import org.zafer.wflopcore.wake.WakeModelProvider;
 import org.zafer.wflopmodel.problem.WFLOP;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.wind.WindProfile;
@@ -12,39 +12,39 @@ import java.util.List;
 
 public class PowerOutputCalculator {
 
-    private final WakeCalculator wakeCalculator;
+    private final WakeModel wakeModel;
     private final PowerModel powerModel;
     private final WFLOP wflop;
 
     public PowerOutputCalculator(WFLOP wflop) {
         this(
                 wflop,
-                new DefaultWakeCalculatorProvider(),
-                new WakeCalculationPolicy(true, true),
+                new DefaultWakeModelProvider(),
+                new WakeModelPolicy(true, true),
                 new DefaultPowerModelProvider()
         );
     }
 
     public PowerOutputCalculator(
             WFLOP wflop,
-            WakeCalculatorProvider wakeProvider
+            WakeModelProvider wakeModelProvider
     ) {
         this(
                 wflop,
-                wakeProvider,
-                new WakeCalculationPolicy(true, true),
+                wakeModelProvider,
+                new WakeModelPolicy(true, true),
                 new DefaultPowerModelProvider()
         );
     }
 
     public PowerOutputCalculator(
             WFLOP wflop,
-            WakeCalculatorProvider wakeProvider,
-            WakeCalculationPolicy policy
+            WakeModelProvider wakeModelProvider,
+            WakeModelPolicy policy
     ) {
         this(
                 wflop,
-                wakeProvider,
+                wakeModelProvider,
                 policy,
                 new DefaultPowerModelProvider()
         );
@@ -52,12 +52,12 @@ public class PowerOutputCalculator {
 
     public PowerOutputCalculator(
             WFLOP wflop,
-            WakeCalculatorProvider wakeProvider,
-            WakeCalculationPolicy policy,
+            WakeModelProvider wakeModelProvider,
+            WakeModelPolicy policy,
             PowerModelProvider powerModelProvider
     ) {
         this.wflop = wflop;
-        this.wakeCalculator = wakeProvider.create(wflop, policy);
+        this.wakeModel = wakeModelProvider.create(wflop, policy);
         this.powerModel = powerModelProvider.create();
     }
 
@@ -80,7 +80,7 @@ public class PowerOutputCalculator {
         List<WindProfile> windProfiles = wflop.getWindProfiles();
         double power = 0.0;
         for (WindProfile windProfile : windProfiles) {
-            double turbineSpeed = wakeCalculator.calculateEffectiveSpeed(
+            double turbineSpeed = wakeModel.calculateEffectiveSpeed(
                 turbine,
                 turbines,
                 windProfile

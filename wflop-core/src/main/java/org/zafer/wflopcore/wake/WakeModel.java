@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.zafer.wflopmodel.wind.WindProfile;
 
-public interface WakeCalculator {
+public interface WakeModel {
 
     double calculateEffectiveSpeed(int turbine, List<Integer> turbines, WindProfile windProfile);
 }

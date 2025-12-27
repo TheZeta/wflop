@@ -5,7 +5,7 @@ import org.zafer.wflopmodel.wind.WindProfile;
 
 import java.util.List;
 
-public class JensenWakeCalculator implements WakeCalculator {
+public class JensenWakeModel implements WakeModel {
 
     private final WFLOP wflop;
     private final boolean useDistanceMatrix;
@@ -25,7 +25,7 @@ public class JensenWakeCalculator implements WakeCalculator {
     private final int indX = 0;
     private final int indY = 1;
 
-    public JensenWakeCalculator(WFLOP wflop, WakeCalculationPolicy policy) {
+    public JensenWakeModel(WFLOP wflop, WakeModelPolicy policy) {
         this.wflop = wflop;
         this.rotorRadius = wflop.getRotorRadius();
         this.turbineSurfaceArea = Math.PI * rotorRadius * rotorRadius;
