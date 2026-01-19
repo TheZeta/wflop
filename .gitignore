@@ -17,6 +17,8 @@ build/
 # Exception: Include algorithm configuration JSON files
 !wflop-algorithms/src/main/resources/**/*.json
 !wflop-algorithms/src/test/resources/**/*.json
+!**/configs/
+!**/configs/**
 
 # === IntelliJ IDEA ===
 .idea/
