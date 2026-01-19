@@ -1,0 +1,13 @@
+{
+  "algorithm": "NovelGA",
+  "populationSize": 100,
+  "crossoverRate": 0.3,
+  "mutationRate": 0.1,
+  "selectionStrategy": "tournament",
+  "wakeAnalysisPercentage": 0.1,
+  "mutationSelectionPercentage": 0.5,
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}
