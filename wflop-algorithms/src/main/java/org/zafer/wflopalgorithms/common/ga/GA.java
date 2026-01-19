@@ -22,7 +22,7 @@ import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
-import org.zafer.wflopmetaheuristic.ProgressListener;
+import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;

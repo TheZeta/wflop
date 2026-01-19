@@ -1,5 +1,7 @@
 package org.zafer.wflopmetaheuristic;
 
+import org.zafer.wflopmetaheuristic.listener.ProgressListener;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;

@@ -1,5 +1,6 @@
 package org.zafer.wflopmetaheuristic;
 
+import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 import java.util.ArrayList;

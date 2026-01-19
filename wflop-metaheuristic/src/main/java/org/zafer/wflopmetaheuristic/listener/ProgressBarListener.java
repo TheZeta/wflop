@@ -1,5 +1,6 @@
-package org.zafer.wflopmetaheuristic;
+package org.zafer.wflopmetaheuristic.listener;
 
+import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 
 public class ProgressBarListener implements ProgressListener {
