@@ -1,25 +1,23 @@
 package org.zafer.wfloprunner;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.zafer.wflopalgorithms.algorithms.novelga.NovelGA;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import org.zafer.wflopalgorithms.factory.AlgorithmFactory;
 import org.zafer.wflopalgorithms.factory.AlgorithmLoadException;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.ConvergenceGraphListener;
+import org.zafer.wflopmetaheuristic.listener.ProgressBarListener;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmetaheuristic.ProgressBarListener;
 import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmodel.problem.WFLOP;
 
-public class RunNovelGA {
+public class Run {
 
     public static void main(String[] args) {
-        System.out.println("Starting Novel GA...");
-        String jsonPath = "wflop-runner/configs/novelga.json";
+        String jsonPath = args[0];
         Metaheuristic algorithm = null;
         try {
             algorithm = AlgorithmFactory.loadFromJson(jsonPath);
@@ -28,27 +26,32 @@ public class RunNovelGA {
         }
         System.out.println("Loading problem instance...");
         WFLOP problem = ConfigLoader.loadFromResource(
-                "wflop_problem.json",
-                new TypeReference<WFLOP>() {});
+            "wflop_problem.json",
+            new TypeReference<WFLOP>() {});
 
         if (problem == null) {
             System.out.println("Problem instance not loaded");
         } else {
             System.out.println("Cell count: " + problem.getCellCount());
             if (algorithm != null) {
+                String algoName = algorithm.getClass().getSimpleName();
+                System.out.println("Running algorithm: " + algoName);
                 ConvergenceGraphListener graphListener = new ConvergenceGraphListener(
-                    "convergence_novelga",
-                    "NovelGA",
+                    "convergence_" + algoName.toLowerCase(),
+                    algoName,
                     ConvergenceGraphListener.ExportFormat.HTML,
                     ConvergenceGraphListener.XAxisType.BOTH
                 );
                 ProgressBarListener progressBarListener = new ProgressBarListener();
-                Solution solution = algorithm.runWithListeners(problem, new ArrayList<>(Arrays.asList(graphListener, progressBarListener)));
+                Solution solution = algorithm.runWithListeners(
+                    problem,
+                    new ArrayList<>(Arrays.asList(graphListener, progressBarListener))
+                );
                 System.out.println(solution.getFitness());
                 try {
                     graphListener.export();
                     System.out.println("Convergence graphs exported to:");
-                    System.out.println("  - convergence_novelga.html");
+                    System.out.println("  - convergence_" + algoName.toLowerCase() + ".html");
                 } catch (java.io.IOException e) {
                     System.err.println("Failed to export convergence graphs: " + e.getMessage());
                 }
