@@ -1,7 +1,7 @@
 package org.zafer.wflopalgorithms.factory;
 
 import org.junit.jupiter.api.Test;
-import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
+import org.zafer.wflopalgorithms.algorithms.ga.GA;
 import org.zafer.wflopalgorithms.algorithms.pso.PSO;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
@@ -20,19 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class AlgorithmFactoryTest {
 
     @Test
-    void testLoadStandardGAFromJson() throws AlgorithmLoadException {
+    void testLoadGAFromJson() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "configs/test_standardga.json";
+        String jsonPath = "configs/test_ga.json";
 
         // When
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
 
         // Then
         assertNotNull(algorithm);
-        assertInstanceOf(StandardGA.class, algorithm);
+        assertInstanceOf(GA.class, algorithm);
 
-        StandardGA ga = (StandardGA) algorithm;
-        assertEquals("StandardGA", ga.getAlgorithm());
+        GA ga = (GA) algorithm;
+        assertEquals("GA", ga.getAlgorithm());
         assertEquals(100, ga.getPopulationSize());
         assertEquals(0.8, ga.getCrossoverRate(), 0.001);
         assertEquals(0.01, ga.getMutationRate(), 0.001);
@@ -64,7 +64,7 @@ class AlgorithmFactoryTest {
     @Test
     void testMultipleAlgorithmTypes() throws AlgorithmLoadException {
         // Given
-        String gaJsonPath = "configs/test_standardga.json";
+        String gaJsonPath = "configs/test_ga.json";
         String psoJsonPath = "configs/test_pso.json";
 
         // When
@@ -74,7 +74,7 @@ class AlgorithmFactoryTest {
         // Then
         assertNotNull(ga);
         assertNotNull(pso);
-        assertInstanceOf(StandardGA.class, ga);
+        assertInstanceOf(GA.class, ga);
         assertInstanceOf(PSO.class, pso);
     }
 
@@ -108,9 +108,9 @@ class AlgorithmFactoryTest {
     }
 
     @Test
-    void testStandardGAExecutesRun() throws AlgorithmLoadException {
+    void testGAExecutesRun() throws AlgorithmLoadException {
         // Given
-        String jsonPath = "configs/test_standardga.json";
+        String jsonPath = "configs/test_ga.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
         WFLOP problem = ConfigLoader.loadFromResource(
                 "configs/test_problem.json",
@@ -144,9 +144,9 @@ class AlgorithmFactoryTest {
     @Test
     void testRegistryContainsAlgorithms() {
         // Given & When
-        assertTrue(AlgorithmRegistry.isRegistered("StandardGA"));
+        assertTrue(AlgorithmRegistry.isRegistered("GA"));
         assertTrue(AlgorithmRegistry.isRegistered("PSO"));
-        assertTrue(AlgorithmRegistry.isRegistered("NovelGA"));
+        assertTrue(AlgorithmRegistry.isRegistered("WDGA"));
         assertFalse(AlgorithmRegistry.isRegistered("NonExistentAlgorithm"));
     }
 }

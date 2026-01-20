@@ -1,5 +1,5 @@
 {
-  "algorithm": "NovelGA",
+  "algorithm": "WDGA",
   "populationSize": 100,
   "crossoverRate": 0.3,
   "mutationRate": 0.1,

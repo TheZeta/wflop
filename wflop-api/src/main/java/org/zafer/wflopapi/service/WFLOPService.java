@@ -43,7 +43,7 @@ public class WFLOPService {
         );
 
         // Use new stateless API - algorithm is reusable
-        Metaheuristic algorithm = algorithmFactory.createNovelGA();
+        Metaheuristic algorithm = algorithmFactory.createWDGA();
         MetaheuristicRunner runner = new MetaheuristicRunner(algorithm);
 
         final double[] firstBest = new double[] { Double.NaN };

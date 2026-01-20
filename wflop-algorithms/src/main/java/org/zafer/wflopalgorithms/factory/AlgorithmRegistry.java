@@ -1,12 +1,12 @@
 package org.zafer.wflopalgorithms.factory;
 
-import org.zafer.wflopalgorithms.algorithms.novelga.NovelGA;
-import org.zafer.wflopalgorithms.algorithms.pso.PSO;
-import org.zafer.wflopalgorithms.algorithms.standardga.StandardGA;
-import org.zafer.wflopmetaheuristic.Metaheuristic;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.zafer.wflopalgorithms.algorithms.ga.GA;
+import org.zafer.wflopalgorithms.algorithms.wdga.WDGA;
+import org.zafer.wflopalgorithms.algorithms.pso.PSO;
+import org.zafer.wflopmetaheuristic.Metaheuristic;
 
 /**
  * Registry class that maps algorithm names to their corresponding classes.
@@ -17,15 +17,15 @@ public class AlgorithmRegistry {
     private static final Map<String, Class<? extends Metaheuristic>> REGISTRY = new HashMap<>();
 
     static {
-        register("NovelGA", NovelGA.class);
+        register("GA", GA.class);
+        register("WDGA", WDGA.class);
         register("PSO", PSO.class);
-        register("StandardGA", StandardGA.class);
     }
 
     /**
      * Registers an algorithm name with its corresponding class.
      * 
-     * @param algorithmName The algorithm identifier (e.g., "NovelGA", "PSO")
+     * @param algorithmName The algorithm identifier (e.g., "WDGA", "PSO")
      * @param algorithmClass The class that implements Metaheuristic
      */
     public static void register(String algorithmName, Class<? extends Metaheuristic> algorithmClass) {

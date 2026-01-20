@@ -1,4 +1,4 @@
-package org.zafer.wflopalgorithms.algorithms.novelga.strategy;
+package org.zafer.wflopalgorithms.algorithms.wdga.strategy;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,13 +24,14 @@ class WakeBasedMutationTest {
     @BeforeEach
     void setUp() {
         wflop = ConfigLoader.loadFromResource(
-                "configs/test_problem_small.json",
-            new TypeReference<WFLOP>() {});
+            "configs/test_problem_small.json",
+            new TypeReference<WFLOP>() {}
+        );
         powerCalculator = new PowerCalculator(wflop);
         wakeBasedMutationStrategy = new WakeBasedMutationStrategy(
             0.5,
             1.0,
-                powerCalculator);
+            powerCalculator);
 
         if (wflop == null) {
             System.out.println("WFLOP is null!");
@@ -51,7 +52,7 @@ class WakeBasedMutationTest {
         // When
         Individual mutatedIndividual = wakeBasedMutationStrategy.mutate(originalIndividual, wflop);
 
-	// Then
+	    // Then
         assertEquals(new HashSet(Arrays.asList(0, 1)), new HashSet(mutatedIndividual.getGenes()));
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class WFLOPAlgorithmFactory {
 
-    public Metaheuristic createNovelGA() {
-        String jsonPath = "configs/novelga.json";
+    public Metaheuristic createWDGA() {
+        String jsonPath = "configs/algorithms/wdga.json";
         Metaheuristic algorithm = null;
 
         try {

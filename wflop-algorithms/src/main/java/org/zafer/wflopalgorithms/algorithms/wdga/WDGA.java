@@ -1,4 +1,4 @@
-package org.zafer.wflopalgorithms.common.ga;
+package org.zafer.wflopalgorithms.algorithms.wdga;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +11,17 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedCrossoverStrategy;
+import org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedMutationStrategy;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
-import org.zafer.wflopalgorithms.common.ga.strategy.RandomReplacementMutation;
 import org.zafer.wflopalgorithms.common.ga.strategy.SelectionStrategy;
-import org.zafer.wflopalgorithms.common.ga.strategy.SinglePointCrossover;
-import org.zafer.wflopalgorithms.common.ga.strategy.SwapMutation;
 import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.power.PowerCalculator;
+import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
-import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
@@ -31,38 +30,43 @@ import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.problem.WFLOP;
 
-public abstract class GA implements Metaheuristic {
+public class WDGA implements Metaheuristic {
 
     private final String algorithm;
     private final int populationSize;
     private final double crossoverRate;
     private final double mutationRate;
     private final String selectionStrategy;
-    private final String crossoverStrategy;
-    private final String mutationStrategy;
     private final TerminationCondition terminationCondition;
     private final Random random;
 
+    private final double wakeAnalysisPercentage; // Percentage of turbines to analyze
+    private final double mutationSelectionPercentage; // Percentage of analyzed turbines to mutate
+
     @JsonCreator
-    public GA(
-            @JsonProperty("algorithm") String algorithm,
-            @JsonProperty("populationSize") int populationSize,
-            @JsonProperty("crossoverRate") double crossoverRate,
-            @JsonProperty("mutationRate") double mutationRate,
-            @JsonProperty("selectionStrategy") String selectionStrategy,
-            @JsonProperty("crossoverStrategy") String crossoverStrategy,
-            @JsonProperty("mutationStrategy") String mutationStrategy,
-            @JsonProperty("termination") TerminationConditionConfig terminationConfig
+    public WDGA(
+        @JsonProperty("algorithm") String algorithm,
+        @JsonProperty("populationSize") int populationSize,
+        @JsonProperty("crossoverRate") double crossoverRate,
+        @JsonProperty("mutationRate") double mutationRate,
+        @JsonProperty("selectionStrategy") String selectionStrategy,
+        @JsonProperty("wakeAnalysisPercentage") Double wakeAnalysisPercentage,
+        @JsonProperty("mutationSelectionPercentage") Double mutationSelectionPercentage,
+        @JsonProperty("termination") TerminationConditionConfig terminationConfig
     ) {
         this.algorithm = algorithm;
         this.populationSize = populationSize;
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;
         this.selectionStrategy = selectionStrategy != null ? selectionStrategy : "tournament";
-        this.crossoverStrategy = crossoverStrategy != null ? crossoverStrategy : "singlepoint";
-        this.mutationStrategy = mutationStrategy != null ? mutationStrategy : "randomreplacement";
         this.terminationCondition = TerminationConditionFactory.fromConfig(terminationConfig);
         this.random = new Random();
+        this.wakeAnalysisPercentage = wakeAnalysisPercentage != null
+            ? wakeAnalysisPercentage
+            : 0.1;
+        this.mutationSelectionPercentage = mutationSelectionPercentage != null
+            ? mutationSelectionPercentage
+            : 0.5;
     }
 
     public void setSeed(long seed) {
@@ -166,7 +170,7 @@ public abstract class GA implements Metaheuristic {
             Individual individual = new Individual(new ArrayList<>(indices));
             population.add(individual);
         }
-	
+
         return population;
     }
 
@@ -182,44 +186,35 @@ public abstract class GA implements Metaheuristic {
         return calculator.calculateTotalPower(layout);
     }
 
-
-    protected SelectionStrategy createSelectionStrategy() {
+    private SelectionStrategy createSelectionStrategy() {
         long seed = random.nextLong();
         int tournamentSize = 3; // Default tournament size
         return switch (selectionStrategy.toLowerCase()) {
-            case "tournament" -> 
-                new TournamentSelection(tournamentSize, seed);
-            default -> 
-                new TournamentSelection(tournamentSize, seed);
+            case "tournament" ->
+                    new TournamentSelection(tournamentSize, seed);
+            default ->
+                    new TournamentSelection(tournamentSize, seed);
         };
     }
 
-    protected CrossoverStrategy createCrossoverStrategy() {
-        long seed = random.nextLong();
-        return switch (crossoverStrategy.toLowerCase()) {
-            case "singlepoint", "single-point", "single_point" -> 
-                new SinglePointCrossover(seed);
-            default -> 
-                new SinglePointCrossover(seed);
-        };
+    private CrossoverStrategy createCrossoverStrategy() {
+        long seed = getRandom().nextLong();
+        return new WakeBasedCrossoverStrategy(seed);
     }
 
-    protected MutationStrategy createMutationStrategy(
+    private MutationStrategy createMutationStrategy(
         PowerCalculator powerCalculator
     ) {
-
-        long seed = random.nextLong();
-        return switch (mutationStrategy.toLowerCase()) {
-            case "randomreplacement", "random-replacement", "random_replacement" ->
-                new RandomReplacementMutation(seed);
-            case "swap" ->
-                new SwapMutation(seed);
-            default -> 
-                new RandomReplacementMutation(seed);
-        };
+        long seed = getRandom().nextLong();
+        return new WakeBasedMutationStrategy(
+            wakeAnalysisPercentage,
+            mutationSelectionPercentage,
+            seed,
+            powerCalculator
+        );
     }
 
-
+    // Getters for testing and validation
     public String getAlgorithm() {
         return algorithm;
     }
@@ -240,19 +235,19 @@ public abstract class GA implements Metaheuristic {
         return selectionStrategy;
     }
 
-    public String getCrossoverStrategy() {
-        return crossoverStrategy;
-    }
-
-    public String getMutationStrategy() {
-        return mutationStrategy;
-    }
-
     public TerminationCondition getTerminationCondition() {
         return terminationCondition;
     }
 
     public Random getRandom() {
         return random;
+    }
+
+    public double getWakeAnalysisPercentage() {
+        return wakeAnalysisPercentage;
+    }
+
+    public double getMutationSelectionPercentage() {
+        return mutationSelectionPercentage;
     }
 }

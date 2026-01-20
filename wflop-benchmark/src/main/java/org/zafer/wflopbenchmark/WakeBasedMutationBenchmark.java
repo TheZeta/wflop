@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import org.zafer.wflopalgorithms.algorithms.novelga.strategy.WakeBasedMutationStrategy;
+import org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedMutationStrategy;
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopbenchmark.helpers.RandomSolutionGenerator;
 import org.zafer.wflopconfig.ConfigLoader;

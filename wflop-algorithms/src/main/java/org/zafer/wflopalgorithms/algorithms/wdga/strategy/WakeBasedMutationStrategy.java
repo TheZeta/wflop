@@ -1,4 +1,4 @@
-package org.zafer.wflopalgorithms.algorithms.novelga.strategy;
+package org.zafer.wflopalgorithms.algorithms.wdga.strategy;
 
 import java.util.ArrayList;
 import java.util.Collections;

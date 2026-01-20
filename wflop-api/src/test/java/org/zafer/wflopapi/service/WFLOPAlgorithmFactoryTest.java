@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import org.zafer.wflopalgorithms.algorithms.novelga.NovelGA;
+import org.zafer.wflopalgorithms.algorithms.wdga.WDGA;
 import org.zafer.wflopmetaheuristic.termination.GenerationBasedTermination;
 
 public class WFLOPAlgorithmFactoryTest {
@@ -15,11 +15,11 @@ public class WFLOPAlgorithmFactoryTest {
         WFLOPAlgorithmFactory factory = new WFLOPAlgorithmFactory();
 
         // When
-        NovelGA algorithm = (NovelGA) factory.createNovelGA();
+        WDGA algorithm = (WDGA) factory.createWDGA();
 
         // Then
-        assertEquals(NovelGA.class, algorithm.getClass());
-        assertEquals("NovelGA", algorithm.getAlgorithm());
+        assertEquals(WDGA.class, algorithm.getClass());
+        assertEquals("WDGA", algorithm.getAlgorithm());
         assertEquals(100, algorithm.getPopulationSize());
         assertEquals(0.3, algorithm.getCrossoverRate(), 0.001);
         assertEquals(0.1, algorithm.getMutationRate(), 0.001);

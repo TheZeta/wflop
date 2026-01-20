@@ -1,4 +1,4 @@
-package org.zafer.wflopalgorithms.algorithms.novelga.strategy;
+package org.zafer.wflopalgorithms.algorithms.wdga.strategy;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -11,7 +11,7 @@ import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
 import org.zafer.wflopmodel.problem.WFLOP;
 
 /**
- * Zone-based crossover strategy for NovelGA.
+ * Zone-based crossover strategy for WDGA.
  * Divides solutions by zones (e.g., left/right halves) and combines them.
  * If offspring has incorrect number of turbines, applies repair operations.
  */
