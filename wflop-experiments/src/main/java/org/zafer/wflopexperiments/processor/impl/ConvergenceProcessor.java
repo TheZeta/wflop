@@ -1,16 +1,19 @@
 package org.zafer.wflopexperiments.processor.impl;
 
-import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
-import org.zafer.wflopexperiments.model.*;
-import org.zafer.wflopexperiments.processor.ExperimentProcessor;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.zafer.wflopexperiments.model.AlgorithmResult;
+import org.zafer.wflopexperiments.model.ExperimentResult;
+import org.zafer.wflopexperiments.model.ProblemResult;
+import org.zafer.wflopexperiments.model.RunResult;
+import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
+import org.zafer.wflopexperiments.processor.ExperimentProcessor;
 
 public class ConvergenceProcessor implements ExperimentProcessor {
 
@@ -44,35 +47,45 @@ public class ConvergenceProcessor implements ExperimentProcessor {
 
     @Override
     public void process(ExperimentResult result) {
-        for (AlgorithmResult algorithm : result.getAlgorithmResults()) {
-            List<List<ConvergenceListener.DataPoint>> runs =
-                algorithm.getRuns().stream()
-                    .map(this::extract)
-                    .toList();
+        for (ProblemResult problem : result.getProblemResults()) {
+            for (AlgorithmResult algorithm : problem.getAlgorithmResults()) {
 
-            List<Point> data =
-                (aggregation == Aggregation.NONE)
-                    ? singleRun(runs)
-                    : (mode == Mode.ITERATION)
-                        ? aggregateByIteration(runs)
-                        : aggregateByTime(runs);
+                List<List<ConvergenceListener.DataPoint>> runs =
+                    algorithm.getRuns().stream()
+                        .map(this::extract)
+                        .toList();
 
-            exportCsv(algorithm.getAlgorithmId(), data);
+                List<Point> data;
+
+                if (aggregation == Aggregation.NONE) {
+                    data = singleRun(runs);
+                } else if (mode == Mode.ITERATION) {
+                    data = aggregateByIteration(runs);
+                } else {
+                    data = aggregateByTime(runs);
+                }
+
+                exportCsv(problem.getProblemId(), algorithm.getAlgorithmId(), data);
+            }
         }
     }
 
     private List<ConvergenceListener.DataPoint> extract(RunResult run) {
         return run.getListenerData().stream()
-                .filter(d -> d.getPayload() instanceof ConvergenceListener)
-                .map(d -> (ConvergenceListener) d.getPayload())
-                .findFirst()
-                .orElseThrow()
-                .getData();
+            .filter(d -> d.getPayload() instanceof ConvergenceListener)
+            .map(d -> (ConvergenceListener) d.getPayload())
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "ConvergenceListener missing in run " + run.getRunIndex()
+                )
+            )
+            .getData();
     }
 
-    // ✅ NEW: no aggregation, first run only
+    // Aggregation.NONE → first run only
     private List<Point> singleRun(
-            List<List<ConvergenceListener.DataPoint>> runs
+        List<List<ConvergenceListener.DataPoint>> runs
     ) {
         if (runs.isEmpty()) {
             return List.of();
@@ -82,11 +95,7 @@ public class ConvergenceProcessor implements ExperimentProcessor {
         List<Point> out = new ArrayList<>();
 
         for (ConvergenceListener.DataPoint p : run) {
-            double x =
-                (mode == Mode.TIME)
-                    ? p.getElapsedTimeSeconds()
-                    : p.getIteration();
-
+            double x = (mode == Mode.TIME) ? p.getElapsedTimeSeconds() : p.getIteration();
             out.add(new Point(x, p.getBestFitness()));
         }
 
@@ -94,22 +103,20 @@ public class ConvergenceProcessor implements ExperimentProcessor {
     }
 
     private List<Point> aggregateByIteration(
-            List<List<ConvergenceListener.DataPoint>> runs
+        List<List<ConvergenceListener.DataPoint>> runs
     ) {
-        int length =
-                runs.stream()
-                        .mapToInt(List::size)
-                        .min()
-                        .orElse(0);
+        int length = runs.stream()
+            .mapToInt(List::size)
+            .min()
+            .orElse(0);
 
         List<Point> out = new ArrayList<>();
 
         for (int i = 0; i < length; i++) {
-            int finalI = i;
-            List<Double> values =
-                    runs.stream()
-                            .map(r -> r.get(finalI).getBestFitness())
-                            .toList();
+            int idx = i;
+            List<Double> values = runs.stream()
+                .map(r -> r.get(idx).getBestFitness())
+                .toList();
 
             out.add(new Point(i + 1, aggregate(values)));
         }
@@ -118,14 +125,13 @@ public class ConvergenceProcessor implements ExperimentProcessor {
     }
 
     private List<Point> aggregateByTime(
-            List<List<ConvergenceListener.DataPoint>> runs
+        List<List<ConvergenceListener.DataPoint>> runs
     ) {
-        double maxTime =
-                runs.stream()
-                        .flatMap(List::stream)
-                        .mapToDouble(ConvergenceListener.DataPoint::getElapsedTimeSeconds)
-                        .max()
-                        .orElse(0);
+        double maxTime = runs.stream()
+            .flatMap(List::stream)
+            .mapToDouble(ConvergenceListener.DataPoint::getElapsedTimeSeconds)
+            .max()
+            .orElse(0);
 
         List<Point> out = new ArrayList<>();
 
@@ -167,8 +173,12 @@ public class ConvergenceProcessor implements ExperimentProcessor {
         };
     }
 
-    private void exportCsv(String algoId, List<Point> data) {
-        Path path = Paths.get(outputPath + "_" + algoId + ".csv");
+    private void exportCsv(
+        String problemId,
+        String algorithmId,
+        List<Point> data
+    ) {
+        Path path = Paths.get(outputPath + "_" + problemId + "_" + algorithmId + ".csv");
 
         try {
             if (path.getParent() != null) {

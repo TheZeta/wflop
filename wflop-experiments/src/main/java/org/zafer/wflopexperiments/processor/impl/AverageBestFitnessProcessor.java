@@ -1,14 +1,17 @@
 package org.zafer.wflopexperiments.processor.impl;
 
-import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
-import org.zafer.wflopexperiments.model.*;
-import org.zafer.wflopexperiments.processor.ExperimentProcessor;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import org.zafer.wflopexperiments.model.AlgorithmResult;
+import org.zafer.wflopexperiments.model.ExperimentResult;
+import org.zafer.wflopexperiments.model.ProblemResult;
+import org.zafer.wflopexperiments.model.RunResult;
+import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
+import org.zafer.wflopexperiments.processor.ExperimentProcessor;
 
 public class AverageBestFitnessProcessor implements ExperimentProcessor {
 
@@ -21,54 +24,58 @@ public class AverageBestFitnessProcessor implements ExperimentProcessor {
     @Override
     public void process(ExperimentResult result) {
         try {
-            Path path = Path.of(outputPath);
+            String resolvedPath = outputPath.endsWith(".csv") ? outputPath : outputPath + ".csv";
+
+            Path path = Path.of(resolvedPath);
+
             if (path.getParent() != null) {
                 Files.createDirectories(path.getParent());
             }
 
             try (FileWriter writer = new FileWriter(path.toFile())) {
-                writer.write("algorithm,mean_best_fitness\n");
+                writer.write("problem,algorithm,mean_best_fitness\n");
 
-                for (AlgorithmResult algorithm : result.getAlgorithmResults()) {
-                    double mean =
-                            algorithm.getRuns().stream()
-                                    .mapToDouble(this::finalBestFitness)
-                                    .average()
-                                    .orElse(Double.NaN);
+                for (ProblemResult problem : result.getProblemResults()) {
+                    for (AlgorithmResult algorithm : problem.getAlgorithmResults()) {
+                        double mean = algorithm.getRuns().stream()
+                            .mapToDouble(this::finalBestFitness)
+                            .average()
+                            .orElse(Double.NaN);
 
-                    // Persist
-                    writer.write(
-                            algorithm.getAlgorithmId() + "," + mean + "\n"
-                    );
+                        // Persist
+                        writer.write(
+                            problem.getProblemId() + "," +
+                            algorithm.getAlgorithmId() + "," +
+                            mean + "\n"
+                        );
 
-                    // Also print (nice for quick feedback)
-                    System.out.printf(
-                            "[AVG] %s → %.6f%n",
+                        // Console feedback
+                        System.out.printf(
+                            "[AVG] %s | %s → %.6f%n",
+                            problem.getProblemId(),
                             algorithm.getAlgorithmId(),
                             mean
-                    );
+                        );
+                    }
                 }
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private double finalBestFitness(RunResult run) {
-        ConvergenceListener listener =
-            run.getListenerData().stream()
-                .filter(d -> d.getPayload() instanceof ConvergenceListener)
-                .map(d -> (ConvergenceListener) d.getPayload())
-                .findFirst()
-                .orElseThrow(() ->
-                    new IllegalStateException(
-                        "ConvergenceListener missing in run " + run.getRunIndex()
-                    )
-                );
+        ConvergenceListener listener = run.getListenerData().stream()
+            .filter(d -> d.getPayload() instanceof ConvergenceListener)
+            .map(d -> (ConvergenceListener) d.getPayload())
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "ConvergenceListener missing in run " + run.getRunIndex()
+                )
+            );
 
         List<ConvergenceListener.DataPoint> data = listener.getData();
-
-        return data.get(data.size() - 1).getBestFitness();
+        return data.getLast().getBestFitness();
     }
 }

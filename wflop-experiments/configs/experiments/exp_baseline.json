@@ -1,40 +1,28 @@
 {
-  "experimentName": "baseline",
+  "experimentName": "wdga_vs_baselines",
   "runs": 1,
-  "problemPath": "wflop_problem.json",
+  "problems": [
+    { "id": "ws1_10x10_t20", "path": "configs/problems/ws1_10x10_t20.json" },
+    { "id": "ws1_10x10_t40", "path": "configs/problems/ws1_10x10_t40.json" }
+  ],
+  "algorithms": [
+    { "id": "ga",     "path": "configs/algorithms/ga.json" },
+    { "id": "sa",     "path": "configs/algorithms/sa.json" },
+    { "id": "de",     "path": "configs/algorithms/de.json" },
+    { "id": "lshade", "path": "configs/algorithms/lshade.json" },
+    { "id": "fode",   "path": "configs/algorithms/fode.json" },
+    { "id": "wdga",   "path": "configs/algorithms/wdga.json" }
+  ],
   "listeners": [
     "convergence",
     "progressBar"
-  ],
-  "algorithms": [
-    {
-      "id": "de",
-      "path": "configs/algorithms/de.json"
-    },
-    {
-      "id": "lshade",
-      "path": "configs/algorithms/lshade.json"
-    },
-    {
-      "id": "fode",
-      "path": "configs/algorithms/fode.json"
-    },
-    {
-      "id": "novelga",
-      "path": "configs/algorithms/novelga.json"
-    },
-    {
-      "id": "standardga",
-      "path": "configs/algorithms/standardga.json"
-    }
   ],
   "processors": [
     {
       "id": "convergence",
       "params": {
-        "mode": "TIME",
-        "aggregation": "MEAN",
-        "timeStep": 1.0,
+        "mode": "ITERATION",
+        "aggregation": "NONE",
         "outputPath": "wflop-experiments/results/convergence"
       }
     },
