@@ -1,0 +1,13 @@
+{
+  "algorithm": "GA",
+  "populationSize": 100,
+  "crossoverRate": 0.3,
+  "mutationRate": 0.1,
+  "selectionStrategy": "tournament",
+  "crossoverStrategy": "singlepoint",
+  "mutationStrategy": "randomreplacement",
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}

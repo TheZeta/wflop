@@ -1,0 +1,8 @@
+{
+  "algorithm": "LSHADE",
+  "populationSize": 200,
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}

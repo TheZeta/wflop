@@ -3,7 +3,11 @@ package org.zafer.wflopalgorithms.factory;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zafer.wflopalgorithms.algorithms.de.DE;
+import org.zafer.wflopalgorithms.algorithms.fode.FODE;
 import org.zafer.wflopalgorithms.algorithms.ga.GA;
+import org.zafer.wflopalgorithms.algorithms.lshade.LSHADE;
+import org.zafer.wflopalgorithms.algorithms.sa.SA;
 import org.zafer.wflopalgorithms.algorithms.wdga.WDGA;
 import org.zafer.wflopalgorithms.algorithms.pso.PSO;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
@@ -20,6 +24,10 @@ public class AlgorithmRegistry {
         register("GA", GA.class);
         register("WDGA", WDGA.class);
         register("PSO", PSO.class);
+        register("SA", SA.class);
+        register("DE", DE.class);
+        register("LSHADE", LSHADE.class);
+        register("FODE", FODE.class);
     }
 
     /**

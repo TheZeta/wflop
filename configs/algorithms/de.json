@@ -1,0 +1,10 @@
+{
+  "algorithm": "DE",
+  "populationSize": 100,
+  "f": 0.5,
+  "cr": 0.9,
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}

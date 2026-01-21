@@ -1,0 +1,8 @@
+{
+  "algorithm": "FODE",
+  "populationSize": 100,
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}

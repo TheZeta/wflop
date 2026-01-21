@@ -1,0 +1,10 @@
+{
+  "algorithm": "SA",
+  "initialTemperature": 1000.0,
+  "coolingRate": 0.95,
+  "innerIterations": 1000,
+  "termination": {
+    "type": "generation",
+    "maxGenerations": 200
+  }
+}
