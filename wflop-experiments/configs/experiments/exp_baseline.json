@@ -1,0 +1,48 @@
+{
+  "experimentName": "baseline",
+  "runs": 1,
+  "problemPath": "wflop_problem.json",
+  "listeners": [
+    "convergence",
+    "progressBar"
+  ],
+  "algorithms": [
+    {
+      "id": "de",
+      "path": "configs/algorithms/de.json"
+    },
+    {
+      "id": "lshade",
+      "path": "configs/algorithms/lshade.json"
+    },
+    {
+      "id": "fode",
+      "path": "configs/algorithms/fode.json"
+    },
+    {
+      "id": "novelga",
+      "path": "configs/algorithms/novelga.json"
+    },
+    {
+      "id": "standardga",
+      "path": "configs/algorithms/standardga.json"
+    }
+  ],
+  "processors": [
+    {
+      "id": "convergence",
+      "params": {
+        "mode": "TIME",
+        "aggregation": "MEAN",
+        "timeStep": 1.0,
+        "outputPath": "wflop-experiments/results/convergence"
+      }
+    },
+    {
+      "id": "average-best",
+      "params": {
+        "outputPath": "wflop-experiments/results/average-best"
+      }
+    }
+  ]
+}

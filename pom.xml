@@ -30,6 +30,7 @@
         <module>wflop-runner</module>
         <module>wflop-testdata</module>
         <module>wflop-benchmark</module>
+        <module>wflop-experiments</module>
     </modules>
 
     <!-- ========================= -->
