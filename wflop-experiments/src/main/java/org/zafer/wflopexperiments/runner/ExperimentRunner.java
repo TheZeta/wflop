@@ -37,9 +37,10 @@ public class ExperimentRunner {
             for (int run = 1; run <= config.getRuns(); run++) {
 
                 // 1. Load WFLOP instance (per run)
-                WFLOP wflop = ConfigLoader.loadFromResource(
+                WFLOP wflop = ConfigLoader.load(
                     config.getProblemPath(),
-                    new TypeReference<WFLOP>() {});
+                    new TypeReference<WFLOP>() {}
+                );
 
                 // 2. Load algorithm
                 Metaheuristic algorithm;

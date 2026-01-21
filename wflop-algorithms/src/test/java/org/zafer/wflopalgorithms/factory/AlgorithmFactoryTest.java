@@ -112,7 +112,7 @@ class AlgorithmFactoryTest {
         // Given
         String jsonPath = "configs/test_ga.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
-        WFLOP problem = ConfigLoader.loadFromResource(
+        WFLOP problem = ConfigLoader.load(
                 "configs/test_problem.json",
                 new TypeReference<WFLOP>() {});
 
@@ -129,7 +129,7 @@ class AlgorithmFactoryTest {
         // Given
         String jsonPath = "configs/test_pso.json";
         Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
-        WFLOP problem = ConfigLoader.loadFromResource(
+        WFLOP problem = ConfigLoader.load(
                 "configs/test_problem.json",
                 new TypeReference<WFLOP>() {});
 

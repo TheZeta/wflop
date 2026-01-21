@@ -37,7 +37,7 @@ public class WakeBasedMutationBenchmark {
 
     @Setup(Level.Trial)
     public void setup() {
-        this.wflop = ConfigLoader.loadFromResource(
+        this.wflop = ConfigLoader.load(
                 "wflop_problem.json",
                 new TypeReference<WFLOP>() {}
         );

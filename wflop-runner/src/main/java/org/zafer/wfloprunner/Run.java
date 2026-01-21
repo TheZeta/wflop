@@ -17,17 +17,21 @@ import org.zafer.wflopmodel.problem.WFLOP;
 public class Run {
 
     public static void main(String[] args) {
-        String jsonPath = args[0];
+        String algoPath = args[0];
+        String problemPath = args[1];
+
         Metaheuristic algorithm = null;
         try {
-            algorithm = AlgorithmFactory.loadFromJson(jsonPath);
+            algorithm = AlgorithmFactory.loadFromJson(algoPath);
         } catch(AlgorithmLoadException e) {
             System.out.println(e);
         }
+
         System.out.println("Loading problem instance...");
-        WFLOP problem = ConfigLoader.loadFromResource(
-            "wflop_problem.json",
-            new TypeReference<WFLOP>() {});
+        WFLOP problem = ConfigLoader.load(
+            problemPath,
+            new TypeReference<WFLOP>() {}
+        );
 
         if (problem == null) {
             System.out.println("Problem instance not loaded");

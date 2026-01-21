@@ -23,7 +23,7 @@ class WakeBasedMutationTest {
 
     @BeforeEach
     void setUp() {
-        wflop = ConfigLoader.loadFromResource(
+        wflop = ConfigLoader.load(
             "configs/test_problem_small.json",
             new TypeReference<WFLOP>() {}
         );
