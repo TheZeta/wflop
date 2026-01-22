@@ -11,7 +11,8 @@
   "windProfiles": [
     {
       "speed": 5.8,
-      "angle": 180
+      "angle": 180,
+      "probability": 1.0
     }
   ]
 }

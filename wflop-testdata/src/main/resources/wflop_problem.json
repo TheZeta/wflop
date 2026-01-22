@@ -9,25 +9,14 @@
   "dimension": 10,
   "numberOfTurbines": 20,
   "windProfiles": [
-    {
-      "speed": 5.2,
-      "angle": 45
-    },
-    {
-      "speed": 6.7,
-      "angle": 90
-    },
-    {
-      "speed": 4.9,
-      "angle": 135
-    },
-    {
-      "speed": 7.3,
-      "angle": 180
-    },
-    {
-      "speed": 5.8,
-      "angle": 225
-    }
+    { "speed": 8.0,  "angle": 270, "probability": 0.20 },
+    { "speed": 10.0, "angle": 270, "probability": 0.25 },
+    { "speed": 12.0, "angle": 270, "probability": 0.20 },
+
+    { "speed": 9.0,  "angle": 240, "probability": 0.10 },
+    { "speed": 11.0, "angle": 240, "probability": 0.10 },
+
+    { "speed": 7.0,  "angle": 300, "probability": 0.05 },
+    { "speed": 13.0, "angle": 300, "probability": 0.10 }
   ]
 }

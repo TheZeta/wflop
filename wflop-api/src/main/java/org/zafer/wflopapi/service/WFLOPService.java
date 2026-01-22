@@ -38,7 +38,7 @@ public class WFLOPService {
                 dto.dimension,
                 dto.numberOfTurbines,
                 dto.windProfiles.stream()
-                        .map(wp -> new WindProfile(wp.speed, wp.angle))
+                        .map(wp -> new WindProfile(wp.speed, wp.angle, wp.probability))
                         .collect(Collectors.toList())
         );
 
@@ -81,7 +81,7 @@ public class WFLOPService {
                 problemDto.dimension,
                 problemDto.numberOfTurbines,
                 problemDto.windProfiles.stream()
-                        .map(wp -> new WindProfile(wp.speed, wp.angle))
+                        .map(wp -> new WindProfile(wp.speed, wp.angle, wp.probability))
                         .collect(Collectors.toList())
         );
 

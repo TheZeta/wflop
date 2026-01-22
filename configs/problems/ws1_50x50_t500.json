@@ -6,8 +6,8 @@
   "airDensity": 1.225,
   "surfaceRoughness": 0.1,
   "gridWidth": 200.0,
-  "dimension": 10,
-  "numberOfTurbines": 20,
+  "dimension": 50,
+  "numberOfTurbines": 500,
   "windProfiles": [
     { "speed": 12.0, "angle":   0, "probability": 0.125 },
     { "speed": 12.0, "angle":  45, "probability": 0.125 },

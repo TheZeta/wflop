@@ -11,23 +11,28 @@
   "windProfiles": [
     {
       "speed": 5.2,
-      "angle": 45
+      "angle": 45,
+      "probability": 0.2
     },
     {
       "speed": 6.7,
-      "angle": 90
+      "angle": 90,
+      "probability": 0.2
     },
     {
       "speed": 4.9,
-      "angle": 135
+      "angle": 135,
+      "probability": 0.2
     },
     {
       "speed": 7.3,
-      "angle": 180
+      "angle": 180,
+      "probability": 0.2
     },
     {
       "speed": 5.8,
-      "angle": 225
+      "angle": 225,
+      "probability": 0.2
     }
   ]
 }

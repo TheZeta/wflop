@@ -7,17 +7,20 @@ public class WindProfile {
 
     private final double speed;
     private final int angle;
+    private final double probability;
 
     private static int angleCount;
     private int index;
 
     @JsonCreator
     public WindProfile(
-            @JsonProperty("speed") double speed,
-            @JsonProperty("angle") int angle) {
-
+        @JsonProperty("speed") double speed,
+        @JsonProperty("angle") int angle,
+        @JsonProperty("probability") double probability
+    ) {
         this.speed = speed;
         this.angle = angle;
+        this.probability = probability;
     }
 
     public double getSpeed() {
@@ -26,6 +29,10 @@ public class WindProfile {
 
     public int getAngle() {
         return angle;
+    }
+
+    public double getProbability() {
+        return probability;
     }
 
     public int getIndex() {

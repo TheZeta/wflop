@@ -82,7 +82,7 @@ public class PowerCalculator {
                 turbines,
                 windProfile
             );
-            power += powerModel.getPowerOutput(turbineSpeed);
+            power += windProfile.getProbability() * powerModel.getPowerOutput(turbineSpeed);
         }
         return power;
     }
