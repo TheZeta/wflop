@@ -1,6 +1,7 @@
 {
   "experimentName": "wdga_vs_baselines",
   "runs": 1,
+  "warmupRuns": 5,
   "problems": [
     { "id": "ws1_10x10_t20", "path": "configs/problems/ws1_10x10_t20.json" },
     { "id": "ws1_10x10_t40", "path": "configs/problems/ws1_10x10_t40.json" }

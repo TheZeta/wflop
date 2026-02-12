@@ -36,6 +36,27 @@ public class ExperimentRunner {
             for (AlgorithmConfig algoConfig : config.getAlgorithms()) {
                 AlgorithmResult algorithmResult = new AlgorithmResult(algoConfig.getId());
 
+                // 🔥 WARM-UP PHASE
+                for (int w = 1; w <= config.getWarmupRuns(); w++) {
+                    WFLOP wflop = ConfigLoader.load(
+                        problemConfig.getPath(),
+                        new TypeReference<WFLOP>() {
+                        }
+                    );
+
+                    Metaheuristic warmupAlgorithm;
+                    try {
+                        warmupAlgorithm = AlgorithmFactory.loadFromJson(
+                            algoConfig.getPath()
+                        );
+                    } catch (AlgorithmLoadException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    // No listeners, no result collection
+                    warmupAlgorithm.run(wflop);
+                }
+
                 // 3. Loop over runs
                 for (int run = 1; run <= config.getRuns(); run++) {
                     // 3.1 Load WFLOP instance (per run)

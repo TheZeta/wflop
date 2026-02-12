@@ -6,6 +6,7 @@ public class ExperimentConfig {
 
     private String experimentName;
     private int runs;
+    private int warmupRuns;
 
     private List<ProblemConfig> problems;
     private List<AlgorithmConfig> algorithms;
@@ -22,6 +23,10 @@ public class ExperimentConfig {
 
     public int getRuns() {
         return runs;
+    }
+
+    public int getWarmupRuns() {
+        return warmupRuns;
     }
 
     public List<ProblemConfig> getProblems() {
