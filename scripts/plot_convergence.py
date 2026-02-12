@@ -5,6 +5,7 @@ from collections import defaultdict
 
 FOLDER_PATH = "wflop-experiments/results"
 
+
 def load_data():
     grouped = defaultdict(list)
 
@@ -13,13 +14,14 @@ def load_data():
             continue
 
         name = os.path.splitext(filename)[0]
-        parts = name.split("_")
+        name = name.replace("convergence_", "")
 
-        if len(parts) < 3:
+        parts = name.split("_")
+        if len(parts) < 2:
             continue
 
-        problem_id = parts[-2]
         algorithm_id = parts[-1]
+        problem_id = "_".join(parts[:-1])
 
         df = pd.read_csv(os.path.join(FOLDER_PATH, filename))
         grouped[problem_id].append((algorithm_id, df))
