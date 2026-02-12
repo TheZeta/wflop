@@ -16,6 +16,7 @@ import org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedMutationStrat
 import org.zafer.wflopalgorithms.common.ga.solution.Individual;
 import org.zafer.wflopalgorithms.common.ga.strategy.CrossoverStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.MutationStrategy;
+import org.zafer.wflopalgorithms.common.ga.strategy.RandomReplacementMutation;
 import org.zafer.wflopalgorithms.common.ga.strategy.SelectionStrategy;
 import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.power.PowerCalculator;
@@ -36,6 +37,7 @@ public class WDGA implements Metaheuristic {
     private final int populationSize;
     private final double crossoverRate;
     private final double mutationRate;
+    private final double smartMutationRate;
     private final String selectionStrategy;
     private final TerminationCondition terminationCondition;
     private final Random random;
@@ -49,6 +51,7 @@ public class WDGA implements Metaheuristic {
         @JsonProperty("populationSize") int populationSize,
         @JsonProperty("crossoverRate") double crossoverRate,
         @JsonProperty("mutationRate") double mutationRate,
+        @JsonProperty("smartMutationRate") double  smartMutationRate,
         @JsonProperty("selectionStrategy") String selectionStrategy,
         @JsonProperty("wakeAnalysisPercentage") Double wakeAnalysisPercentage,
         @JsonProperty("mutationSelectionPercentage") Double mutationSelectionPercentage,
@@ -57,6 +60,7 @@ public class WDGA implements Metaheuristic {
         this.algorithm = algorithm;
         this.populationSize = populationSize;
         this.crossoverRate = crossoverRate;
+        this.smartMutationRate = smartMutationRate;
         this.mutationRate = mutationRate;
         this.selectionStrategy = selectionStrategy != null ? selectionStrategy : "tournament";
         this.terminationCondition = TerminationConditionFactory.fromConfig(terminationConfig);
@@ -97,6 +101,7 @@ public class WDGA implements Metaheuristic {
         SelectionStrategy selectionStrategyImpl = createSelectionStrategy();
         CrossoverStrategy crossoverStrategyImpl = createCrossoverStrategy();
         MutationStrategy mutationStrategyImpl = createMutationStrategy(calculator);
+        MutationStrategy randomReplacement = new RandomReplacementMutation();
 
         terminationCondition.onStart();
 
@@ -123,7 +128,11 @@ public class WDGA implements Metaheuristic {
                 }
 
                 if (random.nextDouble() < mutationRate) {
-                    child = mutationStrategyImpl.mutate(child, problem);
+                    if (random.nextDouble() < smartMutationRate) {
+                        child = mutationStrategyImpl.mutate(child, problem);
+                    } else {
+                        child = randomReplacement.mutate(child, problem);
+                    }
                 }
 
                 double fitness = computeFitness(child, calculator);

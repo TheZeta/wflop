@@ -3,6 +3,7 @@
   "populationSize": 100,
   "crossoverRate": 0.3,
   "mutationRate": 0.1,
+  "smartMutationRate": 0.6,
   "selectionStrategy": "tournament",
   "wakeAnalysisPercentage": 0.1,
   "mutationSelectionPercentage": 0.5,
