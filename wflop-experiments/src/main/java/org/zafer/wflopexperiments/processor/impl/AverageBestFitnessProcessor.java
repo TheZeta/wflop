@@ -10,8 +10,8 @@ import org.zafer.wflopexperiments.model.AlgorithmResult;
 import org.zafer.wflopexperiments.model.ExperimentResult;
 import org.zafer.wflopexperiments.model.ProblemResult;
 import org.zafer.wflopexperiments.model.RunResult;
-import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
 import org.zafer.wflopexperiments.processor.ExperimentProcessor;
+import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
 
 public class AverageBestFitnessProcessor implements ExperimentProcessor {
 
@@ -33,28 +33,41 @@ public class AverageBestFitnessProcessor implements ExperimentProcessor {
             }
 
             try (FileWriter writer = new FileWriter(path.toFile())) {
-                writer.write("problem,algorithm,mean_best_fitness\n");
+                writer.write(
+                    "problem,algorithm,mean_best_fitness,mean_best_found_at,conversion_efficiency\n"
+                );
 
                 for (ProblemResult problem : result.getProblemResults()) {
                     for (AlgorithmResult algorithm : problem.getAlgorithmResults()) {
-                        double mean = algorithm.getRuns().stream()
+                        double bestFitnessMean = algorithm.getRuns().stream()
                             .mapToDouble(this::finalBestFitness)
                             .average()
                             .orElse(Double.NaN);
+
+                        double bestFitnessAchievedAtMean = algorithm.getRuns().stream()
+                            .mapToDouble(this::finalBestFitnessAchievedAt)
+                            .average()
+                            .orElse(Double.NaN);
+
+                        double conversionEfficiency = bestFitnessMean / totalPowerWithoutWake(
+                            algorithm.getRuns().getLast()
+                        );
 
                         // Persist
                         writer.write(
                             problem.getProblemId() + "," +
                             algorithm.getAlgorithmId() + "," +
-                            mean + "\n"
+                            bestFitnessMean + "," +
+                            bestFitnessAchievedAtMean + "," +
+                            conversionEfficiency + "\n"
                         );
 
                         // Console feedback
                         System.out.printf(
-                            "[AVG] %s | %s → %.6f%n",
+                            "[AVG] %s | %s => %.6f%n",
                             problem.getProblemId(),
                             algorithm.getAlgorithmId(),
-                            mean
+                            bestFitnessMean
                         );
                     }
                 }
@@ -77,5 +90,35 @@ public class AverageBestFitnessProcessor implements ExperimentProcessor {
 
         List<ConvergenceListener.DataPoint> data = listener.getData();
         return data.getLast().getBestFitness();
+    }
+
+    private double finalBestFitnessAchievedAt(RunResult run) {
+        ConvergenceListener listener = run.getListenerData().stream()
+            .filter(d -> d.getPayload() instanceof ConvergenceListener)
+            .map(d -> (ConvergenceListener) d.getPayload())
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "ConvergenceListener missing in run " + run.getRunIndex()
+                )
+            );
+
+        List<ConvergenceListener.DataPoint> data = listener.getData();
+        return data.getLast().getBestFitnessAchievedAt();
+    }
+
+    private double totalPowerWithoutWake(RunResult run) {
+        ConvergenceListener listener = run.getListenerData().stream()
+            .filter(d -> d.getPayload() instanceof ConvergenceListener)
+            .map(d -> (ConvergenceListener) d.getPayload())
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "ConvergenceListener missing in run " + run.getRunIndex()
+                )
+            );
+
+        List<ConvergenceListener.DataPoint> data = listener.getData();
+        return data.getLast().getTotalPowerWithoutWake();
     }
 }

@@ -18,6 +18,7 @@ import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionFactory;
+import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 import org.zafer.wflopmodel.layout.TurbineLayout;
 import org.zafer.wflopmodel.problem.WFLOP;
 
@@ -74,8 +75,11 @@ public class SA implements Metaheuristic {
         AnnealingState best = current;
 
         double temperature = initialTemperature;
-        int gen = 0;
 
+        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
+            problem.getNumberOfTurbines()
+        );
+        int gen = 0;
         while (!terminationCondition.shouldTerminate()) {
             for (int i = 0; i < innerIterations; i++) {
                 AnnealingState neighbor = generateNeighbor(current, problem, calculator);
@@ -94,12 +98,14 @@ public class SA implements Metaheuristic {
             terminationCondition.onGeneration(++gen);
 
             if (!listeners.isEmpty()) {
+                TerminationProgress tp = terminationCondition.getProgress();
                 ProgressEvent event =
                     new ProgressEvent(
                         gen,
                         best.getFitness(),
                         current.getFitness(),
-                        terminationCondition.getProgress()
+                        totalPowerWithoutWake,
+                        tp
                     );
 
                 for (ProgressListener l : listeners) {

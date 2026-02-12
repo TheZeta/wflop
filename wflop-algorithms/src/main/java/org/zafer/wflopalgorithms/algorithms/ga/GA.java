@@ -101,6 +101,9 @@ public class GA implements Metaheuristic {
 
         Individual best = Collections.max(population, Comparator.comparingDouble(Individual::getFitness));
 
+        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
+            problem.getNumberOfTurbines()
+        );
         int gen = 0;
         while (!terminationCondition.shouldTerminate()) {
             List<Individual> newPopulation = new ArrayList<>();
@@ -141,6 +144,7 @@ public class GA implements Metaheuristic {
                         gen,
                         best.getFitness(),
                         avg,
+                        totalPowerWithoutWake,
                         tp
                 );
 

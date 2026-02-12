@@ -90,8 +90,11 @@ public class FODE implements Metaheuristic {
         evaluatePopulation(population, problem, calculator);
 
         FODEIndividual best = getBest(population);
-        int gen = 0;
 
+        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
+            problem.getNumberOfTurbines()
+        );
+        int gen = 0;
         while (!terminationCondition.shouldTerminate()) {
             int targetSize = computePopulationSize();
             List<FODEIndividual> nextPop = new ArrayList<>();
@@ -136,7 +139,13 @@ public class FODE implements Metaheuristic {
 
                 TerminationProgress tp = terminationCondition.getProgress();
 
-                ProgressEvent event = new ProgressEvent(gen, best.getFitness(), avg, tp);
+                ProgressEvent event = new ProgressEvent(
+                    gen,
+                    best.getFitness(),
+                    avg,
+                    totalPowerWithoutWake,
+                    tp
+                );
 
                 for (ProgressListener listener : listeners) {
                     listener.onIteration(event);

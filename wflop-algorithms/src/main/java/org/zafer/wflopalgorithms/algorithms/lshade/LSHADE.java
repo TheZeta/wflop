@@ -81,10 +81,13 @@ public class LSHADE implements Metaheuristic {
         terminationCondition.onStart();
 
         List<LSHADEIndividual> population = initializePopulation(problem);
-    evaluatePopulation(population, problem, calculator);
+        evaluatePopulation(population, problem, calculator);
 
         LSHADEIndividual best = getBest(population);
 
+        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
+            problem.getNumberOfTurbines()
+        );
         int gen = 0;
         while (!terminationCondition.shouldTerminate()) {
 
@@ -132,7 +135,13 @@ public class LSHADE implements Metaheuristic {
 
                 TerminationProgress tp = terminationCondition.getProgress();
 
-                ProgressEvent event = new ProgressEvent(gen, best.getFitness(), avg, tp);
+                ProgressEvent event = new ProgressEvent(
+                    gen,
+                    best.getFitness(),
+                    avg,
+                    totalPowerWithoutWake,
+                    tp
+                );
 
                 for (ProgressListener listener : listeners) {
                     listener.onIteration(event);

@@ -86,4 +86,16 @@ public class PowerCalculator {
         }
         return power;
     }
+
+    public double calculateTotalPowerWithoutWake(int turbineCount) {
+        List<WindProfile> windProfiles = wflop.getWindProfiles();
+        double power = 0.0;
+        for (WindProfile windProfile : windProfiles) {
+            double unreducedSpeed = windProfile.getSpeed();
+            power += turbineCount
+                * windProfile.getProbability()
+                * powerModel.getPowerOutput(unreducedSpeed);
+        }
+        return power;
+    }
 }
