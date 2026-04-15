@@ -14,11 +14,17 @@ build/
 *.xlsx
 *.xls
 
-# Exception: Include algorithm configuration JSON files
+# === Exceptions & Refinements ===
+# Include algorithm configuration JSON files
 !wflop-algorithms/src/main/resources/**/*.json
 !wflop-algorithms/src/test/resources/**/*.json
+
+# Include all config directories
 !**/configs/
 !**/configs/**
+
+# Refinement: Re-ignore specific sub-folders within configs
+configs/tuning/
 
 # === IntelliJ IDEA ===
 .idea/

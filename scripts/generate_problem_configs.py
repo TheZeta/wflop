@@ -79,8 +79,8 @@ def generate_instances():
 
                 filepath = os.path.join(OUTPUT_DIR, filename)
 
-                with open(filepath, "w") as f:
-                    json.dump(instance, f, indent=2)
+#                 with open(filepath, "w") as f:
+#                     json.dump(instance, f, indent=2)
 
                 print('{ "id": "'
                     f"wf_dim{dimension}_"

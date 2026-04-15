@@ -43,9 +43,13 @@ def draw_table(ax, table_df, metric_cfg):
 
     n_rows, n_cols = table_df.shape
 
+    from textwrap import fill
+
+    wrapped_labels = [fill(str(label), width=12) for label in table_df.index]
+
     mpl_table = ax.table(
         cellText=table_df.values,
-        rowLabels=table_df.index,
+        rowLabels=wrapped_labels,
         colLabels=table_df.columns,
         loc="center"
     )
@@ -54,12 +58,29 @@ def draw_table(ax, table_df, metric_cfg):
     mpl_table.set_fontsize(10)
     mpl_table.scale(1, 1.5)
 
+    for (row, col), cell in mpl_table.get_celld().items():
+        if row == 0:
+            cell.set_height(0.30)   # column header height
+        else:
+            cell.set_height(0.08)   # all other cells
+
     # Rotate column headers
     for col_idx in range(n_cols):
         header_cell = mpl_table[0, col_idx]
         header_cell.get_text().set_rotation(90)
         header_cell.get_text().set_ha("center")
         header_cell.get_text().set_va("bottom")
+
+    for col_idx in range(n_cols):
+        header_cell = mpl_table[0, col_idx]
+        txt = header_cell.get_text()
+
+        txt.set_rotation(90)
+        txt.set_ha("center")
+        txt.set_va("center")
+
+        # move text downward inside the cell
+        txt.set_position((0.5, 0.35))
 
     # Row-wise coloring
     for row_idx in range(n_rows):
