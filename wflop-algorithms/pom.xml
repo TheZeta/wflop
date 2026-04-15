@@ -56,4 +56,50 @@
         </dependency>
     </dependencies>
 
+    <!-- ========================= -->
+    <!-- Build configuration -->
+    <!-- ========================= -->
+    <build>
+        <plugins>
+            <!-- Mutation testing with PIT (Pitest) -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <configuration>
+                    <!-- Target classes for mutation testing -->
+                    <targetClasses>
+                        <param>org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedCrossoverStrategy</param>
+                    </targetClasses>
+                    <!-- Target tests for mutation testing -->
+                    <targetTests>
+                        <param>org.zafer.wflopalgorithms.algorithms.wdga.strategy.WakeBasedCrossoverTest</param>
+                    </targetTests>
+                    <!-- Mutation operators to use (DEFAULTS is comprehensive) -->
+                    <mutationEngine>gregor</mutationEngine>
+                    <!-- Number of threads for parallel mutation analysis -->
+                    <threads>4</threads>
+                    <!-- Report format and output -->
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                    </outputFormats>
+                    <!-- Coverage threshold (0% = no enforcement, set higher for CI) -->
+                    <coverageThreshold>0</coverageThreshold>
+                    <!-- Timeout per test in milliseconds -->
+                    <timeoutFactor>1.25</timeoutFactor>
+                    <!-- Skip coverage check failures for initial runs -->
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                </configuration>
+                <!-- PIT plugin dependencies for JUnit 5 support -->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
