@@ -19,6 +19,9 @@ build/
 !wflop-algorithms/src/main/resources/**/*.json
 !wflop-algorithms/src/test/resources/**/*.json
 
+# Include problem configuration JSON files in benchmark submodule
+!wflop-benchmark/src/main/resources/**/*.json
+
 # Include all config directories
 !**/configs/
 !**/configs/**

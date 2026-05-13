@@ -22,11 +22,6 @@
 
         <dependency>
             <groupId>org.zafer</groupId>
-            <artifactId>wflop-testdata</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.zafer</groupId>
             <artifactId>wflop-model</artifactId>
         </dependency>
 
