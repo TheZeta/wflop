@@ -244,6 +244,10 @@ public class WDGA implements Metaheuristic {
         return mutationRate;
     }
 
+    public double getSmartMutationRate() {
+        return smartMutationRate;
+    }
+
     public String getSelectionStrategy() {
         return selectionStrategy;
     }

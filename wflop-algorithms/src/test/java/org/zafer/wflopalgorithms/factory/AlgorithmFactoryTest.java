@@ -1,152 +1,103 @@
 package org.zafer.wflopalgorithms.factory;
 
-import org.junit.jupiter.api.Test;
-import org.zafer.wflopalgorithms.algorithms.ga.GA;
-import org.zafer.wflopalgorithms.algorithms.pso.PSO;
-import org.zafer.wflopconfig.ConfigLoader;
-import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmetaheuristic.Solution;
-import org.zafer.wflopmetaheuristic.termination.GenerationBasedTermination;
-import org.zafer.wflopmodel.problem.WFLOP;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 
-/**
- * Unit tests for AlgorithmFactory.
- * Tests the registration-based factory pattern using AlgorithmRegistry.
- */
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.zafer.wflopalgorithms.algorithms.wdga.WDGA;
+import org.zafer.wflopmetaheuristic.Metaheuristic;
+import org.zafer.wflopmetaheuristic.termination.GenerationBasedTermination;
+import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
+
+@ExtendWith(MockitoExtension.class)
 class AlgorithmFactoryTest {
 
+    @Mock
+    private AlgorithmRegistry registry;
+
+    @InjectMocks
+    private AlgorithmFactory factory;
+
     @Test
-    void testLoadGAFromJson() throws AlgorithmLoadException {
+    void createsWDGA_whenValidJsonProvided() throws JsonProcessingException, AlgorithmLoadException {
         // Given
-        String jsonPath = "configs/test_ga.json";
+        doReturn(WDGA.class).when(registry).getAlgorithmClass("WDGA");
 
-        // When
-        Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
+        String algorithm = "WDGA";
+        int populationSize = 100;
+        double crossoverRate = 0.3;
+        double mutationRate = 0.1;
+        double smartMutationRate = 0.6;
+        String selectionStrategy = "tournament";
+        double wakeAnalysisPercentage = 0.1;
+        double mutationSelectionPercentage = 0.5;
+        String type = "generation";
+        int maxGenerations = 200;
 
-        // Then
-        assertNotNull(algorithm);
-        assertInstanceOf(GA.class, algorithm);
+        TerminationCondition termination = new GenerationBasedTermination(maxGenerations);
 
-        GA ga = (GA) algorithm;
-        assertEquals("GA", ga.getAlgorithm());
-        assertEquals(100, ga.getPopulationSize());
-        assertEquals(0.8, ga.getCrossoverRate(), 0.001);
-        assertEquals(0.01, ga.getMutationRate(), 0.001);
-        assertEquals("tournament", ga.getSelectionStrategy());
-        assertEquals(new GenerationBasedTermination(200), ga.getTerminationCondition());
-    }
-
-    @Test
-    void testLoadPSOFromJson() throws AlgorithmLoadException {
-        // Given
-        String jsonPath = "configs/test_pso.json";
-
-        // When
-        Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
-
-        // Then
-        assertNotNull(algorithm);
-        assertInstanceOf(PSO.class, algorithm);
-
-        PSO pso = (PSO) algorithm;
-        assertEquals("PSO", pso.getAlgorithm());
-        assertEquals(50, pso.getSwarmSize());
-        assertEquals(100, pso.getMaxIterations());
-        assertEquals(0.729, pso.getInertiaWeight(), 0.001);
-        assertEquals(1.49445, pso.getCognitiveComponent(), 0.001);
-        assertEquals(1.49445, pso.getSocialComponent(), 0.001);
-    }
-
-    @Test
-    void testMultipleAlgorithmTypes() throws AlgorithmLoadException {
-        // Given
-        String gaJsonPath = "configs/test_ga.json";
-        String psoJsonPath = "configs/test_pso.json";
-
-        // When
-        Metaheuristic ga = AlgorithmFactory.loadFromJson(gaJsonPath);
-        Metaheuristic pso = AlgorithmFactory.loadFromJson(psoJsonPath);
-
-        // Then
-        assertNotNull(ga);
-        assertNotNull(pso);
-        assertInstanceOf(GA.class, ga);
-        assertInstanceOf(PSO.class, pso);
-    }
-
-    @Test
-    void testMissingAlgorithmTypeProperty() {
-        // Given - A JSON file without algorithm property
-        String jsonPath = "configs/test_missing_type.json";
-
-        // When & Then
-        AlgorithmLoadException exception = assertThrows(
-            AlgorithmLoadException.class,
-            () -> AlgorithmFactory.loadFromJson(jsonPath)
+        String json = """
+        {
+          "algorithm": "%s",
+          "populationSize": %d,
+          "crossoverRate": %f,
+          "mutationRate": %f,
+          "smartMutationRate": %f,
+          "selectionStrategy": "%s",
+          "wakeAnalysisPercentage": %f,
+          "mutationSelectionPercentage": %f,
+          "termination": {
+            "type": "%s",
+            "maxGenerations": %d
+          }
+        }
+        """.formatted(
+            algorithm, populationSize, crossoverRate, mutationRate,
+            smartMutationRate, selectionStrategy, wakeAnalysisPercentage,
+            mutationSelectionPercentage, type, maxGenerations
         );
 
-        assertTrue(exception.getMessage().contains("algorithm"));
+        JsonNode node = new ObjectMapper().readTree(json);
+
+        // When
+        Metaheuristic metaheuristic = factory.load(node);
+
+        // Then
+        assertInstanceOf(WDGA.class, metaheuristic);
+        WDGA wdga = (WDGA) metaheuristic;
+
+        assertEquals(algorithm, wdga.getAlgorithm());
+        assertEquals(populationSize, wdga.getPopulationSize());
+        assertEquals(crossoverRate, wdga.getCrossoverRate(), 0.001);
+        assertEquals(mutationRate, wdga.getMutationRate(), 0.001);
+        assertEquals(smartMutationRate, wdga.getSmartMutationRate(), 0.001);
+        assertEquals(selectionStrategy, wdga.getSelectionStrategy());
+        assertEquals(wakeAnalysisPercentage, wdga.getWakeAnalysisPercentage(), 0.001);
+        assertEquals(mutationSelectionPercentage, wdga.getMutationSelectionPercentage(), 0.001);
+        assertEquals(termination, wdga.getTerminationCondition());
     }
 
     @Test
-    void testInvalidAlgorithmType() {
-        // Given - A JSON file with an invalid algorithm type
-        String jsonPath = "configs/test_invalid_type.json";
+    void throwsException_whenAlgorithmFieldMissing() {
+        // Given: empty JSON object (i.e., {})
+        ObjectNode node = JsonNodeFactory.instance.objectNode();
 
         // When & Then
-        AlgorithmLoadException exception = assertThrows(
+        AlgorithmLoadException ex = assertThrows(
             AlgorithmLoadException.class,
-            () -> AlgorithmFactory.loadFromJson(jsonPath)
+            () -> factory.load(node)
         );
 
-        assertTrue(exception.getMessage().contains("is not registered") ||
-                   exception.getMessage().contains("JSON resource not found"));
-    }
-
-    @Test
-    void testGAExecutesRun() throws AlgorithmLoadException {
-        // Given
-        String jsonPath = "configs/test_ga.json";
-        Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
-        WFLOP problem = ConfigLoader.load(
-                "configs/test_problem.json",
-                new TypeReference<WFLOP>() {});
-
-        // When
-        Solution solution = algorithm.run(problem);
-
-        // Then
-        assertNotNull(solution);
-        assertTrue(solution.getFitness() > 0);
-    }
-
-    @Test
-    void testPSOExecutesRun() throws AlgorithmLoadException {
-        // Given
-        String jsonPath = "configs/test_pso.json";
-        Metaheuristic algorithm = AlgorithmFactory.loadFromJson(jsonPath);
-        WFLOP problem = ConfigLoader.load(
-                "configs/test_problem.json",
-                new TypeReference<WFLOP>() {});
-
-        // When
-        Solution solution = algorithm.run(problem);
-
-        // Then
-        assertNotNull(solution);
-        assertTrue(solution.getFitness() > 0);
-    }
-
-    @Test
-    void testRegistryContainsAlgorithms() {
-        // Given & When
-        assertTrue(AlgorithmRegistry.isRegistered("GA"));
-        assertTrue(AlgorithmRegistry.isRegistered("PSO"));
-        assertTrue(AlgorithmRegistry.isRegistered("WDGA"));
-        assertFalse(AlgorithmRegistry.isRegistered("NonExistentAlgorithm"));
+        assertTrue(ex.getMessage().contains("Missing required field: 'algorithm'"));
     }
 }

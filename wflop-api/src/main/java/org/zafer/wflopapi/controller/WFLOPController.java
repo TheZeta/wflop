@@ -1,5 +1,6 @@
 package org.zafer.wflopapi.controller;
 
+import org.zafer.wflopapi.dto.AlgorithmDTO;
 import org.zafer.wflopapi.dto.EvaluationRequestDTO;
 import org.zafer.wflopapi.dto.ProblemDTO;
 import org.zafer.wflopapi.dto.SolutionDTO;
@@ -20,8 +21,11 @@ public class WFLOPController {
     }
 
     @PostMapping("/solve")
-    public ResponseEntity<SolutionDTO> solve(@RequestBody ProblemDTO problem) {
-        return ResponseEntity.ok(wflopService.solve(problem));
+    public ResponseEntity<SolutionDTO> solve(
+        @RequestBody ProblemDTO problemDTO,
+        @RequestBody AlgorithmDTO algorithmDTO
+    ) {
+        return ResponseEntity.ok(wflopService.solve(problemDTO, algorithmDTO));
     }
 
     @PostMapping("/evaluate")

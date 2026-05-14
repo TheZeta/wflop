@@ -5,6 +5,9 @@ import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.zafer.wflopalgorithms.factory.AlgorithmFactory;
+import org.zafer.wflopalgorithms.factory.AlgorithmRegistry;
+import org.zafer.wflopalgorithms.factory.DefaultAlgorithmRegistry;
 import org.zafer.wflopexperiments.config.ExperimentConfig;
 import org.zafer.wflopexperiments.runner.ExperimentRunner;
 
@@ -15,10 +18,12 @@ public final class ExperimentMain {
 
         ExperimentConfig config =
             new ObjectMapper().readValue(
-                   configPath.toFile(),
-                   ExperimentConfig.class
+                configPath.toFile(),
+                ExperimentConfig.class
             );
+        AlgorithmRegistry registry = new DefaultAlgorithmRegistry();
+        AlgorithmFactory factory = new AlgorithmFactory(registry);
 
-        new ExperimentRunner(config).run();
+        new ExperimentRunner(config, factory).run();
     }
 }

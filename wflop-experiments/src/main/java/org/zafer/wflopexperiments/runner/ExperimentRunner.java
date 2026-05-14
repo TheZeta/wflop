@@ -20,9 +20,11 @@ import org.zafer.wflopmodel.problem.WFLOP;
 public class ExperimentRunner {
 
     private final ExperimentConfig config;
+    private final AlgorithmFactory algorithmFactory;
 
-    public ExperimentRunner(ExperimentConfig config) {
+    public ExperimentRunner(ExperimentConfig config, AlgorithmFactory algorithmFactory) {
         this.config = config;
+        this.algorithmFactory = algorithmFactory;
     }
 
     public void run() {
@@ -33,22 +35,17 @@ public class ExperimentRunner {
             ProblemResult problemResult = new ProblemResult(problemConfig.getId());
 
             // 2. Loop over algorithms
-            for (AlgorithmConfig algoConfig : config.getAlgorithms()) {
-                AlgorithmResult algorithmResult = new AlgorithmResult(algoConfig.getId());
+            for (AlgorithmConfig algorithmConfig : config.getAlgorithms()) {
+                AlgorithmResult algorithmResult = new AlgorithmResult(algorithmConfig.getId());
 
                 // 🔥 WARM-UP PHASE
                 for (int w = 1; w <= config.getWarmupRuns(); w++) {
-                    WFLOP wflop = ConfigLoader.load(
-                        problemConfig.getPath(),
-                        new TypeReference<WFLOP>() {
-                        }
-                    );
+                    WFLOP wflop =
+                        ConfigLoader.load(problemConfig.getPath(), new TypeReference<WFLOP>() {});
 
                     Metaheuristic warmupAlgorithm;
                     try {
-                        warmupAlgorithm = AlgorithmFactory.loadFromJson(
-                            algoConfig.getPath()
-                        );
+                        warmupAlgorithm = algorithmFactory.load(algorithmConfig.getPath());
                     } catch (AlgorithmLoadException e) {
                         throw new RuntimeException(e);
                     }
@@ -60,17 +57,13 @@ public class ExperimentRunner {
                 // 3. Loop over runs
                 for (int run = 1; run <= config.getRuns(); run++) {
                     // 3.1 Load WFLOP instance (per run)
-                    WFLOP wflop = ConfigLoader.load(
-                        problemConfig.getPath(),
-                        new TypeReference<WFLOP>() {}
-                    );
+                    WFLOP wflop =
+                        ConfigLoader.load(problemConfig.getPath(), new TypeReference<WFLOP>() {});
 
                     // 3.2 Load algorithm
                     Metaheuristic algorithm;
                     try {
-                        algorithm = AlgorithmFactory.loadFromJson(
-                                algoConfig.getPath()
-                        );
+                        algorithm = algorithmFactory.load(algorithmConfig.getPath());
                     } catch (AlgorithmLoadException e) {
                         throw new RuntimeException(e);
                     }

@@ -5,71 +5,61 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.zafer.wflopmetaheuristic.Metaheuristic;
 
-/**
- * Factory class for loading algorithm instances from JSON files using a registry.
- * The registry maps algorithm names to their corresponding classes.
- */
 public class AlgorithmFactory {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String ALGORITHM_TYPE_KEY = "algorithm";
 
-    /**
-     * Loads an algorithm instance from a JSON file using the algorithm registry.
-     * The JSON file must contain an "algorithm" property that maps to a registered algorithm name.
-     * 
-     * @param jsonPath The path to the JSON resource file
-     * @return An instance of Metaheuristic loaded from the JSON
-     * @throws AlgorithmLoadException If the algorithm cannot be loaded
-     */
-    public static Metaheuristic loadFromJson(String jsonPath) throws AlgorithmLoadException {
-        try (InputStream inputStream = openJson(jsonPath)) {
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final AlgorithmRegistry registry;
 
-            // Parse JSON
-            JsonNode rootNode = objectMapper.readTree(inputStream);
+    public AlgorithmFactory(AlgorithmRegistry registry) {
+        this.registry = registry;
+    }
 
-            if (!rootNode.has(ALGORITHM_TYPE_KEY)) {
-                throw new AlgorithmLoadException(
-                        "JSON file must contain '" + ALGORITHM_TYPE_KEY + "' property"
-                );
-            }
+    public Metaheuristic load(String path) throws AlgorithmLoadException {
+        return load(Path.of(path));
+    }
 
-            String algorithm = rootNode.get(ALGORITHM_TYPE_KEY).asText();
-            Class<? extends Metaheuristic> algorithmClass =
-                    AlgorithmRegistry.getAlgorithmClass(algorithm);
-
-            // Re-open for deserialization
-            try (InputStream deserStream = openJson(jsonPath)) {
-                return objectMapper.readValue(deserStream, algorithmClass);
-            }
-
+    public Metaheuristic load(Path path) throws AlgorithmLoadException {
+        try (InputStream is = Files.newInputStream(path)) {
+            return load(is);
         } catch (IOException e) {
-            throw new AlgorithmLoadException("Failed to load algorithm from JSON: " + jsonPath, e);
+            throw new AlgorithmLoadException("Failed to load JSON from file: " + path, e);
         }
     }
 
-    private static InputStream openJson(String path) throws IOException {
-        // 1. Check filesystem first
-        Path filePath = Path.of(path);
-        if (Files.exists(filePath)) {
-            return Files.newInputStream(filePath);
+    public Metaheuristic load(InputStream inputStream) throws AlgorithmLoadException {
+        try {
+            JsonNode jsonNode = mapper.readTree(inputStream);
+            return load(jsonNode);
+        } catch (IOException e) {
+            throw new AlgorithmLoadException("Failed to deserialize algorithm JSON", e);
+        }
+    }
+
+    public Metaheuristic load(JsonNode node) throws AlgorithmLoadException, JsonProcessingException {
+        JsonNode algorithmNode = node.get(ALGORITHM_TYPE_KEY);
+
+        if (algorithmNode == null || algorithmNode.isNull()) {
+            throw new AlgorithmLoadException(
+                "Missing required field: '" + ALGORITHM_TYPE_KEY + "'"
+            );
         }
 
-        // 2. Fallback to classpath
-        InputStream classpathStream = AlgorithmFactory.class
-                .getClassLoader()
-                .getResourceAsStream(path);
-
-        if (classpathStream != null) {
-            return classpathStream;
+        String algorithm = algorithmNode.asText();
+        Class<? extends Metaheuristic> algorithmClass = registry.getAlgorithmClass(algorithm);
+        if (algorithmClass == null) {
+            throw new AlgorithmLoadException(
+                "Unknown algorithm type: " + algorithm
+            );
         }
 
-        throw new IOException("JSON config not found in filesystem or classpath: " + path);
+        return mapper.treeToValue(node, algorithmClass);
     }
 }

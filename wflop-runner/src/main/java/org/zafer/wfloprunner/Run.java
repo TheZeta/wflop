@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.zafer.wflopalgorithms.factory.AlgorithmFactory;
 import org.zafer.wflopalgorithms.factory.AlgorithmLoadException;
+import org.zafer.wflopalgorithms.factory.AlgorithmRegistry;
+import org.zafer.wflopalgorithms.factory.DefaultAlgorithmRegistry;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopmetaheuristic.ConvergenceGraphListener;
 import org.zafer.wflopmetaheuristic.listener.ProgressBarListener;
@@ -20,18 +22,18 @@ public class Run {
         String algoPath = args[0];
         String problemPath = args[1];
 
+        AlgorithmRegistry registry = new DefaultAlgorithmRegistry();
+        AlgorithmFactory factory = new AlgorithmFactory(registry);
+
         Metaheuristic algorithm = null;
         try {
-            algorithm = AlgorithmFactory.loadFromJson(algoPath);
+            algorithm = factory.load(algoPath);
         } catch(AlgorithmLoadException e) {
             System.out.println(e);
         }
 
         System.out.println("Loading problem instance...");
-        WFLOP problem = ConfigLoader.load(
-            problemPath,
-            new TypeReference<WFLOP>() {}
-        );
+        WFLOP problem = ConfigLoader.load(problemPath, new TypeReference<WFLOP>() {});
 
         if (problem == null) {
             System.out.println("Problem instance not loaded");

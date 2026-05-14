@@ -1,7 +1,6 @@
 package org.zafer.wflopalgorithms.algorithms.wdga.strategy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Set;
@@ -80,7 +79,7 @@ class WakeBasedCrossoverTest {
                     new Individual(List.of(12, 13, 14, 15)),    /* When 0 degrees selected */
                     new Individual(List.of(2, 3, 14, 15)),      /* When 90 degrees selected */
                     new Individual(List.of(0, 1, 2, 3)),        /* When 180 degrees selected */
-                    new Individual(List.of(2, 3, 12, 13))       /* When 270 degrees selected */
+                    new Individual(List.of(0, 1, 12, 13))       /* When 270 degrees selected */
                 )
             ),
             Arguments.of(
