@@ -45,6 +45,7 @@
         <jackson.version>2.18.1</jackson.version>
         <junit.version>5.10.2</junit.version>
         <mockito.version>5.18.0</mockito.version>
+        <slf4j.version>2.0.17</slf4j.version>
 
         <!-- Plugin versions -->
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
@@ -162,6 +163,21 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
