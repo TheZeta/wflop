@@ -12,10 +12,8 @@ import org.zafer.wflopalgorithms.factory.AlgorithmLoadException;
 import org.zafer.wflopconfig.ConfigLoader;
 import org.zafer.wflopexperiments.config.*;
 import org.zafer.wflopexperiments.model.*;
-import org.zafer.wflopexperiments.processor.ExperimentProcessor;
 import org.zafer.wflopexperiments.processor.IncrementalAlgorithmProcessor;
 import org.zafer.wflopexperiments.processor.registry.IncrementalProcessorRegistry;
-import org.zafer.wflopexperiments.processor.registry.ProcessorRegistry;
 import org.zafer.wflopexperiments.progress.ExperimentProgress;
 import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.listener.registry.ListenerRegistry;
@@ -79,8 +77,7 @@ public class ExperimentRunner {
                 // 3. Loop over runs
                 for (int run = 1; run <= config.getRuns(); run++) {
                     // 3.1 Load WFLOP instance (per run)
-                    WFLOP wflop =
-                        ConfigLoader.load(problemConfig.getPath(), new TypeReference<WFLOP>() {});
+                    WFLOP wflop = ConfigLoader.load(problemConfig.getPath(), new TypeReference<WFLOP>() {});
 
                     // 3.2 Load algorithm
                     Metaheuristic algorithm;
@@ -123,11 +120,11 @@ public class ExperimentRunner {
 
                 progress.nextAlgorithm();
                 logger.info("Completed algorithm {}/{} for {}: {} progress={}%",
-                        progress.getAlgorithmIndex(),
-                        config.getAlgorithms().size(),
-                        problemResult.getProblemId(),
-                        progress.getLabel(),
-                        String.format("%.1f", progress.getProgress() * 100)
+                    progress.getAlgorithmIndex(),
+                    config.getAlgorithms().size(),
+                    problemResult.getProblemId(),
+                    progress.getLabel(),
+                    String.format("%.1f", progress.getProgress() * 100)
                 );
             }
 
@@ -136,18 +133,13 @@ public class ExperimentRunner {
 
             progress.nextProblem();
             logger.info("Completed problem {}/{}: progress={}%",
-                    progress.getProblemIndex(),
-                    config.getProblems().size(),
-                    String.format("%.1f", progress.getProgress() * 100)
+                progress.getProblemIndex(),
+                config.getProblems().size(),
+                String.format("%.1f", progress.getProgress() * 100)
             );
         }
 
         logger.info("Experiment data collection complete. Processing final results.");
-
-        // 6. Post-process experiment results (final/legacy processors)
-        processFinally(experimentResult);
-
-        logger.info("Experiment finished successfully.");
     }
 
     /**
@@ -187,37 +179,6 @@ public class ExperimentRunner {
                         e
                 );
                 // Continue processing (fail-safe: don't let one processor failure halt the experiment)
-            }
-        }
-    }
-
-    /**
-     * Invokes final processors after the entire experiment completes.
-     * These processors operate on the complete ExperimentResult tree.
-     */
-    private void processFinally(ExperimentResult experimentResult) {
-        for (ProcessorConfig processorConfig : config.getProcessors()) {
-            if (processorConfig.isIncremental()) {
-                continue; // Skip incremental processors
-            }
-
-            try {
-                ExperimentProcessor processor = ProcessorRegistry.create(
-                        processorConfig.getId(),
-                        processorConfig.getParams()
-                );
-
-                processor.process(experimentResult);
-
-                logger.debug("Final processor '{}' completed", processorConfig.getId());
-            } catch (Exception e) {
-                logger.error(
-                        "Final processor '{}' failed: {}",
-                        processorConfig.getId(),
-                        e.getMessage(),
-                        e
-                );
-                // Continue processing other final processors
             }
         }
     }

@@ -1,12 +1,5 @@
 package org.zafer.wflopexperiments.processor.impl;
 
-import org.zafer.wflopexperiments.model.AlgorithmResult;
-import org.zafer.wflopexperiments.model.ProblemResult;
-import org.zafer.wflopexperiments.model.RunResult;
-import org.zafer.wflopexperiments.processor.IncrementalAlgorithmProcessor;
-import org.zafer.wflopexperiments.progress.ExperimentProgress;
-import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,21 +8,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Incremental version of ConvergenceProcessor.
- * 
- * <p>Processes convergence data for a single algorithm after it completes all runs
- * for a problem. Supports the same aggregation modes as ConvergenceProcessor but
- * writes/overwrites the output file after each algorithm completes.
- *
- * <p>Configuration parameters:
- * <ul>
- *   <li>{@code mode}: "ITERATION" or "TIME" (default: "ITERATION")</li>
- *   <li>{@code aggregation}: "MEAN", "MEDIAN", or "NONE" (default: "MEAN")</li>
- *   <li>{@code timeStep}: time step for TIME mode (default: 1.0)</li>
- *   <li>{@code outputPath}: base output path (without extension)</li>
- * </ul>
- */
+import org.zafer.wflopexperiments.model.AlgorithmResult;
+import org.zafer.wflopexperiments.model.ProblemResult;
+import org.zafer.wflopexperiments.model.RunResult;
+import org.zafer.wflopexperiments.processor.IncrementalAlgorithmProcessor;
+import org.zafer.wflopexperiments.progress.ExperimentProgress;
+import org.zafer.wflopmetaheuristic.listener.ConvergenceListener;
+
 public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProcessor {
 
     public enum Mode {
@@ -49,10 +34,10 @@ public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProc
     private final String outputPath;
 
     public IncrementalConvergenceProcessor(
-            Mode mode,
-            Aggregation aggregation,
-            double timeStep,
-            String outputPath
+        Mode mode,
+        Aggregation aggregation,
+        double timeStep,
+        String outputPath
     ) {
         this.mode = mode;
         this.aggregation = aggregation;
@@ -62,14 +47,13 @@ public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProc
 
     @Override
     public void processAlgorithmResult(
-            ProblemResult problemResult,
-            AlgorithmResult algorithmResult,
-            ExperimentProgress progress
+        ProblemResult problemResult,
+        AlgorithmResult algorithmResult,
+        ExperimentProgress progress
     ) throws Exception {
-        List<List<ConvergenceListener.DataPoint>> runs =
-                algorithmResult.getRuns().stream()
-                        .map(this::extract)
-                        .toList();
+        List<List<ConvergenceListener.DataPoint>> runs =algorithmResult.getRuns().stream()
+            .map(this::extract)
+            .toList();
 
         List<Point> data;
 
@@ -86,51 +70,47 @@ public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProc
 
     private List<ConvergenceListener.DataPoint> extract(RunResult run) {
         return run.getListenerData().stream()
-                .filter(d -> d.getPayload() instanceof ConvergenceListener)
-                .map(d -> (ConvergenceListener) d.getPayload())
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "ConvergenceListener missing in run " + run.getRunIndex()
-                        )
+            .filter(d -> d.getPayload() instanceof ConvergenceListener)
+            .map(d -> (ConvergenceListener) d.getPayload())
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "ConvergenceListener missing in run " + run.getRunIndex()
                 )
-                .getData();
+            )
+            .getData();
     }
 
     // Aggregation.NONE → first run only
-    private List<Point> singleRun(
-            List<List<ConvergenceListener.DataPoint>> runs
-    ) {
+    private List<Point> singleRun(List<List<ConvergenceListener.DataPoint>> runs) {
         if (runs.isEmpty()) {
             return List.of();
         }
 
-        List<ConvergenceListener.DataPoint> run = runs.get(0);
+        List<ConvergenceListener.DataPoint> run = runs.getFirst();
         List<Point> out = new ArrayList<>();
 
         for (ConvergenceListener.DataPoint p : run) {
-            double x = (mode == Mode.TIME) ? p.getElapsedTimeSeconds() : p.getIteration();
-            out.add(new Point(x, p.getBestFitness()));
+            double x = (mode == Mode.TIME) ? p.elapsedTimeSeconds() : p.iteration();
+            out.add(new Point(x, p.bestFitness()));
         }
 
         return out;
     }
 
-    private List<Point> aggregateByIteration(
-            List<List<ConvergenceListener.DataPoint>> runs
-    ) {
+    private List<Point> aggregateByIteration(List<List<ConvergenceListener.DataPoint>> runs) {
         int length = runs.stream()
-                .mapToInt(List::size)
-                .min()
-                .orElse(0);
+            .mapToInt(List::size)
+            .min()
+            .orElse(0);
 
         List<Point> out = new ArrayList<>();
 
         for (int i = 0; i < length; i++) {
             int idx = i;
             List<Double> values = runs.stream()
-                    .map(r -> r.get(idx).getBestFitness())
-                    .toList();
+                .map(r -> r.get(idx).bestFitness())
+                .toList();
 
             out.add(new Point(i + 1, aggregate(values)));
         }
@@ -138,14 +118,12 @@ public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProc
         return out;
     }
 
-    private List<Point> aggregateByTime(
-            List<List<ConvergenceListener.DataPoint>> runs
-    ) {
+    private List<Point> aggregateByTime(List<List<ConvergenceListener.DataPoint>> runs) {
         double maxTime = runs.stream()
-                .flatMap(List::stream)
-                .mapToDouble(ConvergenceListener.DataPoint::getElapsedTimeSeconds)
-                .max()
-                .orElse(0);
+            .flatMap(List::stream)
+            .mapToDouble(ConvergenceListener.DataPoint::elapsedTimeSeconds)
+            .max()
+            .orElse(0);
 
         List<Point> out = new ArrayList<>();
 
@@ -160,38 +138,31 @@ public class IncrementalConvergenceProcessor implements IncrementalAlgorithmProc
         return out;
     }
 
-    private double bestSoFar(
-            List<ConvergenceListener.DataPoint> run,
-            double time
-    ) {
+    private double bestSoFar(List<ConvergenceListener.DataPoint> run, double time) {
         return run.stream()
-                .filter(p -> p.getElapsedTimeSeconds() <= time)
-                .mapToDouble(ConvergenceListener.DataPoint::getBestFitness)
-                .max()
-                .orElse(Double.NEGATIVE_INFINITY);
+            .filter(p -> p.elapsedTimeSeconds() <= time)
+            .mapToDouble(ConvergenceListener.DataPoint::bestFitness)
+            .max()
+            .orElse(Double.NEGATIVE_INFINITY);
     }
 
     private double aggregate(List<Double> values) {
         return switch (aggregation) {
             case MEAN ->
-                    values.stream().mapToDouble(d -> d).average().orElse(0);
+                values.stream().mapToDouble(d -> d).average().orElse(0);
             case MEDIAN -> {
                 List<Double> sorted = values.stream().sorted().toList();
                 int n = sorted.size();
                 yield (n % 2 == 0)
-                        ? (sorted.get(n / 2 - 1) + sorted.get(n / 2)) / 2
-                        : sorted.get(n / 2);
+                    ? (sorted.get(n / 2 - 1) + sorted.get(n / 2)) / 2
+                    : sorted.get(n / 2);
             }
             case NONE ->
-                    throw new IllegalStateException("Aggregation.NONE should not reach here");
+                throw new IllegalStateException("Aggregation.NONE should not reach here");
         };
     }
 
-    private void exportCsv(
-            String problemId,
-            String algorithmId,
-            List<Point> data
-    ) throws IOException {
+    private void exportCsv(String problemId, String algorithmId, List<Point> data) throws IOException {
         Path path = Paths.get(outputPath + "_" + problemId + "_" + algorithmId + ".csv");
 
         if (path.getParent() != null) {
