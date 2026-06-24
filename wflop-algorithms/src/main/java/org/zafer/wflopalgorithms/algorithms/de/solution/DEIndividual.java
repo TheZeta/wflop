@@ -1,5 +1,8 @@
 package org.zafer.wflopalgorithms.algorithms.de.solution;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.zafer.wflopmetaheuristic.Solution;
 
 public class DEIndividual implements Solution {
@@ -24,6 +27,8 @@ public class DEIndividual implements Solution {
     }
 
     public void setFitness(double fitness) {
-        this.fitness = fitness;
+        this.fitness = BigDecimal.valueOf(fitness)
+            .setScale(4, RoundingMode.HALF_UP)
+            .doubleValue();
     }
 }

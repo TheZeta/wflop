@@ -1,9 +1,11 @@
 package org.zafer.wflopalgorithms.common.ga.solution;
 
-import org.zafer.wflopmetaheuristic.Solution;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.zafer.wflopmetaheuristic.Solution;
 
 /**
  * Represents an individual in the genetic algorithm population.
@@ -34,7 +36,9 @@ public class Individual implements Solution {
     }
 
     public void setFitness(double fitness) {
-        this.fitness = fitness;
+        this.fitness = BigDecimal.valueOf(fitness)
+            .setScale(4, RoundingMode.HALF_UP)
+            .doubleValue();
     }
 
     /**

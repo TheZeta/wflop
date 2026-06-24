@@ -1,5 +1,8 @@
 package org.zafer.wflopalgorithms.algorithms.lshade.solution;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.zafer.wflopmetaheuristic.Solution;
 
 public class LSHADEIndividual implements Solution {
@@ -17,7 +20,11 @@ public class LSHADEIndividual implements Solution {
     public void setVector(double[] vector) { this.vector = vector; }
 
     public double getFitness() { return fitness; }
-    public void setFitness(double fitness) { this.fitness = fitness; }
+    public void setFitness(double fitness) {
+        this.fitness = BigDecimal.valueOf(fitness)
+            .setScale(4, RoundingMode.HALF_UP)
+            .doubleValue();
+    }
 
     public double getF() { return F; }
     public void setF(double f) { F = f; }
