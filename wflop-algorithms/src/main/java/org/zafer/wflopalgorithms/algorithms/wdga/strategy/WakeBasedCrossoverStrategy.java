@@ -16,6 +16,7 @@ import org.zafer.wflopmodel.wind.WindProfile;
  */
 public class WakeBasedCrossoverStrategy implements CrossoverStrategy {
 
+    private int resultantWind = -1;
     private final Random random;
 
     public WakeBasedCrossoverStrategy() {
@@ -32,7 +33,9 @@ public class WakeBasedCrossoverStrategy implements CrossoverStrategy {
         List<Integer> parent2Genes = parent2.getGenes();
 
         // Calculate resultant wind angle from all wind profiles
-        int windAngle = calculateResultantWind(problem);
+        if (this.resultantWind == -1) {
+            this.resultantWind = calculateResultantWind(problem);
+        }
 
         Set<Integer> childGenes = new HashSet<>();
 
@@ -40,7 +43,7 @@ public class WakeBasedCrossoverStrategy implements CrossoverStrategy {
         double center = (problem.getDimension() - 1) / 2.0;
 
         // Convert custom angle to math radians
-        double radians = Math.toRadians(windAngle - 90);
+        double radians = Math.toRadians(this.resultantWind - 90);
         double dx = Math.cos(radians);
         double dy = Math.sin(radians);
 
