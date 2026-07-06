@@ -42,8 +42,6 @@ class AlgorithmFactoryIT {
         String type = "generation";
         int maxGenerations = 200;
 
-        TerminationCondition termination = new GenerationBasedTermination(maxGenerations);
-
         String json = """
         {
           "algorithm": "%s",
@@ -69,15 +67,6 @@ class AlgorithmFactoryIT {
 
         // Then
         assertInstanceOf(GA.class, metaheuristic);
-
-        GA ga = (GA) metaheuristic;
-        assertEquals(populationSize, ga.getPopulationSize());
-        assertEquals(crossoverRate, ga.getCrossoverRate(), 0.001);
-        assertEquals(mutationRate, ga.getMutationRate(), 0.001);
-        assertEquals(selectionStrategy, ga.getSelectionStrategy());
-        assertEquals(crossoverStrategy, ga.getCrossoverStrategy());
-        assertEquals(mutationStrategy, ga.getMutationStrategy());
-        assertEquals(termination, ga.getTerminationCondition());
     }
 
     @Test

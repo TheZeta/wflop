@@ -1,9 +1,9 @@
 package org.zafer.wflopmetaheuristic.termination;
 
-public class GenerationBasedTermination implements TerminationCondition {
+public class  GenerationBasedTermination implements TerminationCondition {
 
     private final int maxGenerations;
-    private int currentGeneration;
+    private int currentGeneration = 0;
 
     public GenerationBasedTermination(int maxGenerations) {
         this.maxGenerations = maxGenerations;
@@ -15,8 +15,8 @@ public class GenerationBasedTermination implements TerminationCondition {
     }
 
     @Override
-    public void onGeneration(int generation) {
-        this.currentGeneration = generation;
+    public void onGeneration() {
+        this.currentGeneration++;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class GenerationBasedTermination implements TerminationCondition {
     }
 
     @Override
-    public TerminationProgress getProgress() {
+    public TerminationProgress getTerminationProgress() {
         return new TerminationProgress(
                 (double) currentGeneration / maxGenerations,
                 "Generations",

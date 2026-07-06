@@ -17,6 +17,7 @@ public class ConvergenceListener implements ProgressListener {
     ) {}
 
     private final List<DataPoint> data = new ArrayList<>();
+    private int iteration = 0;
     private long startTimeMs = -1;
     private double bestFitness = Double.NEGATIVE_INFINITY;
     private double bestFitnessAchievedAtIteration;
@@ -30,15 +31,17 @@ public class ConvergenceListener implements ProgressListener {
 
         double elapsed = (System.currentTimeMillis() - startTimeMs) / 1000.0;
 
+        iteration++;
+
         if (event.getBestFitness() > bestFitness) {
             bestFitness = event.getBestFitness();
-            bestFitnessAchievedAtIteration = event.getIteration();
+            bestFitnessAchievedAtIteration = iteration;
             bestFitnessAchievedAtTime = elapsed;
         }
 
         data.add(
             new DataPoint(
-                event.getIteration(),
+                iteration,
                 elapsed,
                 event.getBestFitness(),
                 bestFitnessAchievedAtIteration,

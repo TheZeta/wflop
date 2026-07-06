@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.zafer.wflopalgorithms.algorithms.fode.solution.FODEIndividual;
+import org.zafer.wflopalgorithms.common.AbstractMetaheuristic;
 import org.zafer.wflopcore.power.PowerCalculator;
+import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
+import org.zafer.wflopcore.wake.WakeOptimization;
 import org.zafer.wflopmetaheuristic.ProgressEvent;
 import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
@@ -22,16 +25,15 @@ import org.zafer.wflopmodel.problem.WFLOP;
  * Fractional-Order Differential Evolution (FODE)
  * Based on LSHADE with fractional-order difference mutation.
  */
-public class FODE implements Metaheuristic {
+public class FODE extends AbstractMetaheuristic {
 
-    private final String algorithm;
     private final int maxPopulationSize;
     private final int minPopulationSize = 4;
 
     /* === LSHADE memory === */
     private final int H = 5;
-    private double[] MF;
-    private double[] MCR;
+    private final double[] MF;
+    private final double[] MCR;
     private int memoryIndex = 0;
 
     /* === FODE parameters === */
@@ -42,8 +44,8 @@ public class FODE implements Metaheuristic {
     private final Deque<double[]> pbestDiffHistory = new ArrayDeque<>();
     private final Deque<double[]> randDiffHistory  = new ArrayDeque<>();
 
-    private final TerminationCondition terminationCondition;
-    private final Random random;
+    private List<FODEIndividual> population;
+    private FODEIndividual bestIndividual;
 
     @JsonCreator
     public FODE(
@@ -51,147 +53,104 @@ public class FODE implements Metaheuristic {
         @JsonProperty("populationSize") int populationSize,
         @JsonProperty("termination") TerminationConditionConfig terminationConfig
     ) {
-        this.algorithm = algorithm;
+        super(TerminationConditionFactory.fromConfig(terminationConfig));
+
         this.maxPopulationSize = populationSize;
-        this.terminationCondition = TerminationConditionFactory.fromConfig(terminationConfig);
-        this.random = new Random();
 
-        MF = new double[H];
-        MCR = new double[H];
-        Arrays.fill(MF, 0.5);
-        Arrays.fill(MCR, 0.5);
-    }
-
-    public void setSeed(long seed) {
-        random.setSeed(seed);
+        this.MF = new double[H];
+        this.MCR = new double[H];
+        Arrays.fill(this.MF, 0.5);
+        Arrays.fill(this.MCR, 0.5);
     }
 
     @Override
-    public Solution run(WFLOP problem) {
-        return runInternal(problem, new PowerCalculator(problem), Collections.emptyList());
-    }
-
-    @Override
-    public Solution runWithListeners(
-        WFLOP problem,
-        List<ProgressListener> listeners
-    ) {
-        return runInternal(problem, new PowerCalculator(problem), listeners);
-    }
-
-    private Solution runInternal(
-        WFLOP problem,
-        PowerCalculator calculator,
-        List<ProgressListener> listeners
-    ) {
-        terminationCondition.onStart();
-
-        List<FODEIndividual> population = initializePopulation(problem);
-        evaluatePopulation(population, problem, calculator);
-
-        FODEIndividual best = getBest(population);
-
-        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
-            problem.getNumberOfTurbines()
+    protected PowerCalculator createPowerCalculator() {
+        return new PowerCalculator(
+            getProblem(),
+            new DefaultWakeModelProvider(),
+            WakeOptimization.NONE
         );
-        int gen = 0;
-        while (!terminationCondition.shouldTerminate()) {
-            int targetSize = computePopulationSize();
-            List<FODEIndividual> nextPop = new ArrayList<>();
+    }
 
-            List<Double> successfulF = new ArrayList<>();
-            List<Double> successfulCR = new ArrayList<>();
-            List<Double> fitnessGains = new ArrayList<>();
+    @Override
+    protected void init() {
+        initializePopulation();
+        evaluatePopulation();
 
-            for (FODEIndividual xi : population) {
+        this.bestIndividual = getBest();
+    }
 
-                sampleParameters(xi);
-                double[] trial = generateFractionalTrial(population, xi);
+    @Override
+    protected void step() {
+        int targetSize = computePopulationSize();
+        List<FODEIndividual> nextPop = new ArrayList<>();
 
-                enforceBounds(trial, problem.getCellCount());
-                double trialFitness = evaluate(trial, problem, calculator);
+        List<Double> successfulF = new ArrayList<>();
+        List<Double> successfulCR = new ArrayList<>();
+        List<Double> fitnessGains = new ArrayList<>();
 
-                if (trialFitness > xi.getFitness()) {
-                    FODEIndividual child = new FODEIndividual(trial);
-                    child.setFitness(trialFitness);
-                    nextPop.add(child);
+        for (FODEIndividual xi : this.population) {
+            sampleParameters(xi);
+            double[] trial = generateFractionalTrial(xi);
 
-                    successfulF.add(xi.getF());
-                    successfulCR.add(xi.getCR());
-                    fitnessGains.add(trialFitness - xi.getFitness());
-                } else {
-                    nextPop.add(xi);
-                }
-            }
+            enforceBounds(trial);
+            double trialFitness = evaluate(trial);
 
-            updateMemories(successfulF, successfulCR, fitnessGains);
+            if (trialFitness > xi.getFitness()) {
+                FODEIndividual child = new FODEIndividual(trial);
+                child.setFitness(trialFitness);
+                nextPop.add(child);
 
-            population = reducePopulation(nextPop, targetSize);
-            best = getBest(population);
-
-            terminationCondition.onGeneration(++gen);
-            if (!listeners.isEmpty()) {
-                double avg = population
-                    .stream()
-                    .mapToDouble(FODEIndividual::getFitness)
-                    .average()
-                    .orElse(0);
-
-                TerminationProgress tp = terminationCondition.getProgress();
-
-                ProgressEvent event = new ProgressEvent(
-                    gen,
-                    best.getFitness(),
-                    avg,
-                    totalPowerWithoutWake,
-                    tp
-                );
-
-                for (ProgressListener listener : listeners) {
-                    listener.onIteration(event);
-                }
+                successfulF.add(xi.getF());
+                successfulCR.add(xi.getCR());
+                fitnessGains.add(trialFitness - xi.getFitness());
+            } else {
+                nextPop.add(xi);
             }
         }
 
-        return best;
+        updateMemories(successfulF, successfulCR, fitnessGains);
+
+        this.population = reducePopulation(nextPop, targetSize);
+        this.bestIndividual = getBest();
     }
 
-    private List<FODEIndividual> initializePopulation(WFLOP problem) {
-        List<FODEIndividual> population = new ArrayList<>();
+    @Override
+    protected Solution getBestSolution() {
+        return this.bestIndividual;
+    }
 
-        int turbines = problem.getNumberOfTurbines();
-        int cellCount = problem.getCellCount();
+    private void initializePopulation() {
+        this.population = new ArrayList<>();
 
-        for (int i = 0; i < maxPopulationSize; i++) {
+        int turbines = getProblem().getNumberOfTurbines();
+        int cellCount = getProblem().getCellCount();
+
+        for (int i = 0; i < this.maxPopulationSize; i++) {
             double[] vector = new double[turbines];
             for (int d = 0; d < turbines; d++) {
-                vector[d] = random.nextDouble() * cellCount;
+                vector[d] = getRandom().nextDouble() * cellCount;
             }
             population.add(new FODEIndividual(vector));
         }
-
-        return population;
     }
 
     /* ============================================================
        Fractional-Order Mutation
        ============================================================ */
 
-    private double[] generateFractionalTrial(
-        List<FODEIndividual> pop,
-        FODEIndividual xi
-    ) {
-        int p = Math.max(2, (int) (0.11 * pop.size()));
+    private double[] generateFractionalTrial(FODEIndividual xi) {
+        int p = Math.max(2, (int) (0.11 * this.population.size()));
 
-        List<FODEIndividual> sorted = pop.stream()
+        List<FODEIndividual> sorted = this.population.stream()
             .sorted(Comparator.comparingDouble(FODEIndividual::getFitness).reversed())
             .toList();
 
-        FODEIndividual pbest = sorted.get(random.nextInt(p));
+        FODEIndividual pbest = sorted.get(getRandom().nextInt(p));
 
         FODEIndividual r1, r2;
-        do { r1 = pop.get(random.nextInt(pop.size())); } while (r1 == xi);
-        do { r2 = pop.get(random.nextInt(pop.size())); } while (r2 == xi || r2 == r1);
+        do { r1 = this.population.get(getRandom().nextInt(this.population.size())); } while (r1 == xi);
+        do { r2 = this.population.get(getRandom().nextInt(this.population.size())); } while (r2 == xi || r2 == r1);
 
         double[] dpbest = subtract(pbest.getVector(), xi.getVector());
         double[] drand  = subtract(r1.getVector(), r2.getVector());
@@ -203,10 +162,10 @@ public class FODE implements Metaheuristic {
         double[] fracRand  = fractionalDifference(randDiffHistory);
 
         double[] trial = new double[xi.getVector().length];
-        int jRand = random.nextInt(trial.length);
+        int jRand = getRandom().nextInt(trial.length);
 
         for (int j = 0; j < trial.length; j++) {
-            if (random.nextDouble() < xi.getCR() || j == jRand) {
+            if (getRandom().nextDouble() < xi.getCR() || j == jRand) {
                 trial[j] = xi.getVector()[j] + xi.getF() * (fracPbest[j] + fracRand[j]);
             } else {
                 trial[j] = xi.getVector()[j];
@@ -301,44 +260,40 @@ public class FODE implements Metaheuristic {
     }
 
     private void sampleParameters(FODEIndividual ind) {
-        int r = random.nextInt(H);
+        int r = getRandom().nextInt(H);
 
         /* === Scale factor F: Cauchy distribution === */
         double F;
         do {
-            F = MF[r] + 0.1 * Math.tan(Math.PI * (random.nextDouble() - 0.5));
+            F = MF[r] + 0.1 * Math.tan(Math.PI * (getRandom().nextDouble() - 0.5));
         } while (F <= 0.0);
         F = Math.min(F, 1.0);
 
         /* === Crossover rate CR: Normal distribution === */
-        double CR = MCR[r] + 0.1 * random.nextGaussian();
-        CR = Math.max(0.0, Math.min(1.0, CR));
+        double CR = MCR[r] + 0.1 * getRandom().nextGaussian();
+        CR = Math.clamp(CR, 0.0, 1.0);
 
         ind.setF(F);
         ind.setCR(CR);
     }
 
-    private double evaluate(
-        double[] vector,
-        WFLOP problem,
-        PowerCalculator calculator
-    ) {
-        int[] layout = discretize(vector, problem);
+    private double evaluate(double[] vector) {
+        int[] layout = discretize(vector);
         List<Integer> list = Arrays.stream(layout)
             .boxed()
             .toList();
         TurbineLayout tl = new TurbineLayout(new ArrayList<>(list));
-        return calculator.calculateTotalPower(tl);
+        return getPowerCalculator().calculateTotalPower(tl);
     }
 
-    private int[] discretize(double[] vector, WFLOP problem) {
-        int cellCount = problem.getCellCount();
+    private int[] discretize(double[] vector) {
+        int cellCount = getProblem().getCellCount();
         int[] layout = new int[vector.length];
         boolean[] occupied = new boolean[cellCount];
 
         for (int i = 0; i < vector.length; i++) {
             int cell = (int) Math.floor(vector[i]);
-            cell = Math.max(0, Math.min(cell, cellCount - 1));
+            cell = Math.clamp(cell, 0, cellCount - 1);
 
             while (occupied[cell]) {
                 cell = (cell + 1) % cellCount;
@@ -373,12 +328,10 @@ public class FODE implements Metaheuristic {
     }
 
     private int computePopulationSize() {
-        double progress = terminationCondition.getProgress().getProgress();
         // progress ∈ [0, 1]
-
         int size = (int) Math.floor(
             minPopulationSize
-            + (maxPopulationSize - minPopulationSize) * (1.0 - progress)
+            + (maxPopulationSize - minPopulationSize) * (1.0 - getProgress())
         );
 
         return Math.max(minPopulationSize, size);
@@ -394,27 +347,23 @@ public class FODE implements Metaheuristic {
             .toList();
     }
 
-    private void enforceBounds(double[] vector, int cellCount) {
+    private void enforceBounds(double[] vector) {
         for (int i = 0; i < vector.length; i++) {
             if (vector[i] < 0) {
                 vector[i] = 0;
-            } else if (vector[i] >= cellCount) {
-                vector[i] = cellCount - 1e-9;
+            } else if (vector[i] >= getProblem().getCellCount()) {
+                vector[i] = getProblem().getCellCount() - 1e-9;
             }
         }
     }
 
-    private void evaluatePopulation(
-        List<FODEIndividual> pop,
-        WFLOP problem,
-        PowerCalculator calculator
-    ) {
-        for (FODEIndividual ind : pop) {
-            ind.setFitness(evaluate(ind.getVector(), problem, calculator));
+    private void evaluatePopulation() {
+        for (FODEIndividual ind : this.population) {
+            ind.setFitness(evaluate(ind.getVector()));
         }
     }
 
-    private FODEIndividual getBest(List<FODEIndividual> pop) {
-        return Collections.max(pop, Comparator.comparingDouble(FODEIndividual::getFitness));
+    private FODEIndividual getBest() {
+        return Collections.max(this.population, Comparator.comparingDouble(FODEIndividual::getFitness));
     }
 }

@@ -23,6 +23,7 @@ public class ConvergenceGraphListener implements ProgressListener {
     private final ExportFormat format;
     private final String algorithmName;
     private final XAxisType xAxisType;
+    private int iteration = 0;
     private long startTimeMs = -1; // -1 indicates not started yet
     private int bestFitnessIteration = -1; // Iteration when best fitness was achieved
     private double bestFitnessTimeSeconds = -1; // Time when best fitness was achieved
@@ -48,37 +49,13 @@ public class ConvergenceGraphListener implements ProgressListener {
     }
 
     /**
-     * Data point representing convergence at a single iteration.
-     */
-    public static class ConvergenceDataPoint {
-        private final int iteration;
-        private final double elapsedTimeSeconds;
-        private final double bestFitness;
-        private final double averageFitness;
-
-        public ConvergenceDataPoint(int iteration, double elapsedTimeSeconds, double bestFitness, double averageFitness) {
-            this.iteration = iteration;
-            this.elapsedTimeSeconds = elapsedTimeSeconds;
-            this.bestFitness = bestFitness;
-            this.averageFitness = averageFitness;
-        }
-
-        public int getIteration() {
-            return iteration;
-        }
-
-        public double getElapsedTimeSeconds() {
-            return elapsedTimeSeconds;
-        }
-
-        public double getBestFitness() {
-            return bestFitness;
-        }
-
-        public double getAverageFitness() {
-            return averageFitness;
-        }
-    }
+         * Data point representing convergence at a single iteration.
+         */
+    public record ConvergenceDataPoint(
+        int iteration,
+        double elapsedTimeSeconds,
+        double bestFitness
+    ) {}
 
     /**
      * Creates a ConvergenceGraphListener that exports to CSV format, plotting by iteration.
@@ -130,23 +107,24 @@ public class ConvergenceGraphListener implements ProgressListener {
         if (startTimeMs == -1) {
             startTimeMs = System.currentTimeMillis();
         }
-        
+
+        iteration++;
+
         // Calculate elapsed time in seconds
         long currentTimeMs = System.currentTimeMillis();
         double elapsedTimeSeconds = (currentTimeMs - startTimeMs) / 1000.0;
-        
+
         // Track when best fitness was achieved
         if (event.getBestFitness() > bestFitnessValue) {
             bestFitnessValue = event.getBestFitness();
-            bestFitnessIteration = event.getIteration();
+            bestFitnessIteration = iteration;
             bestFitnessTimeSeconds = elapsedTimeSeconds;
         }
-        
+
         dataPoints.add(new ConvergenceDataPoint(
-            event.getIteration(),
+            iteration,
             elapsedTimeSeconds,
-            event.getBestFitness(),
-            event.getAverageFitness()
+            event.getBestFitness()
         ));
     }
 
@@ -191,11 +169,10 @@ public class ConvergenceGraphListener implements ProgressListener {
             
             // Write data rows
             for (ConvergenceDataPoint point : dataPoints) {
-                writer.write(String.format("%d,%.6f,%.6f,%.6f\n",
-                    point.getIteration(),
-                    point.getElapsedTimeSeconds(),
-                    point.getBestFitness(),
-                    point.getAverageFitness()));
+                writer.write(String.format("%d,%.6f,%.6f\n",
+                    point.iteration(),
+                    point.elapsedTimeSeconds(),
+                    point.bestFitness()));
             }
         }
         System.out.println("Convergence graph exported to: " + csvPath.toAbsolutePath());
@@ -209,7 +186,7 @@ public class ConvergenceGraphListener implements ProgressListener {
         try (FileWriter writer = new FileWriter(jsonPath.toFile())) {
             writer.write("{\n");
             writer.write(String.format("  \"algorithm\": \"%s\",\n", escapeJson(algorithmName)));
-            
+
             // Add best fitness achievement information
             if (bestFitnessIteration != -1) {
                 writer.write("  \"bestFitnessAchieved\": {\n");
@@ -218,24 +195,23 @@ public class ConvergenceGraphListener implements ProgressListener {
                 writer.write(String.format("    \"fitnessValue\": %.6f\n", bestFitnessValue));
                 writer.write("  },\n");
             }
-            
+
             writer.write("  \"convergence_data\": [\n");
-            
+
             for (int i = 0; i < dataPoints.size(); i++) {
                 ConvergenceDataPoint point = dataPoints.get(i);
                 writer.write("    {\n");
-                writer.write(String.format("      \"iteration\": %d,\n", point.getIteration()));
-                writer.write(String.format("      \"elapsedTimeSeconds\": %.6f,\n", point.getElapsedTimeSeconds()));
-                writer.write(String.format("      \"bestFitness\": %.6f,\n", point.getBestFitness()));
-                writer.write(String.format("      \"averageFitness\": %.6f\n", point.getAverageFitness()));
+                writer.write(String.format("      \"iteration\": %d,\n", point.iteration()));
+                writer.write(String.format("      \"elapsedTimeSeconds\": %.6f,\n", point.elapsedTimeSeconds()));
+                writer.write(String.format("      \"bestFitness\": %.6f,\n", point.bestFitness()));
                 writer.write("    }");
-                
+
                 if (i < dataPoints.size() - 1) {
                     writer.write(",");
                 }
                 writer.write("\n");
             }
-            
+
             writer.write("  ]\n");
             writer.write("}\n");
         }
@@ -253,7 +229,7 @@ public class ConvergenceGraphListener implements ProgressListener {
             // Determine initial x-axis type and whether to show toggle
             boolean showToggle = (xAxisType == XAxisType.BOTH);
             XAxisType initialAxis = (xAxisType == XAxisType.BOTH) ? XAxisType.ITERATION : xAxisType;
-            
+
             writer.write("<!DOCTYPE html>\n");
             writer.write("<html>\n");
             writer.write("<head>\n");
@@ -276,10 +252,10 @@ public class ConvergenceGraphListener implements ProgressListener {
             writer.write("    <div class=\"info\">\n");
             writer.write("      <p>Total iterations: " + dataPoints.size() + "</p>\n");
             if (!dataPoints.isEmpty()) {
-                double totalTime = dataPoints.get(dataPoints.size() - 1).getElapsedTimeSeconds();
+                double totalTime = dataPoints.getLast().elapsedTimeSeconds();
                 writer.write("      <p>Total time: " + String.format("%.2f", totalTime) + " seconds</p>\n");
-                writer.write("      <p>Final best fitness: " + String.format("%.6f", dataPoints.get(dataPoints.size() - 1).getBestFitness()) + "</p>\n");
-                
+                writer.write("      <p>Final best fitness: " + String.format("%.6f", dataPoints.get(dataPoints.size() - 1).bestFitness()) + "</p>\n");
+
                 // Display when best fitness was achieved
                 if (bestFitnessIteration != -1) {
                     writer.write("      <p><strong>Best fitness achieved:</strong></p>\n");
@@ -291,61 +267,52 @@ public class ConvergenceGraphListener implements ProgressListener {
                 }
             }
             writer.write("    </div>\n");
-            
+
             if (showToggle) {
                 writer.write("    <div class=\"controls\">\n");
                 writer.write("      <button id=\"btnIteration\" class=\"active\" onclick=\"switchToIteration()\">By Iteration</button>\n");
                 writer.write("      <button id=\"btnTime\" onclick=\"switchToTime()\">By Time</button>\n");
                 writer.write("    </div>\n");
             }
-            
+
             writer.write("    <canvas id=\"convergenceChart\"></canvas>\n");
             writer.write("  </div>\n");
             writer.write("  <script>\n");
-            
+
             // Write iteration labels
             writer.write("    const iterationLabels = [");
             for (int i = 0; i < dataPoints.size(); i++) {
-                writer.write(String.valueOf(dataPoints.get(i).getIteration()));
+                writer.write(String.valueOf(dataPoints.get(i).iteration()));
                 if (i < dataPoints.size() - 1) {
                     writer.write(", ");
                 }
             }
             writer.write("];\n");
-            
+
             // Write time labels
             writer.write("    const timeLabels = [");
             for (int i = 0; i < dataPoints.size(); i++) {
-                writer.write(String.format("%.2f", dataPoints.get(i).getElapsedTimeSeconds()));
+                writer.write(String.format("%.2f", dataPoints.get(i).elapsedTimeSeconds()));
                 if (i < dataPoints.size() - 1) {
                     writer.write(", ");
                 }
             }
             writer.write("];\n");
-            
+
             // Write fitness data
             writer.write("    const bestFitnessData = [");
             for (int i = 0; i < dataPoints.size(); i++) {
-                writer.write(String.format("%.6f", dataPoints.get(i).getBestFitness()));
+                writer.write(String.format("%.6f", dataPoints.get(i).bestFitness()));
                 if (i < dataPoints.size() - 1) {
                     writer.write(", ");
                 }
             }
             writer.write("];\n");
-            
-            writer.write("    const averageFitnessData = [");
-            for (int i = 0; i < dataPoints.size(); i++) {
-                writer.write(String.format("%.6f", dataPoints.get(i).getAverageFitness()));
-                if (i < dataPoints.size() - 1) {
-                    writer.write(", ");
-                }
-            }
-            writer.write("];\n");
-            
+
             // Determine initial labels and x-axis title
             String initialLabels = (initialAxis == XAxisType.TIME) ? "timeLabels" : "iterationLabels";
             String initialXTitle = (initialAxis == XAxisType.TIME) ? "'Time (seconds)'" : "'Iteration'";
-            
+
             writer.write("    const ctx = document.getElementById('convergenceChart').getContext('2d');\n");
             writer.write("    let currentXAxis = '" + initialAxis.name().toLowerCase() + "';\n");
             writer.write("    \n");
@@ -357,13 +324,6 @@ public class ConvergenceGraphListener implements ProgressListener {
             writer.write("          data: bestFitnessData,\n");
             writer.write("          borderColor: 'rgb(75, 192, 192)',\n");
             writer.write("          backgroundColor: 'rgba(75, 192, 192, 0.2)',\n");
-            writer.write("          tension: 0.1\n");
-            writer.write("        },\n");
-            writer.write("        {\n");
-            writer.write("          label: 'Average Fitness',\n");
-            writer.write("          data: averageFitnessData,\n");
-            writer.write("          borderColor: 'rgb(255, 99, 132)',\n");
-            writer.write("          backgroundColor: 'rgba(255, 99, 132, 0.2)',\n");
             writer.write("          tension: 0.1\n");
             writer.write("        }\n");
             writer.write("      ]\n");
@@ -404,7 +364,7 @@ public class ConvergenceGraphListener implements ProgressListener {
             writer.write("    };\n");
             writer.write("    \n");
             writer.write("    const chart = new Chart(ctx, config);\n");
-            
+
             if (showToggle) {
                 writer.write("    \n");
                 writer.write("    function switchToIteration() {\n");
@@ -425,7 +385,7 @@ public class ConvergenceGraphListener implements ProgressListener {
                 writer.write("      document.getElementById('btnIteration').classList.remove('active');\n");
                 writer.write("    }\n");
             }
-            
+
             writer.write("  </script>\n");
             writer.write("</body>\n");
             writer.write("</html>\n");
@@ -484,10 +444,10 @@ public class ConvergenceGraphListener implements ProgressListener {
             return "";
         }
         return input.replace("\\", "\\\\")
-                   .replace("\"", "\\\"")
-                   .replace("\n", "\\n")
-                   .replace("\r", "\\r")
-                   .replace("\t", "\\t");
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t");
     }
 
     /**
@@ -498,10 +458,9 @@ public class ConvergenceGraphListener implements ProgressListener {
             return "";
         }
         return input.replace("&", "&amp;")
-                   .replace("<", "&lt;")
-                   .replace(">", "&gt;")
-                   .replace("\"", "&quot;")
-                   .replace("'", "&#39;");
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;");
     }
 }
-

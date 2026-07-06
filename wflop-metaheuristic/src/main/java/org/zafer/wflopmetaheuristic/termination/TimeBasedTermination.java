@@ -15,7 +15,7 @@ public class TimeBasedTermination implements TerminationCondition {
     }
 
     @Override
-    public void onGeneration(int generation) {
+    public void onGeneration() {
         // No-op
     }
 
@@ -25,7 +25,7 @@ public class TimeBasedTermination implements TerminationCondition {
     }
 
     @Override
-    public TerminationProgress getProgress() {
+    public TerminationProgress getTerminationProgress() {
         long elapsed = System.currentTimeMillis() - startTime;
         double progress = Math.min(1.0, (double) elapsed / maxMillis);
 

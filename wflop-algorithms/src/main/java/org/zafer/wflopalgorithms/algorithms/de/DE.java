@@ -5,32 +5,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.zafer.wflopalgorithms.algorithms.de.solution.DEIndividual;
+import org.zafer.wflopalgorithms.common.AbstractMetaheuristic;
 import org.zafer.wflopcore.power.PowerCalculator;
-import org.zafer.wflopmetaheuristic.listener.ProgressListener;
-import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmetaheuristic.ProgressEvent;
+import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
+import org.zafer.wflopcore.wake.WakeOptimization;
 import org.zafer.wflopmetaheuristic.Solution;
-import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionFactory;
-import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 import org.zafer.wflopmodel.layout.TurbineLayout;
-import org.zafer.wflopmodel.problem.WFLOP;
 
-public class DE implements Metaheuristic {
+public class DE extends AbstractMetaheuristic {
 
-    private final String algorithm;
     private final int populationSize;
     private final double F;   // mutation factor
     private final double CR;  // crossover rate
-    private final TerminationCondition terminationCondition;
-    private final Random random;
+
+    private List<DEIndividual> population;
+    private DEIndividual bestIndividual;
 
     @JsonCreator
     public DE(
@@ -40,131 +36,87 @@ public class DE implements Metaheuristic {
         @JsonProperty("cr") double CR,
         @JsonProperty("termination") TerminationConditionConfig terminationConfig
     ) {
-        this.algorithm = algorithm;
+        super(TerminationConditionFactory.fromConfig(terminationConfig));
+
         this.populationSize = populationSize;
         this.F = F;
         this.CR = CR;
-        this.terminationCondition = TerminationConditionFactory.fromConfig(terminationConfig);
-        this.random = new Random();
-    }
-
-    public void setSeed(long seed) {
-        random.setSeed(seed);
     }
 
     @Override
-    public Solution run(WFLOP problem) {
-        PowerCalculator calculator = new PowerCalculator(problem);
-        return runInternal(problem, calculator, Collections.emptyList());
-    }
-
-    @Override
-    public Solution runWithListeners(
-        WFLOP problem,
-        List<ProgressListener> listeners
-    ) {
-        PowerCalculator calculator = new PowerCalculator(problem);
-        return runInternal(problem, calculator, listeners);
-    }
-
-    private Solution runInternal(
-        WFLOP problem,
-        PowerCalculator calculator,
-        List<ProgressListener> listeners
-    ) {
-        terminationCondition.onStart();
-
-        List<DEIndividual> population = initializePopulation(problem);
-        evaluatePopulation(population, problem, calculator);
-
-        DEIndividual best = getBest(population);
-
-        double totalPowerWithoutWake = calculator.calculateTotalPowerWithoutWake(
-            problem.getNumberOfTurbines()
+    protected PowerCalculator createPowerCalculator() {
+        return new PowerCalculator(
+            getProblem(),
+            new DefaultWakeModelProvider(),
+            WakeOptimization.NONE
         );
-        int gen = 0;
-        while (!terminationCondition.shouldTerminate()) {
+    }
 
-            List<DEIndividual> nextPopulation = new ArrayList<>();
+    @Override
+    protected void init() {
+        initializePopulation();
+        evaluatePopulation();
 
-            for (int i = 0; i < populationSize; i++) {
+        this.bestIndividual = getBest();
+    }
 
-                DEIndividual target = population.get(i);
+    @Override
+    protected void step() {
+        List<DEIndividual> nextPopulation = new ArrayList<>();
 
-                double[] mutant = mutate(population, i);
-                double[] trial = crossover(target.getVector(), mutant);
+        for (int i = 0; i < this.populationSize; i++) {
 
-                enforceBounds(trial, problem.getCellCount());
+            DEIndividual target = this.population.get(i);
 
-                double trialFitness = evaluate(trial, problem, calculator);
+            double[] mutant = mutate(this.population, i);
+            double[] trial = crossover(target.getVector(), mutant);
 
-                if (trialFitness > target.getFitness()) {
-                    DEIndividual offspring = new DEIndividual(trial);
-                    offspring.setFitness(trialFitness);
-                    nextPopulation.add(offspring);
-                } else {
-                    nextPopulation.add(target);
-                }
-            }
+            enforceBounds(trial);
 
-            population = nextPopulation;
-            DEIndividual currentBest = getBest(population);
-            if (currentBest.getFitness() > best.getFitness()) {
-                best = currentBest;
-            }
+            double trialFitness = evaluate(trial);
 
-            terminationCondition.onGeneration(++gen);
-
-            if (!listeners.isEmpty()) {
-                double avg = population
-                    .stream()
-                    .mapToDouble(DEIndividual::getFitness)
-                    .average()
-                    .orElse(0);
-
-                TerminationProgress tp = terminationCondition.getProgress();
-
-                ProgressEvent event = new ProgressEvent(
-                    gen,
-                    best.getFitness(),
-                    avg,
-                    totalPowerWithoutWake,
-                    tp
-                );
-
-                for (ProgressListener listener : listeners) {
-                    listener.onIteration(event);
-                }
+            if (trialFitness > target.getFitness()) {
+                DEIndividual offspring = new DEIndividual(trial);
+                offspring.setFitness(trialFitness);
+                nextPopulation.add(offspring);
+            } else {
+                nextPopulation.add(target);
             }
         }
 
-        return best;
+        this.population = nextPopulation;
+        DEIndividual currentBest = getBest();
+        if (currentBest.getFitness() > this.bestIndividual.getFitness()) {
+            this.bestIndividual = currentBest;
+        }
     }
 
-    private List<DEIndividual> initializePopulation(WFLOP problem) {
-        List<DEIndividual> population = new ArrayList<>();
+    @Override
+    protected Solution getBestSolution() {
+        return this.bestIndividual;
+    }
 
-        int turbines = problem.getNumberOfTurbines();
-        int cellCount = problem.getCellCount();
+    private void initializePopulation() {
+        this.population = new ArrayList<>();
+        int turbines = getProblem().getNumberOfTurbines();
+        int cellCount = getProblem().getCellCount();
 
-        for (int i = 0; i < populationSize; i++) {
+        for (int i = 0; i < this.populationSize; i++) {
             double[] vector = new double[turbines];
             for (int d = 0; d < turbines; d++) {
-                vector[d] = random.nextDouble() * cellCount;
+                vector[d] = getRandom().nextDouble() * cellCount;
             }
-            population.add(new DEIndividual(vector));
+            this.population.add(new DEIndividual(vector));
         }
-
-        return population;
     }
 
     private double[] mutate(List<DEIndividual> pop, int targetIdx) {
         int a, b, c;
         int size = pop.size();
 
-        do { a = random.nextInt(size); } while (a == targetIdx);
-        do { b = random.nextInt(size); } while (b == targetIdx || b == a);
-        do { c = random.nextInt(size); } while (c == targetIdx || c == a || c == b);
+        do { a = getRandom().nextInt(size); } while (a == targetIdx);
+        do { b = getRandom().nextInt(size); } while (b == targetIdx || b == a);
+        do { c = getRandom().nextInt(size); } while (c == targetIdx || c == a || c == b);
 
         double[] A = pop.get(a).getVector();
         double[] B = pop.get(b).getVector();
@@ -180,10 +132,10 @@ public class DE implements Metaheuristic {
 
     private double[] crossover(double[] target, double[] mutant) {
         double[] trial = new double[target.length];
-        int jRand = random.nextInt(target.length);
+        int jRand = getRandom().nextInt(target.length);
 
         for (int j = 0; j < target.length; j++) {
-            if (random.nextDouble() < CR || j == jRand) {
+            if (getRandom().nextDouble() < CR || j == jRand) {
                 trial[j] = mutant[j];
             } else {
                 trial[j] = target[j];
@@ -193,27 +145,23 @@ public class DE implements Metaheuristic {
         return trial;
     }
 
-    private double evaluate(
-            double[] vector,
-            WFLOP problem,
-            PowerCalculator calculator
-    ) {
-        int[] layout = discretize(vector, problem);
+    private double evaluate(double[] vector) {
+        int[] layout = discretize(vector);
         List<Integer> list = Arrays.stream(layout)
             .boxed()
             .toList();
         TurbineLayout tl = new TurbineLayout(new ArrayList<>(list));
-        return calculator.calculateTotalPower(tl);
+        return getPowerCalculator().calculateTotalPower(tl);
     }
 
-    private int[] discretize(double[] vector, WFLOP problem) {
-        int cellCount = problem.getCellCount();
+    private int[] discretize(double[] vector) {
+        int cellCount = getProblem().getCellCount();
         int[] layout = new int[vector.length];
         boolean[] occupied = new boolean[cellCount];
 
         for (int i = 0; i < vector.length; i++) {
             int cell = (int) Math.floor(vector[i]);
-            cell = Math.max(0, Math.min(cell, cellCount - 1));
+            cell = Math.clamp(cell, 0, cellCount - 1);
 
             while (occupied[cell]) {
                 cell = (cell + 1) % cellCount;
@@ -226,27 +174,23 @@ public class DE implements Metaheuristic {
         return layout;
     }
 
-    private void enforceBounds(double[] vector, int cellCount) {
+    private void enforceBounds(double[] vector) {
         for (int i = 0; i < vector.length; i++) {
             if (vector[i] < 0) {
                 vector[i] = 0;
-            } else if (vector[i] >= cellCount) {
-                vector[i] = cellCount - 1e-9;
+            } else if (vector[i] >= getProblem().getCellCount()) {
+                vector[i] = getProblem().getCellCount() - 1e-9;
             }
         }
     }
 
-    private void evaluatePopulation(
-        List<DEIndividual> pop,
-        WFLOP problem,
-        PowerCalculator calculator
-    ) {
-        for (DEIndividual ind : pop) {
-            ind.setFitness(evaluate(ind.getVector(), problem, calculator));
+    private void evaluatePopulation() {
+        for (DEIndividual ind : this.population) {
+            ind.setFitness(evaluate(ind.getVector()));
         }
     }
 
-    private DEIndividual getBest(List<DEIndividual> pop) {
-        return Collections.max(pop, Comparator.comparingDouble(DEIndividual::getFitness));
+    private DEIndividual getBest() {
+        return Collections.max(this.population, Comparator.comparingDouble(DEIndividual::getFitness));
     }
 }

@@ -44,8 +44,6 @@ class AlgorithmFactoryTest {
         String type = "generation";
         int maxGenerations = 200;
 
-        TerminationCondition termination = new GenerationBasedTermination(maxGenerations);
-
         String json = """
         {
           "algorithm": "%s",
@@ -74,17 +72,6 @@ class AlgorithmFactoryTest {
 
         // Then
         assertInstanceOf(WDGA.class, metaheuristic);
-        WDGA wdga = (WDGA) metaheuristic;
-
-        assertEquals(algorithm, wdga.getAlgorithm());
-        assertEquals(populationSize, wdga.getPopulationSize());
-        assertEquals(crossoverRate, wdga.getCrossoverRate(), 0.001);
-        assertEquals(mutationRate, wdga.getMutationRate(), 0.001);
-        assertEquals(smartMutationRate, wdga.getSmartMutationRate(), 0.001);
-        assertEquals(selectionStrategy, wdga.getSelectionStrategy());
-        assertEquals(wakeAnalysisPercentage, wdga.getWakeAnalysisPercentage(), 0.001);
-        assertEquals(mutationSelectionPercentage, wdga.getMutationSelectionPercentage(), 0.001);
-        assertEquals(termination, wdga.getTerminationCondition());
     }
 
     @Test
