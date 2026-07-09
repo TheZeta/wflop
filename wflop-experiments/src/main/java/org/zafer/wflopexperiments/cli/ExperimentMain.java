@@ -15,6 +15,7 @@ public final class ExperimentMain {
 
     public static void main(String[] args) throws Exception {
         Path configPath = Paths.get(args[0]);
+        int threadCount = (args.length > 1) ? parseThreadCount(args[1]) : 1;
 
         ExperimentConfig config =
             new ObjectMapper().readValue(
@@ -24,6 +25,11 @@ public final class ExperimentMain {
         AlgorithmRegistry registry = new DefaultAlgorithmRegistry();
         AlgorithmFactory factory = new AlgorithmFactory(registry);
 
-        new ExperimentRunner(config, factory).run();
+        new ExperimentRunner(config, factory, threadCount).run();
+    }
+
+    private static int parseThreadCount(String rawThreadCount) {
+        int threadCount = Integer.parseInt(rawThreadCount);
+        return Math.max(1, threadCount);
     }
 }

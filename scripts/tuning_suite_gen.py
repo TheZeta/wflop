@@ -4,6 +4,9 @@ import os
 from collections import OrderedDict
 
 # Define the parameter grids
+population_vals = [50, 100, 200]
+crossover_vals = [0.3, 0.5, 0.7]
+mutation_vals = [0.05, 0.1, 0.2]
 wake_analysis_vals = [0.1, 0.3, 0.5]
 mutation_selection_vals = [0.2, 0.4, 0.6]
 smart_mutation_vals = [0.2, 0.4, 0.8]
@@ -14,17 +17,20 @@ os.makedirs(output_dir, exist_ok=True)
 
 def generate_configs():
     combinations = itertools.product(
+        population_vals,
+        crossover_vals,
+        mutation_vals,
         wake_analysis_vals,
         mutation_selection_vals,
         smart_mutation_vals
     )
 
-    for wake_p, mut_sel_p, smart_m in combinations:
+    for pop_p, cross_p, mut_p, wake_p, mut_sel_p, smart_m in combinations:
         config = OrderedDict([
             ("algorithm", "WDGA"),
-            ("populationSize", 100),
-            ("crossoverRate", 0.3),
-            ("mutationRate", 0.1),
+            ("populationSize", pop_p),
+            ("crossoverRate", cross_p),
+            ("mutationRate", mut_p),
             ("smartMutationRate", smart_m),
             ("selectionStrategy", "tournament"),
             ("wakeAnalysisPercentage", wake_p),
@@ -37,6 +43,9 @@ def generate_configs():
 
         # Filename using descriptive shorthand for identification
         filename = (
+            f"pop{pop_p}_"
+            f"cr{cross_p}_"
+            f"mut{mut_p}_"
             f"wa{wake_p}_"
             f"ms{mut_sel_p}_"
             f"sm{smart_m}.json"
@@ -47,6 +56,9 @@ def generate_configs():
             json.dump(config, f, indent=2)
 
         print('{ "id": "'
+            f"pop{pop_p}_"
+            f"cr{cross_p}_"
+            f"mut{mut_p}_"
             f"wa{wake_p}_"
             f"ms{mut_sel_p}_"
             f"sm{smart_m}"

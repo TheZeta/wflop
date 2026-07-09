@@ -47,6 +47,28 @@ public class ExperimentProgress {
     }
 
     /**
+     * Constructs a snapshot of experiment progress for a specific position.
+     *
+     * <p>This is mainly used by parallel execution paths that need to hand a
+     * stable progress view to downstream processors after a task completes.
+     */
+    public ExperimentProgress(
+            int totalProblems,
+            int totalAlgorithms,
+            int totalRunsPerAlgorithm,
+            int problemIndex,
+            int algorithmIndex,
+            int currentRun
+    ) {
+        this.totalProblems = totalProblems;
+        this.totalAlgorithms = totalAlgorithms;
+        this.totalRunsPerAlgorithm = totalRunsPerAlgorithm;
+        this.problemIndex = problemIndex;
+        this.algorithmIndex = algorithmIndex;
+        this.currentRun = currentRun;
+    }
+
+    /**
      * Returns the overall progress as a fraction in [0, 1], where 0 means no work done
      * and 1 means all work completed.
      */
