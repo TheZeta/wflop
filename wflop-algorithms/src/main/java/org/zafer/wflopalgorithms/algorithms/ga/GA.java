@@ -22,15 +22,10 @@ import org.zafer.wflopalgorithms.common.ga.strategy.TournamentSelection;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
 import org.zafer.wflopcore.wake.WakeOptimization;
-import org.zafer.wflopmetaheuristic.ProgressEvent;
-import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.Solution;
-import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionConfig;
 import org.zafer.wflopmetaheuristic.termination.TerminationConditionFactory;
-import org.zafer.wflopmetaheuristic.termination.TerminationProgress;
 import org.zafer.wflopmodel.layout.TurbineLayout;
-import org.zafer.wflopmodel.problem.WFLOP;
 
 public class GA extends AbstractMetaheuristic {
 
@@ -101,7 +96,7 @@ public class GA extends AbstractMetaheuristic {
             if (getRandom().nextDouble() < this.crossoverRate) {
                 child = this.crossoverStrategyImpl.crossover(parent1, parent2, getProblem());
             } else {
-                child = new Individual(parent1.getGenes());
+                child = new Individual(parent1.getList());
             }
 
             if (getRandom().nextDouble() < this.mutationRate) {
@@ -151,7 +146,7 @@ public class GA extends AbstractMetaheuristic {
     }
 
     private double computeFitness(Individual individual) {
-        TurbineLayout layout = new TurbineLayout(individual.getGenes());
+        TurbineLayout layout = new TurbineLayout(individual.getList());
         return getPowerCalculator().calculateTotalPower(layout);
     }
 

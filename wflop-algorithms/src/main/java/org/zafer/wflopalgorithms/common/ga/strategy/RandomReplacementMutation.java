@@ -26,7 +26,7 @@ public class RandomReplacementMutation implements MutationStrategy {
 
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
-        List<Integer> genes = individual.getGenes();
+        List<Integer> genes = individual.getList();
         Set<Integer> existingGenes = new HashSet<>(genes);
         
         // Select a random position to mutate

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.zafer.wflopalgorithms.algorithms.fode.solution.FODEIndividual;
 import org.zafer.wflopalgorithms.common.AbstractMetaheuristic;
+import org.zafer.wflopalgorithms.common.Helper;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
 import org.zafer.wflopcore.wake.WakeOptimization;
@@ -97,7 +98,7 @@ public class FODE extends AbstractMetaheuristic {
             double trialFitness = evaluate(trial);
 
             if (trialFitness > xi.getFitness()) {
-                FODEIndividual child = new FODEIndividual(trial);
+                FODEIndividual child = new FODEIndividual(trial, getProblem().getCellCount());
                 child.setFitness(trialFitness);
                 nextPop.add(child);
 
@@ -131,7 +132,7 @@ public class FODE extends AbstractMetaheuristic {
             for (int d = 0; d < turbines; d++) {
                 vector[d] = getRandom().nextDouble() * cellCount;
             }
-            population.add(new FODEIndividual(vector));
+            population.add(new FODEIndividual(vector, getProblem().getCellCount()));
         }
     }
 
@@ -193,39 +194,6 @@ public class FODE extends AbstractMetaheuristic {
         return result;
     }
 
-//    private double[] fractionalDifference(Deque<double[][]> history) {
-//        int dim = history.peekLast()[0].length;
-//        double[] result = new double[dim];
-//
-//        int j = 0;
-//        for (double[][] h : history) {
-//            double coeff = fractionalCoeff(fractionalOrder, j);
-//            for (int d = 0; d < dim; d++) {
-//                result[d] += coeff * h[0][d];
-//            }
-//            j++;
-//        }
-//
-//        return result;
-//    }
-//
-//    private double[] fractionalDifference(Deque<double[][]> history) {
-//        int dim = history.peekLast().length;
-//        double[] result = new double[dim];
-//
-//        // Use descending iterator to ensure j=0 is the NEWEST difference
-//        Iterator<double[][]> it = history.descendingIterator();
-//        int j = 0;
-//        while (it.hasNext()) {
-//            double[][] h = it.next();
-//            double coeff = fractionalCoeff(0.8, j); // fractionalOrder = 0.8
-//            for (int d = 0; d < dim; d++) {
-//                result[d] += coeff * h[d];
-//            }
-//            j++;
-//        }
-//        return result;
-//    }
 
     private double fractionalCoeff(double a, int j) {
         if (j == 0) return a;
@@ -278,32 +246,12 @@ public class FODE extends AbstractMetaheuristic {
     }
 
     private double evaluate(double[] vector) {
-        int[] layout = discretize(vector);
+        int[] layout = Helper.discretize(vector, getProblem().getCellCount());
         List<Integer> list = Arrays.stream(layout)
             .boxed()
             .toList();
         TurbineLayout tl = new TurbineLayout(new ArrayList<>(list));
         return getPowerCalculator().calculateTotalPower(tl);
-    }
-
-    private int[] discretize(double[] vector) {
-        int cellCount = getProblem().getCellCount();
-        int[] layout = new int[vector.length];
-        boolean[] occupied = new boolean[cellCount];
-
-        for (int i = 0; i < vector.length; i++) {
-            int cell = (int) Math.floor(vector[i]);
-            cell = Math.clamp(cell, 0, cellCount - 1);
-
-            while (occupied[cell]) {
-                cell = (cell + 1) % cellCount;
-            }
-
-            occupied[cell] = true;
-            layout[i] = cell;
-        }
-
-        return layout;
     }
 
     private void updateMemories(

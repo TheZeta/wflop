@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.zafer.wflopalgorithms.algorithms.lshade.solution.LSHADEIndividual;
 import org.zafer.wflopalgorithms.common.AbstractMetaheuristic;
+import org.zafer.wflopalgorithms.common.Helper;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
 import org.zafer.wflopcore.wake.WakeOptimization;
@@ -85,7 +86,7 @@ public class LSHADE extends AbstractMetaheuristic {
             double trialFitness = evaluate(trial);
 
             if (trialFitness > xi.getFitness()) {
-                LSHADEIndividual child = new LSHADEIndividual(trial);
+                LSHADEIndividual child = new LSHADEIndividual(trial, getProblem().getCellCount());
                 child.setFitness(trialFitness);
                 nextPop.add(child);
 
@@ -119,7 +120,7 @@ public class LSHADE extends AbstractMetaheuristic {
             for (int d = 0; d < turbines; d++) {
                 vector[d] = getRandom().nextDouble() * cellCount;
             }
-            this.population.add(new LSHADEIndividual(vector));
+            this.population.add(new LSHADEIndividual(vector, getProblem().getCellCount()));
         }
     }
 
@@ -179,32 +180,12 @@ public class LSHADE extends AbstractMetaheuristic {
     }
 
     private double evaluate(double[] vector) {
-        int[] layout = discretize(vector, getProblem());
+        int[] layout = Helper.discretize(vector, getProblem().getCellCount());
         List<Integer> list = Arrays.stream(layout)
             .boxed()
             .toList();
         TurbineLayout tl = new TurbineLayout(new ArrayList<>(list));
         return getPowerCalculator().calculateTotalPower(tl);
-    }
-
-    private int[] discretize(double[] vector, WFLOP problem) {
-        int cellCount = problem.getCellCount();
-        int[] layout = new int[vector.length];
-        boolean[] occupied = new boolean[cellCount];
-
-        for (int i = 0; i < vector.length; i++) {
-            int cell = (int) Math.floor(vector[i]);
-            cell = Math.clamp(cell, 0, cellCount - 1);
-
-            while (occupied[cell]) {
-                cell = (cell + 1) % cellCount;
-            }
-
-            occupied[cell] = true;
-            layout[i] = cell;
-        }
-
-        return layout;
     }
 
     private void updateMemories(

@@ -49,7 +49,7 @@ public class WakeBasedMutationStrategy implements MutationStrategy {
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
 
-        List<Integer> turbines = new ArrayList<>(individual.getGenes());
+        List<Integer> turbines = new ArrayList<>(individual.getList());
         int countForAnalysis = (int) (turbines.size() * wakeAnalysisPercentage);
         int countForMutation = (int) (countForAnalysis * mutationSelectionPercentage);
 

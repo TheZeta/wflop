@@ -24,7 +24,7 @@ public class SwapMutation implements MutationStrategy {
 
     @Override
     public Individual mutate(Individual individual, WFLOP problem) {
-        List<Integer> genes = individual.getGenes();
+        List<Integer> genes = individual.getList();
         
         if (genes.size() < 2) {
             return individual;

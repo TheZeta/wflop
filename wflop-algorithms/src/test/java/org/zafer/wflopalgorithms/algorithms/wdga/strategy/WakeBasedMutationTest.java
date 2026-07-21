@@ -46,7 +46,7 @@ class WakeBasedMutationTest {
 
         // When
         Individual mutatedIndividual = strategy.mutate(originalIndividual, problem);
-        List<Integer> actualGenes = mutatedIndividual.getGenes();
+        List<Integer> actualGenes = mutatedIndividual.getList();
 
 	    // Then
         assertEquals(turbineCount, actualGenes.size(), "Turbine count should not change after mutation");

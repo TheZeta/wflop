@@ -26,13 +26,14 @@ public class Individual implements Solution {
         this.fitness = fitness;
     }
 
-    public List<Integer> getGenes() {
-        return new ArrayList<>(genes);
-    }
-
     @Override
     public double getFitness() {
         return fitness;
+    }
+
+    @Override
+    public List<Integer> getList() {
+        return new ArrayList<>(genes);
     }
 
     public void setFitness(double fitness) {

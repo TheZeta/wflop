@@ -98,7 +98,7 @@ public class WDGA extends AbstractMetaheuristic {
             if (getRandom().nextDouble() < this.crossoverRate) {
                 child = this.crossoverStrategyImpl.crossover(parent1, parent2, getProblem());
             } else {
-                child = new Individual(parent1.getGenes());
+                child = new Individual(parent1.getList());
             }
 
             if (getRandom().nextDouble() < this.mutationRate) {
@@ -152,7 +152,7 @@ public class WDGA extends AbstractMetaheuristic {
     }
 
     private double computeFitness(Individual individual) {
-        TurbineLayout layout = new TurbineLayout(individual.getGenes());
+        TurbineLayout layout = new TurbineLayout(individual.getList());
         return getPowerCalculator().calculateTotalPower(layout);
     }
 

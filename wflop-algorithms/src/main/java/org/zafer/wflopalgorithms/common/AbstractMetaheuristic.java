@@ -21,6 +21,7 @@ public abstract class AbstractMetaheuristic implements Metaheuristic {
     private PowerCalculator powerCalculator;
 
     private double totalPowerWithoutWake;
+    private double matrixInitTime;
 
     public AbstractMetaheuristic(TerminationCondition terminationCondition) {
         this.terminationCondition = terminationCondition;
@@ -44,9 +45,13 @@ public abstract class AbstractMetaheuristic implements Metaheuristic {
     private Solution runInternal(WFLOP problem, List<ProgressListener> listeners) {
         this.terminationCondition.onStart();
         this.problem = problem;
+        double start = System.currentTimeMillis();
         this.powerCalculator = createPowerCalculator();
+        double end = System.currentTimeMillis();
+
         this.totalPowerWithoutWake = this.powerCalculator.
             calculateTotalPowerWithoutWake(getProblem().getNumberOfTurbines());
+        this.matrixInitTime = end - start;
 
         init();
 
@@ -64,6 +69,7 @@ public abstract class AbstractMetaheuristic implements Metaheuristic {
             ProgressEvent event = new ProgressEvent(
                 getBestSolution().getFitness(),
                 this.totalPowerWithoutWake,
+                this.matrixInitTime,
                 this.terminationCondition.getTerminationProgress()
             );
 

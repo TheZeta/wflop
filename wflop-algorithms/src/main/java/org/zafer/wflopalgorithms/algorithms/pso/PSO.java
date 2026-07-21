@@ -6,6 +6,8 @@ import org.zafer.wflopmetaheuristic.Metaheuristic;
 import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmodel.problem.WFLOP;
 
+import java.util.List;
+
 /**
  * Particle Swarm Optimization implementation for WFLOP that can be loaded from JSON.
  * This is a stateless, reusable algorithm instance.
@@ -85,6 +87,11 @@ public class PSO implements Metaheuristic {
         @Override
         public double getFitness() {
             return fitness;
+        }
+
+        @Override
+        public List<Integer> getList() {
+            return null;
         }
     }
 }

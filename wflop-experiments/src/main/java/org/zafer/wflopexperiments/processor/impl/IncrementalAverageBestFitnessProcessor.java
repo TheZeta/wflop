@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.zafer.wflopexperiments.model.AlgorithmResult;
 import org.zafer.wflopexperiments.model.ProblemResult;
@@ -51,6 +53,21 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
             algorithmResult.getRuns().getLast()
         );
 
+        double matrixInitTime = algorithmResult.getRuns().stream()
+            .mapToDouble(this::matrixInitTime)
+            .average()
+            .orElse(-1);
+
+        List<List<Integer>> layouts = new ArrayList<>();
+
+        for (RunResult r : algorithmResult.getRuns()) {
+            List<Integer> sorted = r.getLayout().stream()
+                .sorted()
+                .toList();
+
+            layouts.add(sorted);
+        }
+
         writeOrAppendCsv(
             problemResult.getProblemId(),
             algorithmResult.getAlgorithmId(),
@@ -58,7 +75,9 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
             bestFitnessAchievedAtIterationMean,
             bestFitnessAchievedAtTimeMean,
             totalIterationCount,
-            conversionEfficiency
+            conversionEfficiency,
+            matrixInitTime,
+            layouts
         );
 
         // Console feedback
@@ -77,7 +96,9 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
         double bestFitnessAchievedAtIterationMean,
         double bestFitnessAchievedAtTimeMean,
         int totalIterationCount,
-        double conversionEfficiency
+        double conversionEfficiency,
+        double matrixInitTime,
+        List<List<Integer>> layouts
     ) throws IOException {
         String resolvedPath = outputPath.endsWith(".csv") ? outputPath : outputPath + ".csv";
         Path path = Path.of(resolvedPath);
@@ -94,7 +115,7 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
                 writer.write(
                     "problem,algorithm,mean_best_fitness," +
                     "mean_best_found_at_iteration,mean_best_found_at_time," +
-                    "total_iteration_count,conversion_efficiency\n"
+                    "total_iteration_count,conversion_efficiency,layouts\n"
                 );
             }
 
@@ -106,7 +127,9 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
                 bestFitnessAchievedAtIterationMean + "," +
                 bestFitnessAchievedAtTimeMean + "," +
                 totalIterationCount + "," +
-                conversionEfficiency + "\n"
+                conversionEfficiency + "," +
+                matrixInitTime + "," +
+                "\"" + layouts + "\"" + "\n"
             );
         }
     }
@@ -129,6 +152,10 @@ public class IncrementalAverageBestFitnessProcessor implements IncrementalAlgori
 
     private double totalPowerWithoutWake(RunResult run) {
         return extractLastData(run).totalPowerWithoutWake();
+    }
+
+    private double matrixInitTime(RunResult run) {
+        return extractLastData(run).matrixInitTime();
     }
 
     private ConvergenceListener.DataPoint extractLastData(RunResult run) {

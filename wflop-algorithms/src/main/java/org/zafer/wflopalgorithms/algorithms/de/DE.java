@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.zafer.wflopalgorithms.algorithms.de.solution.DEIndividual;
 import org.zafer.wflopalgorithms.common.AbstractMetaheuristic;
+import org.zafer.wflopalgorithms.common.Helper;
 import org.zafer.wflopcore.power.PowerCalculator;
 import org.zafer.wflopcore.wake.DefaultWakeModelProvider;
 import org.zafer.wflopcore.wake.WakeOptimization;
@@ -76,7 +77,7 @@ public class DE extends AbstractMetaheuristic {
             double trialFitness = evaluate(trial);
 
             if (trialFitness > target.getFitness()) {
-                DEIndividual offspring = new DEIndividual(trial);
+                DEIndividual offspring = new DEIndividual(trial, getProblem().getCellCount());
                 offspring.setFitness(trialFitness);
                 nextPopulation.add(offspring);
             } else {
@@ -106,7 +107,7 @@ public class DE extends AbstractMetaheuristic {
             for (int d = 0; d < turbines; d++) {
                 vector[d] = getRandom().nextDouble() * cellCount;
             }
-            this.population.add(new DEIndividual(vector));
+            this.population.add(new DEIndividual(vector, getProblem().getCellCount()));
         }
     }
 
@@ -146,32 +147,12 @@ public class DE extends AbstractMetaheuristic {
     }
 
     private double evaluate(double[] vector) {
-        int[] layout = discretize(vector);
+        int[] layout = Helper.discretize(vector, getProblem().getCellCount());
         List<Integer> list = Arrays.stream(layout)
             .boxed()
             .toList();
         TurbineLayout tl = new TurbineLayout(new ArrayList<>(list));
         return getPowerCalculator().calculateTotalPower(tl);
-    }
-
-    private int[] discretize(double[] vector) {
-        int cellCount = getProblem().getCellCount();
-        int[] layout = new int[vector.length];
-        boolean[] occupied = new boolean[cellCount];
-
-        for (int i = 0; i < vector.length; i++) {
-            int cell = (int) Math.floor(vector[i]);
-            cell = Math.clamp(cell, 0, cellCount - 1);
-
-            while (occupied[cell]) {
-                cell = (cell + 1) % cellCount;
-            }
-
-            occupied[cell] = true;
-            layout[i] = cell;
-        }
-
-        return layout;
     }
 
     private void enforceBounds(double[] vector) {

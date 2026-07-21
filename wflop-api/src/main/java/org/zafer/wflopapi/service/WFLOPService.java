@@ -38,7 +38,7 @@ public class WFLOPService {
 
         Solution solution = algorithm.run(problem);
         Individual individualSolution = (Individual) solution;
-        return new SolutionDTO(individualSolution.getGenes(), individualSolution.getFitness());
+        return new SolutionDTO(individualSolution.getList(), individualSolution.getFitness());
     }
 
     public SolutionDTO evaluate(ProblemDTO problemDTO, SolutionDTO solutionDTO) {
@@ -46,7 +46,7 @@ public class WFLOPService {
 
         Individual individual = new Individual(solutionDTO.layout);
         PowerCalculator calculator = new PowerCalculator(problem);
-        TurbineLayout layout = new TurbineLayout(individual.getGenes());
+        TurbineLayout layout = new TurbineLayout(individual.getList());
         double fitness = calculator.calculateTotalPower(layout);
 
         return new SolutionDTO(solutionDTO.layout, fitness);

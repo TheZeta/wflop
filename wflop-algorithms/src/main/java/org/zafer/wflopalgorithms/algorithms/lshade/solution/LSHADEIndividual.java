@@ -2,7 +2,10 @@ package org.zafer.wflopalgorithms.algorithms.lshade.solution;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.List;
 
+import org.zafer.wflopalgorithms.common.Helper;
 import org.zafer.wflopmetaheuristic.Solution;
 
 public class LSHADEIndividual implements Solution {
@@ -12,14 +15,26 @@ public class LSHADEIndividual implements Solution {
     private double F;
     private double CR;
 
-    public LSHADEIndividual(double[] vector) {
+    private final int cellCount;
+
+    public LSHADEIndividual(double[] vector, int cellCount) {
         this.vector = vector;
+        this.cellCount = cellCount;
+    }
+
+    @Override
+    public double getFitness() { return fitness; }
+
+    @Override
+    public List<Integer> getList() {
+        return Arrays.stream(Helper.discretize(vector, cellCount))
+            .boxed()
+            .toList();
     }
 
     public double[] getVector() { return vector; }
     public void setVector(double[] vector) { this.vector = vector; }
 
-    public double getFitness() { return fitness; }
     public void setFitness(double fitness) {
         this.fitness = BigDecimal.valueOf(fitness)
             .setScale(4, RoundingMode.HALF_UP)

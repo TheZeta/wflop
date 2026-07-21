@@ -24,8 +24,8 @@ public class SinglePointCrossover implements CrossoverStrategy {
 
     @Override
     public Individual crossover(Individual parent1, Individual parent2, WFLOP problem) {
-        List<Integer> genes1 = parent1.getGenes();
-        List<Integer> genes2 = parent2.getGenes();
+        List<Integer> genes1 = parent1.getList();
+        List<Integer> genes2 = parent2.getList();
         
         // Perform single-point crossover
         int crossoverPoint = random.nextInt(genes1.size());

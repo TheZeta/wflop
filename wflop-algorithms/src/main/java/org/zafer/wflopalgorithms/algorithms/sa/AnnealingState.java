@@ -28,4 +28,9 @@ public class AnnealingState implements Solution {
     public double getFitness() {
         return fitness;
     }
+
+    @Override
+    public List<Integer> getList() {
+        return layout;
+    }
 }

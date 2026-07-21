@@ -3,6 +3,8 @@ package org.zafer.wflopalgorithms.factory;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.zafer.wflopalgorithms.algorithms.wdga.WDGA;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
-import org.zafer.wflopmetaheuristic.termination.GenerationBasedTermination;
-import org.zafer.wflopmetaheuristic.termination.TerminationCondition;
 
 @ExtendWith(MockitoExtension.class)
 class AlgorithmFactoryTest {
@@ -44,7 +44,7 @@ class AlgorithmFactoryTest {
         String type = "generation";
         int maxGenerations = 200;
 
-        String json = """
+        String json = String.format(Locale.ROOT, """
         {
           "algorithm": "%s",
           "populationSize": %d,
@@ -59,7 +59,7 @@ class AlgorithmFactoryTest {
             "maxGenerations": %d
           }
         }
-        """.formatted(
+        """,
             algorithm, populationSize, crossoverRate, mutationRate,
             smartMutationRate, selectionStrategy, wakeAnalysisPercentage,
             mutationSelectionPercentage, type, maxGenerations

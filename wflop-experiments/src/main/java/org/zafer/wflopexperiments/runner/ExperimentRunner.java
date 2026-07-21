@@ -23,6 +23,7 @@ import org.zafer.wflopexperiments.model.*;
 import org.zafer.wflopexperiments.processor.IncrementalAlgorithmProcessor;
 import org.zafer.wflopexperiments.processor.registry.IncrementalProcessorRegistry;
 import org.zafer.wflopexperiments.progress.ExperimentProgress;
+import org.zafer.wflopmetaheuristic.Solution;
 import org.zafer.wflopmetaheuristic.listener.ProgressListener;
 import org.zafer.wflopmetaheuristic.listener.registry.ListenerRegistry;
 import org.zafer.wflopmetaheuristic.Metaheuristic;
@@ -147,8 +148,9 @@ public class ExperimentRunner {
                 collectedData.add(new ListenerData(listenerId, listener));
             }
 
-            algorithm.runWithListeners(wflop, listeners);
-            algorithmResult.addRun(new RunResult(run, collectedData));
+            Solution solution = algorithm.runWithListeners(wflop, listeners);
+            List<Integer> layout = solution.getList();
+            algorithmResult.addRun(new RunResult(run, collectedData, layout));
 
             progress.nextRun();
             String progressPercent = formatPercent(progress.getProgress());
@@ -327,8 +329,9 @@ public class ExperimentRunner {
                 collectedData.add(new ListenerData(listenerId, listener));
             }
 
-            algorithm.runWithListeners(wflop, listeners);
-            algorithmResult.addRun(new RunResult(run, collectedData));
+            Solution solution = algorithm.runWithListeners(wflop, listeners);
+            List<Integer> layout = solution.getList();
+            algorithmResult.addRun(new RunResult(run, collectedData, layout));
         }
 
         return algorithmResult;

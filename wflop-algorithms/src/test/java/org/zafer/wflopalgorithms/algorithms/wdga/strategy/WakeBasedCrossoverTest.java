@@ -121,13 +121,13 @@ class WakeBasedCrossoverTest {
         int expectedSize,
         int totalCells
     ) {
-        Set<Integer> actualGenes = Set.copyOf(actualOffspring.getGenes());
+        Set<Integer> actualGenes = Set.copyOf(actualOffspring.getList());
 
-        Set<Integer> parent1Genes = Set.copyOf(parent1.getGenes());
-        Set<Integer> parent2Genes = Set.copyOf(parent2.getGenes());
+        Set<Integer> parent1Genes = Set.copyOf(parent1.getList());
+        Set<Integer> parent2Genes = Set.copyOf(parent2.getList());
 
         List<Set<Integer>> expectedGenesList = expectedOffsprings.stream()
-            .map(individual -> Set.copyOf(individual.getGenes()))
+            .map(individual -> Set.copyOf(individual.getList()))
             .toList();
 
         long genesFromParent1 = actualGenes.stream()
@@ -140,7 +140,7 @@ class WakeBasedCrossoverTest {
 
         assertEquals(
             expectedSize,
-            actualOffspring.getGenes().size(),
+            actualOffspring.getList().size(),
             "Offspring should preserve exact turbine count"
         );
 

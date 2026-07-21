@@ -13,7 +13,8 @@ public class ConvergenceListener implements ProgressListener {
         double bestFitness,
         double bestFitnessAchievedAtIteration,
         double bestFitnessAchievedAtTime,
-        double totalPowerWithoutWake
+        double totalPowerWithoutWake,
+        double matrixInitTime
     ) {}
 
     private final List<DataPoint> data = new ArrayList<>();
@@ -46,7 +47,8 @@ public class ConvergenceListener implements ProgressListener {
                 event.getBestFitness(),
                 bestFitnessAchievedAtIteration,
                 bestFitnessAchievedAtTime,
-                event.getTotalPowerWithoutWake()
+                event.getTotalPowerWithoutWake(),
+                event.getMatrixInitTime()
             )
         );
     }

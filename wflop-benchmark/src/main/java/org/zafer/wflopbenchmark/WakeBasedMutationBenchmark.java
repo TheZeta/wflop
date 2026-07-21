@@ -50,7 +50,7 @@ public class WakeBasedMutationBenchmark {
                 );
 
         this.wakeBasedMutationStrategy =
-                new WakeBasedMutationStrategy(0.1, 0.5, powerCalculator);
+                new WakeBasedMutationStrategy(0.5, 0.4, powerCalculator);
 
         originalIndividual =
                 new Individual(RandomSolutionGenerator.populateUniqueRandomListShuffle(
@@ -60,7 +60,7 @@ public class WakeBasedMutationBenchmark {
 
     @Benchmark
     public void benchmarkMutation(Blackhole bh) {
-        Individual copy = new Individual(originalIndividual.getGenes());
+        Individual copy = new Individual(originalIndividual.getList());
 
         wakeBasedMutationStrategy.mutate(copy, wflop);
         bh.consume(copy);

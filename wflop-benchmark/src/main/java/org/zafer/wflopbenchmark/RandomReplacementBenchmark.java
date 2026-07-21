@@ -48,7 +48,7 @@ public class RandomReplacementBenchmark {
 
     @Benchmark
     public void benchmarkMutation(Blackhole bh) {
-        Individual copy = new Individual(originalIndividual.getGenes());
+        Individual copy = new Individual(originalIndividual.getList());
 
         randomReplacementMutation.mutate(copy, wflop);
         bh.consume(copy);

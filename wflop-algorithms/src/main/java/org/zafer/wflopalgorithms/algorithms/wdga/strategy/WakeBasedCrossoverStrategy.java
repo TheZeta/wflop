@@ -29,8 +29,8 @@ public class WakeBasedCrossoverStrategy implements CrossoverStrategy {
 
     @Override
     public Individual crossover(Individual parent1, Individual parent2, WFLOP problem) {
-        List<Integer> parent1Genes = parent1.getGenes();
-        List<Integer> parent2Genes = parent2.getGenes();
+        List<Integer> parent1Genes = parent1.getList();
+        List<Integer> parent2Genes = parent2.getList();
 
         // Calculate resultant wind angle from all wind profiles
         if (this.resultantWind == -1) {
